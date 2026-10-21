@@ -1,0 +1,535 @@
+<title>Pax</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:wght@400;600&display=swap">
+<style>
+/* Layout: one narrow column. The focused night on top, the week as a ruled list under it; List and Recipes as tabs. */
+:root {
+  --bg: #f3f4f1;
+  --surface: #ffffff;
+  --ink: #1d2427;
+  --muted: #5d676b;
+  --line: #d9ddd8;
+  --enamel: #23449e;
+  --enamel-ink: #ffffff;
+  --turmeric: #c98a12;
+  --turmeric-soft: #f6e8c8;
+  --danger: #a3312a;
+  --display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14191b; --surface: #1e2427; --ink: #e8ebe8; --muted: #9aa4a7; --line: #313a3d;
+    --enamel: #8fa8f0; --enamel-ink: #10162a; --turmeric: #e4ad3e; --turmeric-soft: #3a2f17; --danger: #f08a80;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14191b; --surface: #1e2427; --ink: #e8ebe8; --muted: #9aa4a7; --line: #313a3d;
+  --enamel: #8fa8f0; --enamel-ink: #10162a; --turmeric: #e4ad3e; --turmeric-soft: #3a2f17; --danger: #f08a80;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 16px/1.5 var(--body); }
+.wrap { max-width: 640px; margin: 0 auto; padding-block: 20px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 28px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; }
+a { color: var(--enamel); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid var(--enamel); outline-offset: 2px; }
+button:disabled { opacity: .45; cursor: default; }
+.muted { color: var(--muted); }
+.eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+
+header.top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+header.top h1 { font-size: 30px; font-weight: 700; letter-spacing: -.01em; }
+nav.tabs { display: flex; gap: 6px; }
+nav.tabs button { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 14px; }
+nav.tabs button[aria-current="page"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+.banner { border-left: 3px solid var(--turmeric); padding: 4px 0 4px 12px; color: var(--muted); font-size: 15px; }
+
+/* Focused night */
+.focus { display: grid; gap: 14px; }
+.focus h2 { font-size: 32px; line-height: 1.1; font-weight: 700; letter-spacing: -.015em; }
+.focus h2 a { color: inherit; text-decoration-thickness: 2px; text-underline-offset: 4px; text-decoration-color: var(--enamel); }
+.meta { display: flex; flex-wrap: wrap; gap: 4px 14px; color: var(--muted); font-size: 15px; }
+.pcv { display: grid; grid-template-columns: auto 1fr; gap: 2px 14px; font-size: 15px; border-block: 1px solid var(--line); padding-block: 10px; }
+.pcv dt { color: var(--muted); }
+.pcv dd { margin: 0; }
+.tweak { font-size: 15px; }
+.cookline { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-weight: 600; }
+.cookline .who { font-family: var(--display); font-size: 18px; }
+ol.steps { margin: 0; padding-left: 22px; display: grid; gap: 6px; }
+ul.ings { margin: 0; padding: 0; list-style: none; columns: 2; column-gap: 20px; font-size: 15px; }
+ul.ings li { break-inside: avoid; padding: 2px 0; }
+details > summary { cursor: pointer; font-weight: 600; padding: 4px 0; }
+
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 8px 14px; font-weight: 600; font-size: 15px; }
+.btn.primary { background: var(--enamel); color: var(--enamel-ink); border-color: var(--enamel); }
+.btn.danger { color: var(--danger); }
+.btn.quiet { background: transparent; border-color: transparent; padding-inline: 6px; color: var(--enamel); }
+.confirm { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 15px; }
+
+.options { display: grid; gap: 8px; }
+.option { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 12px 14px; display: grid; gap: 2px; width: 100%; }
+.option strong { font-family: var(--display); font-size: 17px; }
+.option span { font-size: 14px; color: var(--muted); }
+
+textarea, input[type=text] { font: inherit; width: 100%; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 10px; padding: 8px 10px; }
+
+/* Week list */
+.week { display: grid; }
+.week-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 6px; }
+.week-head h3 { font-size: 20px; }
+.week-nav { display: flex; gap: 4px; }
+.night { display: grid; grid-template-columns: 64px 1fr auto; gap: 12px; align-items: baseline; padding: 12px 8px; border: 0; border-top: 1px solid var(--line); background: transparent; text-align: left; width: 100%; border-radius: 0; }
+.night:last-child { border-bottom: 1px solid var(--line); }
+.night .d { font-weight: 600; font-variant-numeric: tabular-nums; }
+.night .d small { display: block; font-weight: 400; color: var(--muted); font-size: 13px; }
+.night .dish { min-width: 0; }
+.night .dish b { font-family: var(--display); font-weight: 500; font-size: 17px; }
+.night .tag { font-size: 13px; color: var(--muted); white-space: nowrap; }
+.night[aria-current="true"] { background: var(--turmeric-soft); }
+.night.is-today .d { color: var(--turmeric); }
+
+/* Ingredient list */
+.listsec { display: grid; gap: 4px; }
+.listsec h3 { font-size: 20px; margin-bottom: 4px; }
+.item { display: grid; grid-template-columns: 28px 1fr auto; gap: 10px; align-items: start; padding: 8px 0; border-top: 1px solid var(--line); }
+.item input { width: 20px; height: 20px; margin-top: 3px; accent-color: var(--enamel); }
+.item label { min-width: 0; cursor: pointer; }
+.item label small { display: block; color: var(--muted); font-size: 13px; }
+.item.done label { text-decoration: line-through; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 3px 10px; font-size: 14px; }
+.addrow { display: flex; gap: 8px; }
+.addrow input { flex: 1; min-width: 0; }
+
+/* Recipes */
+.rec { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: baseline; padding: 10px 0; border-top: 1px solid var(--line); }
+.rec .t { min-width: 0; }
+.rec .t a { font-family: var(--display); font-size: 17px; font-weight: 500; }
+.rec .t small { display: block; color: var(--muted); font-size: 13px; }
+.heart { border: 0; background: transparent; font-size: 20px; line-height: 1; padding: 4px 6px; color: var(--muted); }
+.heart[aria-pressed="true"] { color: var(--danger); }
+
+.empty { padding: 24px 0; color: var(--muted); }
+.toast { position: fixed; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 15px; max-width: calc(100% - 32px); }
+@media (max-width: 420px) { .focus h2 { font-size: 27px; } ul.ings { columns: 1; } .night { grid-template-columns: 52px 1fr; } .night .tag { grid-column: 2; } }
+@media (prefers-reduced-motion: no-preference) { .night, .option, .btn { transition: background-color .15s; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <h1>Pax</h1>
+    <nav class="tabs" aria-label="Sections">
+      <button id="tab-tonight" data-tab="tonight">Dinner</button>
+      <button id="tab-list" data-tab="list">List</button>
+      <button id="tab-recipes" data-tab="recipes">Recipes</button>
+    </nav>
+  </header>
+  <div id="banner" class="banner" hidden></div>
+  <main id="view">
+    <div class="empty">Loading this week's dinners. Once Claude plans a week, each night's dish, its cook and the recipe show up here.</div>
+  </main>
+  <div id="toast" class="toast" role="status" hidden></div>
+</div>
+
+<script>
+const SLOTS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+const DAY = { mon: "Monday", tue: "Tuesday", wed: "Wednesday", thu: "Thursday", fri: "Friday", sat: "Saturday", sun: "Sunday" };
+const COOK = { prithvi: "Prithvi", nihal: "Nihal" };
+const OTHER = { prithvi: "nihal", nihal: "prithvi" };
+
+const S = {
+  db: null, user: null, me: null, canWrite: true,
+  weeks: {}, weekId: null, nights: {}, checks: {}, rejects: {}, box: {}, staples: [], requests: {},
+  tab: "tonight", focus: null, ui: {}, profiles: {}, loaded: false,
+};
+let unsubWeek = [];
+
+/* ---------- helpers ---------- */
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const safeLink = u => /^https:\/\//i.test(u || "") ? u : "";
+const slug = s => String(s || "").toLowerCase().replace(/^https?:\/\//, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 150) || "x";
+const recipeKey = r => slug(r.link || r.dish);
+const norm = s => String(s || "").trim().toLowerCase();
+function localISO(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+function addDays(iso, n) { const [y, m, d] = iso.split("-").map(Number); return localISO(new Date(y, m - 1, d + n)); }
+function shortDate(iso) { const [y, m, d] = iso.split("-").map(Number); return new Date(y, m - 1, d).toLocaleDateString("en-US", { month: "short", day: "numeric" }); }
+const today = () => localISO(new Date());
+function toast(msg) { const t = document.getElementById("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => t.hidden = true, 3200); }
+function stamp() { return { by: S.me || null, at: new Date().toISOString() }; }
+function fmtTime(t) { if (!t) return ""; const [h, m] = t.split(":").map(Number); return ((h % 12) || 12) + (m ? ":" + String(m).padStart(2, "0") : "") + (h >= 12 ? "pm" : "am"); }
+
+async function write(fn, okMsg) {
+  if (!S.db) { toast("Changes can't be saved here. Open Pax on claude.ai while signed in."); return; }
+  try { await fn(); if (okMsg) toast(okMsg); }
+  catch (e) {
+    if (e && e.code === "invalid_argument") { S.canWrite = false; showBanner(); render(); toast("You can view Pax but not change it. Ask Prithvi to share it with you as an Editor."); }
+    else if (e && e.code === "quota_exceeded") toast("Pax's storage is full. Clear out old weeks to keep saving.");
+    else toast("That didn't save. Check your connection and try again.");
+  }
+}
+
+/* ---------- derived state ---------- */
+const week = () => S.weeks[S.weekId] || null;
+function slotDate(slot) { return addDays(S.weekId, SLOTS.indexOf(slot)); }
+
+function nightView(slot) {
+  const w = week() || {};
+  const plan = (w.nights || {})[slot] || { kind: "flex" };
+  const st = S.nights[slot] || {};
+  const kind = st.flag || plan.kind || "flex";
+  const cook = st.cook || plan.cook || null;
+  const rejected = new Set(st.rejected || []);
+  const opts = (plan.options || []).filter(o => !rejected.has(o.id) && !S.rejects[recipeKey(o)]);
+  let current = null;
+  if (st.boxPick && !S.rejects[recipeKey(st.boxPick)]) current = { ...st.boxPick, fromBox: true };
+  else current = opts.find(o => o.id === st.current) || opts[0] || null;
+  const backups = opts.filter(o => !current || o.id !== current.id);
+  const hadOptions = (plan.options || []).length > 0;
+  const request = Object.values(S.requests).find(r => r.week === S.weekId && r.slot === slot && r.status === "open");
+  return { slot, date: slotDate(slot), plan, st, kind, cook, current, backups, exhausted: hadOptions && !current, request };
+}
+
+function chooseWeek() {
+  const ids = Object.keys(S.weeks).sort();
+  if (!ids.length) return null;
+  const t = today();
+  const cur = ids.find(id => id <= t && t <= addDays(id, 6));
+  return cur || ids.find(id => id > t) || ids[ids.length - 1];
+}
+
+function defaultFocus() {
+  const t = today();
+  const views = SLOTS.map(nightView);
+  const inWeek = views.find(v => v.date === t);
+  if (inWeek) return inWeek.slot;
+  const next = views.find(v => v.date >= t && v.kind === "cook") || views.find(v => v.kind === "cook");
+  return (next || views[0]).slot;
+}
+
+/* ---------- render ---------- */
+function showBanner() {
+  const b = document.getElementById("banner");
+  if (!S.db && S.loaded) { b.textContent = "You're seeing Pax without its saved data. Open it on claude.ai while signed in to see and change the plan."; b.hidden = false; }
+  else if (!S.canWrite) { b.textContent = "You can view the plan but not change it. Ask Prithvi to share Pax with you as an Editor."; b.hidden = false; }
+  else b.hidden = true;
+}
+
+function render() {
+  document.querySelectorAll("nav.tabs button").forEach(b => b.setAttribute("aria-current", b.dataset.tab === S.tab ? "page" : "false"));
+  const v = document.getElementById("view");
+  if (!S.loaded) return;
+  if (S.tab === "list") v.innerHTML = renderList();
+  else if (S.tab === "recipes") v.innerHTML = renderRecipes();
+  else v.innerHTML = renderTonight();
+  resolveNames();
+}
+
+function noWeek() {
+  return `<div class="empty"><h2 style="font-size:24px;color:var(--ink);margin-bottom:6px">No dinners planned yet</h2>
+  Claude plans each week on Sunday afternoon: a dish for every cook night with two backups, and a note for nights you're out. It'll show up here.</div>`;
+}
+
+function renderTonight() {
+  if (!week()) return noWeek();
+  if (!S.focus) S.focus = defaultFocus();
+  const n = nightView(S.focus);
+  return `<div style="display:grid;gap:32px">${renderFocus(n)}${renderWeek()}</div>`;
+}
+
+function focusLabel(n) {
+  const t = today();
+  if (n.date === t) return "Tonight";
+  if (n.date === addDays(t, 1)) return "Tomorrow";
+  return DAY[n.slot] + ", " + shortDate(n.date);
+}
+
+function renderFocus(n) {
+  const dis = S.canWrite ? "" : "disabled";
+  const ui = S.ui[n.slot] || {};
+  const time = n.plan.time ? fmtTime(n.plan.time) : "";
+  let h = `<section class="focus" aria-labelledby="focus-h"><div class="eyebrow">${esc(focusLabel(n))}${time ? " · " + esc(time) : ""}</div>`;
+
+  if (n.kind === "out" || n.kind === "skip" || n.kind === "flex") {
+    const label = n.st.flag === "out" ? "Eating out" : n.st.flag === "skip" ? "No cooking tonight" : (n.plan.label || (n.kind === "flex" ? "Free night" : n.kind === "out" ? "Eating out" : "No cooking"));
+    h += `<h2 id="focus-h">${esc(label)}</h2>`;
+    if (n.plan.note && !n.st.flag) h += `<p class="tweak" style="margin:0">${esc(n.plan.note)}</p>`;
+    if (n.kind === "flex" && !n.plan.note) h += `<p class="muted" style="margin:0">Out, ordering in or leftovers. Nothing to cook.</p>`;
+    if (n.st.flag) h += `<p class="muted" style="margin:0" data-by="${esc(n.st.by || "")}">Marked by <span class="name">someone</span>. Its ingredients are off the list.</p>`;
+    if (n.st.flag && (n.plan.options || []).length) h += `<div class="actions"><button class="btn" data-act="flag" data-slot="${n.slot}" data-v="" ${dis}>We're cooking after all</button></div>`;
+    return h + `</section>`;
+  }
+
+  const c = n.current;
+  if (!c) {
+    h += `<h2 id="focus-h">Nothing left for ${esc(DAY[n.slot])}</h2>
+      <p style="margin:0">Both backups are gone. Pick something from your recipe box, or ask Claude for two new options.</p>`;
+    h += renderBoxPicker(n, dis) + renderRequest(n, dis) + renderNightFlags(n, dis);
+    return h + `</section>`;
+  }
+  const link = safeLink(c.link);
+  const hearted = !!S.box[recipeKey(c)];
+  h += `<h2 id="focus-h">${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">${esc(c.dish)}</a>` : esc(c.dish)}</h2>
+    <div class="meta">${c.source ? `<span>${esc(c.source)}</span>` : ""}${c.minutes ? `<span>${esc(c.minutes)} min</span>` : ""}${c.cuisine ? `<span>${esc(c.cuisine)}</span>` : ""}${c.fromBox ? `<span>From your recipe box</span>` : ""}</div>
+    <div class="cookline"><span class="who">${esc(COOK[n.cook] || "Whoever's home")} cooks</span>
+      ${n.cook ? `<button class="btn quiet" data-act="cook" data-slot="${n.slot}" ${dis}>Hand to ${esc(COOK[OTHER[n.cook]])}</button>` : ""}
+      <button class="heart" data-act="heart" data-slot="${n.slot}" aria-pressed="${hearted}" aria-label="${hearted ? "Remove from" : "Save to"} recipe box" title="${hearted ? "In your recipe box" : "Save to recipe box"}" ${dis}>${hearted ? "♥" : "♡"}</button></div>
+    <dl class="pcv"><dt>Protein</dt><dd>${esc(c.protein)}</dd><dt>Carb</dt><dd>${esc(c.carb)}</dd><dt>Veg</dt><dd>${esc(c.veg)}</dd></dl>`;
+  if (c.tweak) h += `<p class="tweak" style="margin:0">${esc(c.tweak)}</p>`;
+  if ((c.steps || []).length) h += `<details ${n.date === today() ? "open" : ""}><summary>Quick steps</summary><ol class="steps">${c.steps.map(s => `<li>${esc(s)}</li>`).join("")}</ol>${link ? `<p class="muted" style="margin:8px 0 0;font-size:14px">Quantities and full method are on the <a href="${esc(link)}" target="_blank" rel="noopener">recipe page</a>.</p>` : ""}</details>`;
+  if ((c.ingredients || []).length) h += `<details><summary>What goes in it</summary><ul class="ings">${c.ingredients.map(i => `<li>${esc(i)}</li>`).join("")}</ul></details>`;
+
+  // Swap / reject
+  if (ui.mode === "swap") {
+    h += `<div class="options">${n.backups.map(o => `<button class="option" data-act="pick" data-slot="${n.slot}" data-id="${esc(o.id)}" ${dis}><strong>${esc(o.dish)}</strong><span>${esc([o.source, o.minutes && o.minutes + " min", o.protein].filter(Boolean).join(" · "))}</span></button>`).join("") || `<p class="muted" style="margin:0">No backups left for this night.</p>`}</div>`;
+    h += renderBoxPicker(n, dis, true);
+    h += `<div class="actions"><button class="btn quiet" data-act="ui" data-slot="${n.slot}" data-v="">Keep ${esc(c.dish)}</button></div>`;
+  } else if (ui.mode === "reject") {
+    h += `<div class="confirm"><span>Never suggest ${esc(c.dish)} again?</span>
+      <button class="btn danger" data-act="reject" data-slot="${n.slot}" ${dis}>Reject it</button>
+      <button class="btn quiet" data-act="ui" data-slot="${n.slot}" data-v="">Cancel</button></div>`;
+  } else {
+    h += `<div class="actions">
+      <button class="btn" data-act="ui" data-slot="${n.slot}" data-v="swap" ${dis}>Swap${n.backups.length ? ` (${n.backups.length} backup${n.backups.length > 1 ? "s" : ""})` : ""}</button>
+      <button class="btn danger" data-act="ui" data-slot="${n.slot}" data-v="reject" ${dis}>Reject</button></div>`;
+  }
+  if (n.st.by && (n.st.current || n.st.boxPick || (n.st.rejected || []).length || n.st.cook)) h += `<p class="muted" style="margin:0;font-size:14px" data-by="${esc(n.st.by)}">Last changed by <span class="name">someone</span>.</p>`;
+  h += renderNightFlags(n, dis);
+  return h + `</section>`;
+}
+
+function renderNightFlags(n, dis) {
+  return `<div class="actions" style="margin-top:4px">
+    <button class="btn quiet" data-act="flag" data-slot="${n.slot}" data-v="out" ${dis}>We're eating out</button>
+    <button class="btn quiet" data-act="flag" data-slot="${n.slot}" data-v="skip" ${dis}>Skip cooking</button></div>`;
+}
+
+function renderBoxPicker(n, dis, compact) {
+  const items = Object.values(S.box).filter(b => !S.rejects[recipeKey(b)]);
+  if (!items.length) return compact ? "" : `<p class="muted" style="margin:0">Your recipe box is empty. Tap ♡ on a dish you liked to save it.</p>`;
+  return `<details ${compact ? "" : "open"}><summary>From your recipe box</summary><div class="options" style="margin-top:6px">${items.map(b =>
+    `<button class="option" data-act="boxpick" data-slot="${n.slot}" data-key="${esc(recipeKey(b))}" ${dis}><strong>${esc(b.dish)}</strong><span>${esc([b.source, b.minutes && b.minutes + " min", b.protein].filter(Boolean).join(" · "))}</span></button>`).join("")}</div></details>`;
+}
+
+function renderRequest(n, dis) {
+  if (n.request) return `<p class="banner" style="margin:0">You asked Claude for new options${n.request.note ? `: “${esc(n.request.note)}”` : ""}. They'll show up here after Claude's next run.</p>`;
+  return `<div style="display:grid;gap:8px"><label for="req-${n.slot}" class="eyebrow">Anything Claude should know?</label>
+    <textarea id="req-${n.slot}" rows="2" placeholder="e.g. something with eggs, nothing too heavy"></textarea>
+    <div class="actions"><button class="btn primary" data-act="request" data-slot="${n.slot}" ${dis}>Ask Claude for new options</button></div></div>`;
+}
+
+function renderWeek() {
+  const ids = Object.keys(S.weeks).sort();
+  const i = ids.indexOf(S.weekId);
+  const w = week();
+  let h = `<section class="week" aria-labelledby="week-h"><div class="week-head"><h3 id="week-h">Week of ${esc(shortDate(S.weekId))}</h3>
+    <div class="week-nav"><button class="btn quiet" data-act="week" data-v="${esc(ids[i - 1] || "")}" ${i > 0 ? "" : "disabled"} aria-label="Previous week">← Prev</button>
+    <button class="btn quiet" data-act="week" data-v="${esc(ids[i + 1] || "")}" ${i < ids.length - 1 ? "" : "disabled"} aria-label="Next week">Next →</button></div></div>`;
+  if (w.note) h += `<p class="muted" style="margin:0 0 10px">${esc(w.note)}</p>`;
+  const t = today();
+  for (const slot of SLOTS) {
+    const n = nightView(slot);
+    let dish, tag;
+    if (n.kind === "cook") { dish = n.current ? n.current.dish : "Needs a new dish"; tag = COOK[n.cook] || ""; }
+    else if (n.st.flag === "out") { dish = "Eating out"; tag = ""; }
+    else if (n.st.flag === "skip") { dish = "No cooking"; tag = ""; }
+    else { dish = n.plan.label || (n.kind === "flex" ? "Free night" : "No cooking"); tag = n.plan.time ? fmtTime(n.plan.time) : ""; }
+    h += `<button class="night${n.date === t ? " is-today" : ""}" data-act="focus" data-slot="${slot}" aria-current="${S.focus === slot}">
+      <span class="d">${DAY[slot].slice(0, 3)}<small>${esc(shortDate(n.date))}</small></span>
+      <span class="dish"><b>${esc(dish)}</b></span><span class="tag">${esc(tag)}</span></button>`;
+  }
+  return h + `</section>`;
+}
+
+function buildList() {
+  const map = new Map();
+  for (const slot of SLOTS) {
+    const n = nightView(slot);
+    if (n.kind !== "cook" || !n.current) continue;
+    for (const raw of n.current.ingredients || []) {
+      const k = norm(raw); if (!k) continue;
+      if (!map.has(k)) map.set(k, { key: slug(k), name: raw.trim(), dishes: [] });
+      map.get(k).dishes.push(DAY[slot].slice(0, 3) + ": " + n.current.dish);
+    }
+  }
+  const staples = new Set(S.staples.map(norm));
+  const buy = [], have = [];
+  for (const [k, it] of map) (staples.has(k) ? have : buy).push(it);
+  const by = (a, b) => a.name.localeCompare(b.name);
+  return { buy: buy.sort(by), have: have.sort(by) };
+}
+
+function renderList() {
+  if (!week()) return noWeek();
+  const { buy, have } = buildList();
+  const dis = S.canWrite ? "" : "disabled";
+  const checks = S.checks.items || {};
+  const row = (it, staple) => `<div class="item${checks[it.key] ? " done" : ""}">
+    <input type="checkbox" id="chk-${esc(it.key)}" data-act="check" data-key="${esc(it.key)}" ${checks[it.key] ? "checked" : ""} ${dis}>
+    <label for="chk-${esc(it.key)}">${esc(it.name)}<small>${esc(it.dishes.join(" · "))}</small></label>
+    <button class="btn quiet" style="font-size:13px" data-act="${staple ? "unstaple" : "staple"}" data-name="${esc(it.name)}" ${dis}>${staple ? "Not a staple" : "Always have it"}</button></div>`;
+  let h = `<div style="display:grid;gap:28px"><p class="muted" style="margin:0">Everything for the week of ${esc(shortDate(S.weekId))}'s cooking, built from the current picks. Swap or reject a dish and this list follows. Check the recipe pages for quantities.</p>`;
+  h += `<section class="listsec"><h3>Need to buy <span class="muted" style="font-size:15px;font-weight:400">${buy.length}</span></h3>${buy.map(i => row(i, false)).join("") || `<p class="muted">Nothing to buy. Everything's a staple.</p>`}</section>`;
+  h += `<section class="listsec"><h3>Probably have <span class="muted" style="font-size:15px;font-weight:400">${have.length}</span></h3><p class="muted" style="margin:0 0 4px;font-size:14px">Your staples. Worth a quick look before you shop.</p>${have.map(i => row(i, true)).join("") || `<p class="muted">None of this week's ingredients are on your staples list.</p>`}</section>`;
+  h += `<section class="listsec"><h3>Staples</h3><p class="muted" style="margin:0 0 6px;font-size:14px">Anything here goes under "Probably have." Tap one to remove it.</p>
+    <div class="chips">${S.staples.map(s => `<button class="chip" data-act="unstaple" data-name="${esc(s)}" aria-label="Remove ${esc(s)}" ${dis}>${esc(s)} ×</button>`).join("") || `<span class="muted">No staples yet.</span>`}</div>
+    <form class="addrow" id="staple-form" style="margin-top:8px"><input type="text" id="staple-input" placeholder="Add a staple, e.g. basmati rice" ${dis}><button class="btn" ${dis}>Add</button></form></section></div>`;
+  return h;
+}
+
+function allPlanned() {
+  const seen = new Map();
+  for (const id of Object.keys(S.weeks).sort().reverse()) {
+    const w = S.weeks[id];
+    for (const slot of SLOTS) for (const o of ((w.nights || {})[slot] || {}).options || []) {
+      const k = recipeKey(o);
+      if (!seen.has(k)) seen.set(k, { ...o, week: id });
+    }
+  }
+  return [...seen.values()];
+}
+
+function renderRecipes() {
+  const dis = S.canWrite ? "" : "disabled";
+  const box = Object.values(S.box).sort((a, b) => a.dish.localeCompare(b.dish));
+  const rec = (r, extra) => {
+    const link = safeLink(r.link); const k = recipeKey(r); const hearted = !!S.box[k];
+    return `<div class="rec"><div class="t">${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">${esc(r.dish)}</a>` : `<b>${esc(r.dish)}</b>`}<small>${esc([r.source, r.cuisine, r.minutes && r.minutes + " min", extra].filter(Boolean).join(" · "))}</small></div>
+      <button class="heart" data-act="heartrec" data-key="${esc(k)}" aria-pressed="${hearted}" aria-label="${hearted ? "Remove from" : "Save to"} recipe box" ${dis}>${hearted ? "♥" : "♡"}</button></div>`;
+  };
+  let h = `<div style="display:grid;gap:28px"><section><h3 style="font-size:20px;margin-bottom:6px">Recipe box</h3>
+    ${box.length ? box.map(r => rec(r)).join("") : `<p class="muted" style="margin:0">Nothing saved yet. Tap ♡ on a dinner you loved, and you can pull it into any night when you swap.</p>`}</section>`;
+  const planned = allPlanned().filter(r => !S.rejects[recipeKey(r)]);
+  h += `<section><h3 style="font-size:20px;margin-bottom:6px">Every dish Claude has suggested</h3>${planned.map(r => rec(r, "week of " + shortDate(r.week))).join("") || `<p class="muted">None yet.</p>`}</section>`;
+  const rej = Object.entries(S.rejects);
+  h += `<section><h3 style="font-size:20px;margin-bottom:6px">Rejected</h3><p class="muted" style="margin:0 0 6px;font-size:14px">Claude won't suggest these again.</p>
+    ${rej.map(([k, r]) => `<div class="rec"><div class="t"><b>${esc(r.dish)}</b><small>${esc(r.source || "")}</small></div><button class="btn quiet" data-act="unreject" data-key="${esc(k)}" ${dis}>Allow again</button></div>`).join("") || `<p class="muted">Nothing rejected.</p>`}</section></div>`;
+  return h;
+}
+
+async function resolveNames() {
+  if (!S.user || !S.user.profiles) return;
+  const els = [...document.querySelectorAll("[data-by]")].filter(e => e.dataset.by);
+  if (!els.length) return;
+  const ids = [...new Set(els.map(e => e.dataset.by))];
+  const ps = await S.user.profiles(ids);
+  for (const e of els) { const p = ps[e.dataset.by]; const span = e.querySelector(".name"); if (span) span.textContent = p && p.isMe ? "you" : (p && p.name) || "someone"; }
+}
+
+/* ---------- actions ---------- */
+function nightRef(slot) { return S.db.collection("weeks").doc(S.weekId).collection("nights").doc(slot); }
+async function saveNight(slot, patch) {
+  const next = { ...(S.nights[slot] || {}), ...patch, ...stamp() };
+  S.nights[slot] = next; render();
+  await nightRef(slot).set(next);
+}
+
+const handlers = {
+  focus: d => { S.focus = d.slot; S.ui = {}; render(); window.scrollTo({ top: 0, behavior: "smooth" }); },
+  ui: d => { S.ui[d.slot] = { mode: d.v }; render(); },
+  week: d => { if (d.v) selectWeek(d.v); },
+  pick: d => write(() => { S.ui = {}; return saveNight(d.slot, { current: d.id, boxPick: null }); }, "Swapped."),
+  boxpick: d => { const b = S.box[d.key]; if (!b) return; write(() => { S.ui = {}; return saveNight(d.slot, { boxPick: b }); }, `${b.dish} it is.`); },
+  reject: d => {
+    const n = nightView(d.slot); const c = n.current; if (!c) return;
+    write(async () => {
+      S.ui = {};
+      const patch = c.fromBox ? { boxPick: null } : { rejected: [...new Set([...(n.st.rejected || []), c.id])], current: null };
+      await saveNight(d.slot, patch);
+      await S.db.collection("rejects").doc(recipeKey(c)).set({ dish: c.dish, source: c.source || "", link: c.link || "", week: S.weekId, slot: d.slot, ...stamp() });
+    }, `${c.dish} won't come back.`);
+  },
+  cook: d => { const n = nightView(d.slot); write(() => saveNight(d.slot, { cook: OTHER[n.cook] }), `${COOK[OTHER[n.cook]]} has ${DAY[d.slot]}.`); },
+  flag: d => write(() => saveNight(d.slot, { flag: d.v || null }), d.v ? "Got it. Its ingredients are off the list." : "Back on the menu."),
+  heart: d => toggleBox(nightView(d.slot).current),
+  heartrec: d => toggleBox(S.box[d.key] || allPlanned().find(r => recipeKey(r) === d.key)),
+  unreject: d => write(() => S.db.collection("rejects").doc(d.key).delete(), "Allowed again."),
+  request: d => {
+    const note = (document.getElementById("req-" + d.slot) || {}).value || "";
+    write(() => S.db.collection("requests").add({ week: S.weekId, slot: d.slot, note: note.trim().slice(0, 500), status: "open", ...stamp() }), "Asked. Claude will add options on its next run.");
+  },
+  check: d => {
+    const items = { ...(S.checks.items || {}) }; const on = !items[d.key]; items[d.key] = on; S.checks = { ...S.checks, items }; render();
+    write(async () => {
+      const ref = S.db.collection("checks").doc(S.weekId);
+      try { await ref.update({ items: { [d.key]: on } }); }
+      catch (e) { if (e && e.code === "invalid_argument" && !S.checksExist) await ref.set({ items }); else throw e; }
+    });
+  },
+  staple: d => saveStaples([...S.staples, d.name]),
+  unstaple: d => saveStaples(S.staples.filter(s => norm(s) !== norm(d.name))),
+};
+
+function toggleBox(r) {
+  if (!r) return;
+  const k = recipeKey(r);
+  if (S.box[k]) return write(() => S.db.collection("box").doc(k).delete(), "Removed from your recipe box.");
+  const keep = ["dish", "source", "link", "cuisine", "minutes", "protein", "carb", "veg", "ingredients", "steps", "tweak"];
+  const doc = { id: "box-" + k.slice(0, 40) }; keep.forEach(f => { if (r[f] !== undefined) doc[f] = r[f]; });
+  write(() => S.db.collection("box").doc(k).set({ ...doc, ...stamp() }), "Saved to your recipe box.");
+}
+
+function saveStaples(list) {
+  const seen = new Set(); const items = [];
+  for (const s of list) { const t = s.trim(); if (t && !seen.has(norm(t))) { seen.add(norm(t)); items.push(t); } }
+  S.staples = items; render();
+  write(() => S.db.collection("staples").doc("list").set({ items, ...stamp() }));
+}
+
+document.addEventListener("click", e => {
+  const tab = e.target.closest("nav.tabs button");
+  if (tab) { S.tab = tab.dataset.tab; S.ui = {}; render(); try { history.replaceState(null, "", "#" + S.tab); } catch (_) {} return; }
+  const el = e.target.closest("[data-act]");
+  if (!el || el.disabled || el.dataset.act === "check") return;
+  const h = handlers[el.dataset.act]; if (h) h(el.dataset);
+});
+document.addEventListener("change", e => { const el = e.target.closest("[data-act=check]"); if (el) handlers.check(el.dataset); });
+document.addEventListener("submit", e => {
+  if (e.target.id !== "staple-form") return;
+  e.preventDefault(); const inp = document.getElementById("staple-input");
+  if (inp.value.trim()) saveStaples([...S.staples, inp.value]);
+});
+
+/* ---------- data ---------- */
+function selectWeek(id) {
+  S.weekId = id; S.focus = null; S.ui = {}; S.nights = {}; S.checks = {}; S.checksExist = false;
+  unsubWeek.forEach(u => u()); unsubWeek = [];
+  if (S.db && id) {
+    unsubWeek.push(S.db.collection("weeks").doc(id).collection("nights").onSnapshot(snap => {
+      const m = {}; snap.docs.forEach(d => m[d.id] = d.data()); S.nights = m; render();
+    }, onErr));
+    unsubWeek.push(S.db.collection("checks").doc(id).onSnapshot(d => { S.checksExist = d.exists; S.checks = d.exists ? d.data() : {}; render(); }, onErr));
+  }
+  render();
+}
+function onErr(e) { if (e && e.code === "revoked") { S.db = null; showBanner(); } }
+
+async function start() {
+  const tok = (location.hash || "").slice(1);
+  if (["tonight", "list", "recipes"].includes(tok)) S.tab = tok;
+  render();
+  const [db, user] = await Promise.all([window.claude?.use?.("db") ?? null, window.claude?.use?.("user") ?? null]);
+  S.db = db; S.user = user;
+  if (user) {
+    try { S.me = await user.id(); } catch (_) {}
+    try { const c = await user.can("data.write"); if (c === false) S.canWrite = false; } catch (_) {}
+  }
+  if (!db) { S.loaded = true; S.canWrite = false; showBanner(); render(); return; }
+  let first = true;
+  db.collection("weeks").onSnapshot(snap => {
+    const m = {}; snap.docs.forEach(d => { if (/^\d{4}-\d{2}-\d{2}$/.test(d.id)) m[d.id] = d.data(); }); S.weeks = m;
+    if (first || !S.weeks[S.weekId]) { first = false; S.loaded = true; selectWeek(chooseWeek()); } else render();
+  }, onErr);
+  const coll = (name, key) => db.collection(name).onSnapshot(snap => { const m = {}; snap.docs.forEach(d => m[d.id] = d.data()); S[key] = m; render(); }, onErr);
+  coll("rejects", "rejects"); coll("box", "box");
+  db.collection("requests").where("status", "==", "open").onSnapshot(snap => { const m = {}; snap.docs.forEach(d => m[d.id] = d.data()); S.requests = m; render(); }, onErr);
+  db.collection("staples").doc("list").onSnapshot(d => { S.staples = d.exists ? (d.data().items || []) : []; render(); }, onErr);
+  showBanner();
+}
+start();
+</script>
