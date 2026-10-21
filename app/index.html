@@ -132,7 +132,9 @@ footer.band span:last-child { font-family: var(--print); font-size: 14px; text-t
   .cal { grid-template-columns: minmax(0, 1fr); row-gap: 34px; }
   .day:nth-child(odd) .note-wrap { transform: rotate(-1deg); margin-right: 10px; }
   .day:nth-child(even) .note-wrap { transform: rotate(1deg); margin-left: 10px; }
-  .daybtns { grid-template-columns: 1fr 1fr; }
+  .daybtns { grid-template-columns: 1fr 1fr; gap: 6px; }
+  .daybtns .label { font-size: 15px; padding: 4px 6px; min-height: 38px; text-align: center; white-space: nowrap; }
+  .daybtns .label:only-child { grid-column: 1 / -1; width: auto; justify-self: start; padding-inline: 12px; }
   .v-tomato { width: 200px; right: -50px; top: 40px; }
   .v-peas { width: 190px; top: 1500px; left: auto; right: -70px; transform: rotate(-8deg); }
   .v-carrots { width: 210px; left: -60px; bottom: 120px; }
