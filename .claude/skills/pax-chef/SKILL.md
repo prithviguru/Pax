@@ -31,7 +31,7 @@ Use the ArtifactData tool on the Pax URL. Everything you need is in its database
 - `weeks` - past plans. The last 4 weeks' options are off limits for picks.
 - `weeks/<week>/nights` - what they actually did each night: `current` (the option they swapped to), `rejected` (option ids), `boxPick`, `cook`, `flag` ("order", "out", or "cook" to override a planned night out).
 - `rejects` - dishes either of them rejected. Never suggest one again.
-- `box` - their recipe box (saved favorites). Treat these like any other recipe, but they make good backups.
+- `box` - their recipe tin (saved favorites, shown as index cards in the Recipes tab). These can come from any site, not just the approved sources, because they chose them. Treat them like any other recipe, but they make good backups, and give each one a `cuisine` so it lands behind the right divider.
 - `requests` with `status` "open" - nights where they ran out of options and asked for more.
 - `staples/list` - what they always have. You don't edit it; they do.
 
@@ -76,6 +76,7 @@ Write one document: collection `weeks`, doc id = that Monday's date (`YYYY-MM-DD
 - `id`: a short slug, unique within the week.
 - `ingredients`: one item per entry, no quantities, lowercase, named the way a shopper would say it. Use the same name for the same thing across recipes ("garlic", not "garlic cloves" in one and "garlic" in another), and match the names in `staples/list` exactly so staples sort into "Probably have."
 - `steps`: 3 to 5 short steps. The recipe page has the full method.
+- `shelves`: one entry per ingredient across the week, mapping its exact name to where it goes in the app's fridge: "frozen", "dairy" (cheese, cream, eggs, tofu), "pantry" (beans, pasta, rice, tortillas, jars, sauces) or "produce". The List tab shows groceries on those shelves; anything you skip gets guessed.
 
 ## Answering requests
 

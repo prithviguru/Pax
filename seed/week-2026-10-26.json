@@ -344,5 +344,26 @@
       "note": "You land at EWR at 5:40pm and should be home around 7."
     }
   },
-  "plannedAt": "2026-10-21"
+  "plannedAt": "2026-10-21",
+  "shelves": {
+    "frozen peas": "frozen",
+    "paneer": "dairy",
+    "feta": "dairy",
+    "parmesan": "dairy",
+    "black beans": "pantry",
+    "chickpeas": "pantry",
+    "corn tortillas": "pantry",
+    "ditalini": "pantry",
+    "rotis": "pantry",
+    "salsa verde": "pantry",
+    "avocado": "produce",
+    "cilantro": "produce",
+    "fresh rosemary": "produce",
+    "green chili": "produce",
+    "lemon": "produce",
+    "limes": "produce",
+    "red cabbage": "produce",
+    "spinach": "produce",
+    "tomatoes": "produce"
+  }
 }
