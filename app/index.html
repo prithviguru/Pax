@@ -556,6 +556,7 @@ function renderRecipes() {
       <div class="face back" ${T.flipped ? "" : 'aria-hidden="true" inert'}><span class="kick">How to make it</span>
         ${(card.steps || []).length ? `<ol>${card.steps.map(x => `<li>${esc(x)}</li>`).join("")}</ol>` : `<span class="meta">The steps are on the recipe page.</span>`}
         ${(card.ingredients || []).length ? `<span class="kick" style="margin-top:6px">What goes in it</span><span class="meta">${esc(card.ingredients.join(", "))}</span>` : ""}
+        ${card.tweak ? `<span class="kick" style="margin-top:6px">Notes</span><span class="meta">${esc(card.tweak)}</span>` : ""}
         <div class="foot">${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">Open the recipe →</a>` : ""}<button class="ink" data-act="tin" data-v="flip">Flip back ↻</button></div>
         <button class="ink" style="font-size:14px;align-self:flex-start" data-act="heartrec" data-key="${esc(card.key)}" ${dis}>Take it out of the tin</button></div>`;
   }
