@@ -1,0 +1,369 @@
+{
+  "weekOf": "2026-10-26",
+  "note": "Three cook nights, then Charleston for Vansh & Kruti's wedding. Ingredient lists were written by Claude without reading the recipe pages, so check quantities on the recipe before you shop.",
+  "nights": {
+    "mon": {
+      "kind": "cook",
+      "cook": "nihal",
+      "time": "19:30",
+      "options": [
+        {
+          "id": "paneer-bhurji",
+          "dish": "Paneer Bhurji",
+          "cuisine": "Indian",
+          "minutes": 25,
+          "source": "Swasthi's Recipes",
+          "link": "https://www.indianhealthyrecipes.com/paneer-bhurji-recipe/",
+          "protein": "Paneer",
+          "carb": "Rotis",
+          "veg": "Peas, onion, tomato",
+          "ingredients": [
+            "paneer",
+            "frozen peas",
+            "onion",
+            "tomatoes",
+            "green chili",
+            "ginger",
+            "garlic",
+            "cumin seeds",
+            "turmeric",
+            "red chili powder",
+            "garam masala",
+            "kasuri methi",
+            "cilantro",
+            "lemon",
+            "rotis",
+            "oil",
+            "salt"
+          ],
+          "steps": [
+            "Crumble the paneer. If it's store-bought, soak it in hot water while you start the masala.",
+            "Fry cumin, then onion and green chili until golden.",
+            "Add ginger and garlic, then tomatoes and the ground spices. Cook until soft and jammy.",
+            "Stir in the peas, then the drained paneer. Cook 2 to 3 minutes.",
+            "Finish with kasuri methi, cilantro and lemon. Warm the rotis."
+          ],
+          "tweak": "Peas instead of the optional capsicum."
+        },
+        {
+          "id": "matar-paneer",
+          "dish": "Matar Paneer",
+          "cuisine": "Indian",
+          "minutes": 30,
+          "source": "Swasthi's Recipes",
+          "link": "https://www.indianhealthyrecipes.com/matar-paneer-mutter-masala/",
+          "protein": "Paneer",
+          "carb": "Rotis",
+          "veg": "Peas, onion, tomato",
+          "ingredients": [
+            "paneer",
+            "frozen peas",
+            "onion",
+            "tomatoes",
+            "cashews",
+            "ginger",
+            "garlic",
+            "green chili",
+            "cumin seeds",
+            "turmeric",
+            "red chili powder",
+            "garam masala",
+            "kasuri methi",
+            "cream",
+            "cilantro",
+            "rotis",
+            "oil",
+            "salt"
+          ],
+          "steps": [
+            "Blend sautéed onion, tomato and cashews into a smooth paste.",
+            "Cook the paste with ginger, garlic and the ground spices until the oil separates.",
+            "Add water and peas and simmer until the peas are tender.",
+            "Add paneer cubes, kasuri methi and a splash of cream. Simmer 2 minutes.",
+            "Top with cilantro and serve with rotis."
+          ]
+        },
+        {
+          "id": "kerala-egg-curry",
+          "dish": "Kerala Egg Curry",
+          "cuisine": "Indian",
+          "minutes": 30,
+          "source": "Swasthi's Recipes",
+          "link": "https://www.indianhealthyrecipes.com/kerala-egg-curry/",
+          "protein": "Eggs",
+          "carb": "Rice",
+          "veg": "Spinach side, onion, tomato",
+          "ingredients": [
+            "eggs",
+            "coconut milk",
+            "onion",
+            "tomatoes",
+            "ginger",
+            "garlic",
+            "green chili",
+            "curry leaves",
+            "mustard seeds",
+            "turmeric",
+            "red chili powder",
+            "coriander powder",
+            "garam masala",
+            "coconut oil",
+            "spinach",
+            "basmati rice",
+            "salt"
+          ],
+          "steps": [
+            "Start the rice and hard-boil the eggs.",
+            "Splutter mustard seeds and curry leaves in coconut oil. Add onion, ginger, garlic and chili.",
+            "Add tomatoes and the ground spices and cook until soft.",
+            "Pour in coconut milk, add the peeled eggs and simmer 5 minutes.",
+            "Wilt the spinach in a pan with a little garlic and salt on the side."
+          ],
+          "tweak": "Garlicky spinach on the side for a veggie."
+        }
+      ]
+    },
+    "tue": {
+      "kind": "cook",
+      "cook": "prithvi",
+      "time": "19:30",
+      "options": [
+        {
+          "id": "black-bean-tacos",
+          "dish": "Easy Black Bean Tacos",
+          "cuisine": "Mexican",
+          "minutes": 25,
+          "source": "Cookie and Kate",
+          "link": "https://cookieandkate.com/easy-black-bean-tacos-recipe/",
+          "protein": "Black beans, feta",
+          "carb": "Corn tortillas",
+          "veg": "Cabbage slaw, avocado",
+          "ingredients": [
+            "black beans",
+            "corn tortillas",
+            "red cabbage",
+            "avocado",
+            "feta",
+            "limes",
+            "cilantro",
+            "onion",
+            "garlic",
+            "cumin",
+            "chili powder",
+            "salsa verde",
+            "olive oil",
+            "salt"
+          ],
+          "steps": [
+            "Simmer the black beans with onion, garlic, cumin and chili powder. Mash a few.",
+            "Toss shredded cabbage with lime, cilantro, olive oil and salt.",
+            "Warm the tortillas in a dry pan.",
+            "Fill with beans, slaw, avocado, feta and salsa verde."
+          ]
+        },
+        {
+          "id": "kale-black-bean-burritos",
+          "dish": "Kale and Black Bean Burritos",
+          "cuisine": "Mexican",
+          "minutes": 30,
+          "source": "Cookie and Kate",
+          "link": "https://cookieandkate.com/simple-kale-and-black-bean-burritos/",
+          "protein": "Black beans, cheese",
+          "carb": "Flour tortillas",
+          "veg": "Kale",
+          "ingredients": [
+            "black beans",
+            "kale",
+            "large flour tortillas",
+            "cheddar or monterey jack",
+            "salsa",
+            "limes",
+            "cilantro",
+            "garlic",
+            "cumin",
+            "olive oil",
+            "salt"
+          ],
+          "steps": [
+            "Sauté chopped kale with garlic until wilted. Season with lime and salt.",
+            "Warm the black beans with cumin and a splash of water.",
+            "Fill tortillas with beans, kale, cheese and salsa and roll them up.",
+            "Crisp each burrito seam-side down in a hot pan."
+          ]
+        },
+        {
+          "id": "crispy-sesame-tofu",
+          "dish": "Crispy Sesame Tofu",
+          "cuisine": "Chinese-American",
+          "minutes": 30,
+          "source": "Love and Lemons",
+          "link": "https://www.loveandlemons.com/sesame-tofu-recipe/",
+          "protein": "Tofu",
+          "carb": "Rice",
+          "veg": "Broccoli",
+          "ingredients": [
+            "extra-firm tofu",
+            "broccoli",
+            "jasmine rice",
+            "cornstarch",
+            "soy sauce",
+            "maple syrup",
+            "rice vinegar",
+            "toasted sesame oil",
+            "sriracha",
+            "ginger",
+            "garlic",
+            "sesame seeds",
+            "scallions",
+            "oil"
+          ],
+          "steps": [
+            "Start the rice. Press and cube the tofu and toss it in cornstarch.",
+            "Pan-fry the tofu until crisp on all sides.",
+            "Steam or roast the broccoli.",
+            "Simmer soy sauce, maple, vinegar, sesame oil, ginger, garlic and sriracha until glossy, then toss with the tofu.",
+            "Serve over rice with broccoli, sesame seeds and scallions."
+          ]
+        }
+      ]
+    },
+    "wed": {
+      "kind": "cook",
+      "cook": "nihal",
+      "time": "19:30",
+      "options": [
+        {
+          "id": "pasta-e-ceci",
+          "dish": "Quick Pasta and Chickpeas",
+          "cuisine": "Italian",
+          "minutes": 30,
+          "source": "Smitten Kitchen",
+          "link": "https://smittenkitchen.com/2017/10/quick-pasta-and-chickpeas-pasta-e-ceci/",
+          "protein": "Chickpeas",
+          "carb": "Ditalini",
+          "veg": "Spinach",
+          "ingredients": [
+            "chickpeas",
+            "ditalini",
+            "spinach",
+            "parmesan",
+            "tomato paste",
+            "garlic",
+            "fresh rosemary",
+            "red pepper flakes",
+            "vegetable broth",
+            "olive oil",
+            "salt"
+          ],
+          "steps": [
+            "Sizzle garlic, rosemary and pepper flakes in olive oil.",
+            "Stir in tomato paste, then the chickpeas and broth.",
+            "Add the ditalini and simmer until tender and stewy.",
+            "Stir in spinach until wilted. Finish with parmesan and olive oil."
+          ],
+          "tweak": "Spinach stirred in for a veggie."
+        },
+        {
+          "id": "pea-chickpea-pasta-salad",
+          "dish": "Pea and Chickpea Pasta Salad",
+          "cuisine": "Mediterranean",
+          "minutes": 25,
+          "source": "Love and Lemons",
+          "link": "https://www.loveandlemons.com/pea-chickpea-pasta-salad/",
+          "protein": "Chickpeas",
+          "carb": "Short pasta",
+          "veg": "Peas, greens",
+          "ingredients": [
+            "chickpeas",
+            "short pasta",
+            "frozen peas",
+            "arugula",
+            "feta",
+            "lemon",
+            "fresh mint",
+            "dijon mustard",
+            "garlic",
+            "olive oil",
+            "salt"
+          ],
+          "steps": [
+            "Cook the pasta, dropping the peas in for the last minute. Drain and rinse cool.",
+            "Whisk lemon, olive oil, dijon, garlic and salt.",
+            "Toss pasta and peas with chickpeas, greens, feta, mint and the dressing."
+          ]
+        },
+        {
+          "id": "lemon-orzo",
+          "dish": "One-Pot Lemon Orzo",
+          "cuisine": "Greek-inspired",
+          "minutes": 25,
+          "source": "Love and Lemons",
+          "link": "https://www.loveandlemons.com/lemon-orzo/",
+          "protein": "White beans",
+          "carb": "Orzo",
+          "veg": "Spinach",
+          "ingredients": [
+            "orzo",
+            "cannellini beans",
+            "spinach",
+            "lemon",
+            "parmesan",
+            "garlic",
+            "vegetable broth",
+            "olive oil",
+            "salt"
+          ],
+          "steps": [
+            "Toast the orzo in olive oil with garlic.",
+            "Add broth and simmer, stirring, until creamy.",
+            "Stir in the white beans and spinach until warm and wilted.",
+            "Finish with lemon zest, lemon juice and parmesan."
+          ],
+          "tweak": "White beans stirred in for protein."
+        }
+      ]
+    },
+    "thu": {
+      "kind": "out",
+      "label": "Eat at the airport",
+      "note": "9:42pm flight from EWR. Leave by 7:15pm."
+    },
+    "fri": {
+      "kind": "out",
+      "label": "Vansh & Kruti's wedding events",
+      "note": "Charleston. No dinner time on the calendar yet."
+    },
+    "sat": {
+      "kind": "out",
+      "label": "Vansh & Kruti's wedding",
+      "note": "Charleston. No dinner time on the calendar yet."
+    },
+    "sun": {
+      "kind": "order",
+      "label": "Order in",
+      "note": "You land at EWR at 5:40pm and should be home around 7."
+    }
+  },
+  "plannedAt": "2026-10-21",
+  "shelves": {
+    "frozen peas": "frozen",
+    "paneer": "dairy",
+    "feta": "dairy",
+    "parmesan": "dairy",
+    "black beans": "pantry",
+    "chickpeas": "pantry",
+    "corn tortillas": "pantry",
+    "ditalini": "pantry",
+    "rotis": "pantry",
+    "salsa verde": "pantry",
+    "avocado": "produce",
+    "cilantro": "produce",
+    "fresh rosemary": "produce",
+    "green chili": "produce",
+    "lemon": "produce",
+    "limes": "produce",
+    "red cabbage": "produce",
+    "spinach": "produce",
+    "tomatoes": "produce"
+  }
+}
