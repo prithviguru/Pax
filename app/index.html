@@ -98,7 +98,7 @@ textarea { font: 16px/1.3 var(--print); width: 100%; border: 1px solid var(--ink
 
 /* List: the fridge (sage pantry) */
 :root { --sage: #85906d; --sage-dk: #697056; --sage-ink: #4f553f; --cream: #f0e2cb; --cream-lt: #fbf4e6; --side: #e2d4b8; --coral: #e56a4f; --feet: #3a3b38; }
-.fridge { position: relative; width: 100%; max-width: 420px; perspective: 1600px; padding-bottom: 16px; }
+.fridge { position: relative; width: 100%; max-width: 350px; perspective: 1600px; padding-bottom: 16px; }
 .fridge::before, .fridge::after { content: ""; position: absolute; bottom: 0; width: 34px; height: 18px; background: var(--feet); border-radius: 0 0 3px 3px; }
 .fridge::before { left: 22px; } .fridge::after { right: 22px; }
 .fridge.shut .inside { min-height: 0; max-height: 430px; }
@@ -120,22 +120,22 @@ textarea { font: 16px/1.3 var(--print); width: 100%; border: 1px solid var(--ink
 .thing.staple { border: 1px dashed var(--sage-ink); background: transparent; }
 .thing.got { opacity: .4; }
 .thing.got span { text-decoration: line-through; text-decoration-thickness: 2px; text-decoration-color: var(--coral); }
-.door { position: absolute; inset: 0 0 16px 0; transform-origin: 100% 50%; transition: transform .7s cubic-bezier(.3,.7,.2,1); z-index: 3; }
-.door.open { transform: rotateY(112deg); pointer-events: none; }
+.door { position: absolute; inset: 0 0 16px 0; transform-origin: 0 50%; transition: transform .7s cubic-bezier(.3,.7,.2,1); z-index: 3; }
+.door.open { transform: rotateY(-112deg); pointer-events: none; }
 .door-face { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 5px; background: var(--sage-dk); border-radius: 18px 18px 16px 16px; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
 .door-face .panel { position: relative; background: var(--sage); border-radius: 18px 18px 6px 6px; }
 .door-face .panel.fz { height: 128px; }
 .door-face .panel.main { flex: 1; border-radius: 6px 6px 16px 16px; }
-.handle { position: absolute; left: 22px; width: 13px; background: var(--cream); border: 0; border-radius: 3px; padding: 0; box-shadow: 2px 0 0 rgba(0,0,0,.12); }
-.doornote { position: absolute; right: 9%; top: 34px; width: min(210px, 62%); background: var(--coral); padding: 22px 14px 14px; transform: rotate(4deg); font-family: var(--print); font-size: 15px; color: var(--ink); }
+.handle { position: absolute; right: 22px; width: 13px; background: var(--cream); border: 0; border-radius: 3px; padding: 0; box-shadow: -2px 0 0 rgba(0,0,0,.12); }
+.doornote { position: absolute; left: 7%; top: 30px; width: min(196px, 60%); background: var(--coral); padding: 22px 14px 14px; transform: rotate(-3deg); font-family: var(--print); font-size: 15px; color: var(--ink); }
 .doornote b { display: block; font-family: var(--hand); font-weight: 400; font-size: 38px; line-height: .95; margin-bottom: 8px; }
 .magnet { position: absolute; top: -10px; left: 50%; margin-left: -12px; width: 24px; height: 22px; background: var(--feet); clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); }
-.tip { position: absolute; left: 6px; top: 266px; z-index: 4; background: var(--paper); border: 1px solid var(--ink); padding: 2px 8px; font: 24px/1 var(--hand); pointer-events: none; transform: rotate(-2deg); }
-.tip::before { content: ""; position: absolute; top: -7px; left: 18px; width: 10px; height: 10px; background: var(--paper); border-left: 1px solid var(--ink); border-top: 1px solid var(--ink); transform: rotate(45deg); }
-.fridgebar { display: flex; justify-content: space-between; align-items: center; gap: 12px; max-width: 420px; font-family: var(--print); font-size: 15px; }
+.tip { position: absolute; right: 4px; top: 266px; z-index: 4; background: var(--paper); border: 1px solid var(--ink); padding: 2px 8px; font: 24px/1 var(--hand); pointer-events: none; transform: rotate(-2deg); }
+.tip::before { content: ""; position: absolute; top: -7px; right: 20px; width: 10px; height: 10px; background: var(--paper); border-left: 1px solid var(--ink); border-top: 1px solid var(--ink); transform: rotate(45deg); }
+.fridgebar { display: flex; justify-content: space-between; align-items: center; gap: 12px; max-width: 350px; font-family: var(--print); font-size: 15px; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip { background: var(--paper); border: 1px solid var(--ink); padding: 2px 10px; font-family: var(--print); font-size: 15px; }
-.addrow { display: flex; gap: 8px; margin-top: 10px; max-width: 440px; }
+.addrow { display: flex; gap: 8px; margin-top: 10px; max-width: 350px; }
 .addrow input { flex: 1; min-width: 0; font: 16px var(--print); border: 1px solid var(--ink); background: var(--paper); padding: 6px 10px; border-radius: 0; }
 .addrow button { background: var(--paper); border: 1px solid var(--ink); padding: 4px 14px; font-size: 18px; }
 
@@ -501,7 +501,7 @@ function renderList() {
     <div class="shelf"><h2>The list</h2><p class="empty" style="margin:0">Everything for the week of ${esc(shortDate(S.weekId))}, built from the dishes you're cooking. Swap a dish or mark a night as out and the fridge restocks itself. Quantities are on the recipe pages.</p></div>
     <div class="fridge${open ? "" : " shut"}"><div class="inside" ${open ? "" : "inert"}>${inside}</div>${tip}${door}</div>
     ${open ? `<div class="fridgebar"><span>${left ? `${left} left to buy. Tap anything you've got.` : "Got everything."}</span><button class="ink" data-act="fridge" data-v="close">Close the fridge</button></div>` : ""}
-    <details id="staples-box" style="max-width:440px" ${S.staplesOpen ? "open" : ""}><summary class="print" style="cursor:pointer;font-size:16px">Change what's on the bottom shelf</summary>
+    <details id="staples-box" style="max-width:350px" ${S.staplesOpen ? "open" : ""}><summary class="print" style="cursor:pointer;font-size:16px">Change what's on the bottom shelf</summary>
       <p class="empty" style="margin:8px 0">Staples always land on the bottom shelf. Tap one to take it off.</p>
       <div class="chips">${S.staples.map(x => `<button class="chip" data-act="unstaple" data-name="${esc(x)}" aria-label="Remove ${esc(x)}" ${dis}>${esc(x)} ×</button>`).join("") || `<span class="empty">No staples yet.</span>`}</div>
       <form class="addrow" id="staple-form"><input type="text" id="staple-input" placeholder="Add a staple, e.g. basmati rice" ${dis}><button ${dis}>Add</button></form>
