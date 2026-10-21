@@ -96,35 +96,42 @@ textarea { font: 16px/1.3 var(--print); width: 100%; border: 1px solid var(--ink
 .receipt ul { margin: 0; padding: 8px 0 0; list-style: none; font-size: 18px; line-height: 1.7; }
 .receipt li { border-bottom: 1px dotted var(--ink); }
 
-/* List: the fridge */
-.fridge { position: relative; width: 100%; max-width: 440px; perspective: 1600px; }
-.inside { position: relative; min-height: 600px; background: #fffaf2; border: 1px solid var(--ink); border-radius: 22px 22px 10px 10px; overflow: hidden; display: flex; flex-direction: column; }
-.compart { padding: 10px 12px 12px; border-bottom: 3px solid var(--ink); display: grid; gap: 6px; }
-.compart.freezer { background: #f3f6f7; border-bottom-width: 6px; min-height: 110px; align-content: start; }
-.compart.crisper { background: #f7f3e8; }
-.compart.have { flex: 1; border-bottom: 0; background: #fbf6ee; align-content: start; }
-.compart > span { font-family: var(--print); font-size: 12px; text-transform: uppercase; }
-.compart .none { font-family: var(--print); font-size: 14px; }
+/* List: the fridge (sage pantry) */
+:root { --sage: #85906d; --sage-dk: #697056; --sage-ink: #4f553f; --cream: #f0e2cb; --cream-lt: #fbf4e6; --side: #e2d4b8; --coral: #e56a4f; --feet: #3a3b38; }
+.fridge { position: relative; width: 100%; max-width: 420px; perspective: 1600px; padding-bottom: 16px; }
+.fridge::before, .fridge::after { content: ""; position: absolute; bottom: 0; width: 34px; height: 18px; background: var(--feet); border-radius: 0 0 3px 3px; }
+.fridge::before { left: 22px; } .fridge::after { right: 22px; }
+.inside { position: relative; min-height: 640px; background: var(--cream); border: 14px solid var(--sage); border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; box-shadow: inset 12px 0 0 var(--side), inset -12px 0 0 var(--side); }
+.compart { position: relative; padding: 10px 22px 12px; border-bottom: 8px solid var(--sage-dk); display: grid; gap: 6px; }
+.compart.freezer { min-height: 104px; align-content: start; }
+.compart.have { border-bottom: 0; align-content: start; }
+.compart.drawer { margin: 0 10px 10px; padding: 18px 12px 12px; background: var(--cream-lt); border: 0; border-top: 6px solid var(--sage); box-shadow: 0 0 0 1px var(--side); }
+.compart.drawer::before { content: ""; position: absolute; top: 6px; left: 50%; width: 64px; margin-left: -32px; height: 7px; background: var(--sage-dk); border-radius: 0 0 6px 6px; }
+.compart > span { font-family: var(--print); font-size: 12px; text-transform: uppercase; color: var(--sage-ink); letter-spacing: .03em; }
+.compart .none { font-family: var(--print); font-size: 14px; color: var(--sage-ink); }
+.bottle { position: absolute; top: 12px; right: 24px; width: 18px; height: 46px; background: var(--coral); clip-path: polygon(35% 0, 65% 0, 65% 22%, 100% 40%, 100% 100%, 0 100%, 0 40%, 35% 22%); }
 .shelfrow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; align-items: end; }
-.thing { display: flex; flex-direction: column; justify-content: flex-end; min-height: 48px; background: var(--paper); border: 1px solid var(--ink); padding: 4px 6px; font: 14px/1.15 var(--print); text-align: left; overflow-wrap: anywhere; }
-.thing.jar { border-radius: 4px 4px 8px 8px; border-top-width: 5px; }
-.thing.carton { clip-path: polygon(0 18%, 50% 0, 100% 18%, 100% 100%, 0 100%); padding-top: 12px; }
+.thing { display: flex; flex-direction: column; justify-content: flex-end; min-height: 48px; background: #fffaf1; border: 1px solid #b4aa8f; padding: 4px 6px; font: 14px/1.15 var(--print); text-align: left; color: var(--ink); overflow-wrap: anywhere; }
+.thing.jar { border-radius: 4px 4px 8px 8px; border-top: 5px solid var(--sage); }
+.thing.carton { clip-path: polygon(0 18%, 50% 0, 100% 18%, 100% 100%, 0 100%); padding-top: 12px; border-color: transparent; background: #fffaf1; }
 .thing.bag { border-radius: 14px 14px 6px 6px; }
-.thing.box { border-radius: 2px; }
-.thing.staple { border-style: dashed; border-top-width: 1px; background: transparent; }
-.thing.got { opacity: .42; }
-.thing.got span { text-decoration: line-through; text-decoration-thickness: 2px; text-decoration-color: var(--tomato); }
-.door { position: absolute; inset: 0; transform-origin: 0 50%; transition: transform .7s cubic-bezier(.3,.7,.2,1); z-index: 3; }
-.door.open { transform: rotateY(-112deg); pointer-events: none; }
-.door-face { position: absolute; inset: 0; background: #fbf6ee; border: 1px solid var(--ink); border-radius: 22px 22px 10px 10px; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
-.door-face .fz { height: 116px; border-bottom: 6px solid var(--ink); position: relative; }
-.handle { position: absolute; right: 14px; width: 16px; background: var(--ink); border: 0; border-radius: 8px; padding: 0; }
-.doornote { position: absolute; left: 9%; top: 176px; width: min(250px, 72%); background: var(--paper); border: 1px solid var(--ink); padding: 18px 14px 12px; transform: rotate(-2deg); font-family: var(--print); font-size: 15px; }
-.doornote b { display: block; font-family: var(--hand); font-weight: 400; font-size: 42px; line-height: .95; margin-bottom: 8px; }
-.magnet { position: absolute; top: -9px; left: 50%; margin-left: -9px; width: 18px; height: 18px; border-radius: 50%; background: var(--tomato); border: 1px solid var(--ink); }
-.tip { position: absolute; right: 2px; top: 318px; z-index: 4; background: var(--paper); border: 1px solid var(--ink); padding: 2px 8px; font: 24px/1 var(--hand); pointer-events: none; transform: rotate(-2deg); }
-.tip::before { content: ""; position: absolute; top: -7px; right: 18px; width: 10px; height: 10px; background: var(--paper); border-left: 1px solid var(--ink); border-top: 1px solid var(--ink); transform: rotate(45deg); }
-.fridgebar { display: flex; justify-content: space-between; align-items: center; gap: 12px; max-width: 440px; font-family: var(--print); font-size: 15px; }
+.thing.box { border-radius: 2px; background: #eef1ea; }
+.thing.staple { border: 1px dashed var(--sage-ink); background: transparent; }
+.thing.got { opacity: .4; }
+.thing.got span { text-decoration: line-through; text-decoration-thickness: 2px; text-decoration-color: var(--coral); }
+.door { position: absolute; inset: 0 0 16px 0; transform-origin: 100% 50%; transition: transform .7s cubic-bezier(.3,.7,.2,1); z-index: 3; }
+.door.open { transform: rotateY(112deg); pointer-events: none; }
+.door-face { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 5px; background: var(--sage-dk); border-radius: 18px 18px 16px 16px; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.door-face .panel { position: relative; background: var(--sage); border-radius: 18px 18px 6px 6px; }
+.door-face .panel.fz { height: 128px; }
+.door-face .panel.main { flex: 1; border-radius: 6px 6px 16px 16px; }
+.handle { position: absolute; left: 22px; width: 13px; background: var(--cream); border: 0; border-radius: 3px; padding: 0; box-shadow: 2px 0 0 rgba(0,0,0,.12); }
+.doornote { position: absolute; right: 9%; top: 150px; width: min(210px, 62%); background: var(--coral); padding: 22px 14px 14px; transform: rotate(4deg); font-family: var(--print); font-size: 15px; color: var(--ink); }
+.doornote b { display: block; font-family: var(--hand); font-weight: 400; font-size: 38px; line-height: .95; margin-bottom: 8px; }
+.magnet { position: absolute; top: -10px; left: 50%; margin-left: -12px; width: 24px; height: 22px; background: var(--feet); clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); }
+.tip { position: absolute; left: 6px; top: 266px; z-index: 4; background: var(--paper); border: 1px solid var(--ink); padding: 2px 8px; font: 24px/1 var(--hand); pointer-events: none; transform: rotate(-2deg); }
+.tip::before { content: ""; position: absolute; top: -7px; left: 18px; width: 10px; height: 10px; background: var(--paper); border-left: 1px solid var(--ink); border-top: 1px solid var(--ink); transform: rotate(45deg); }
+.fridgebar { display: flex; justify-content: space-between; align-items: center; gap: 12px; max-width: 420px; font-family: var(--print); font-size: 15px; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip { background: var(--paper); border: 1px solid var(--ink); padding: 2px 10px; font-family: var(--print); font-size: 15px; }
 .addrow { display: flex; gap: 8px; margin-top: 10px; max-width: 440px; }
@@ -134,33 +141,38 @@ textarea { font: 16px/1.3 var(--print); width: 100%; border: 1px solid var(--ink
 /* Recipes: the tin */
 .shelf { display: grid; gap: 4px; }
 .shelf h2 { font-size: 34px; margin-bottom: 6px; }
-.stage { position: relative; width: 100%; max-width: 400px; height: 650px; overflow: hidden; }
-.slot { position: absolute; left: 12px; right: 12px; top: 70px; height: 440px; perspective: 1300px; z-index: 1; transition: transform .55s cubic-bezier(.3,.7,.2,1); }
+.stage { position: relative; width: 100%; max-width: 400px; height: 660px; overflow: hidden; }
+.slot { position: absolute; left: 14px; right: 14px; top: 50px; height: 418px; perspective: 1300px; z-index: 1; transition: transform .55s cubic-bezier(.3,.7,.2,1); }
 .slot.down { transform: translateY(480px); visibility: hidden; transition: transform .55s cubic-bezier(.3,.7,.2,1), visibility 0s .55s; }
 .card3d { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .6s cubic-bezier(.3,.7,.2,1); }
 .card3d.flipped { transform: rotateY(180deg); }
-.face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border: 1px solid var(--ink); background-color: var(--paper); background-image: repeating-linear-gradient(to bottom, transparent 0 31px, #e4dccf 31px 32px); background-position: 0 58px; box-shadow: inset 0 52px 0 -50px var(--tomato); padding: 16px 16px 12px; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+.face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border: 1px solid #c9bfa8; background-color: #fbf6ee; background-image: repeating-linear-gradient(to bottom, transparent 0 31px, #e6dccb 31px 32px); background-position: 0 58px; box-shadow: inset 0 52px 0 -50px var(--coral); padding: 16px 16px 12px; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
 .face.back { transform: rotateY(180deg); overflow-y: auto; }
-.face.torn { background: var(--tomato); background-image: none; box-shadow: none; }
-.face .kick { font-family: var(--print); font-size: 13px; text-transform: uppercase; }
+.face.torn { background: var(--coral); background-image: none; box-shadow: none; border-color: var(--coral); }
+.face .kick { font-family: var(--print); font-size: 13px; text-transform: uppercase; color: var(--sage-ink); }
+.face.torn .kick { color: var(--ink); }
 .face .dish { font-family: var(--hand); font-size: 52px; line-height: .9; margin-top: 16px; overflow-wrap: anywhere; }
 .face .meta { font-family: var(--print); font-size: 15px; }
 .face .pcv { font-size: 17px; line-height: 2; }
-.face .foot { margin-top: auto; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; border-top: 1px solid var(--ink); padding-top: 2px; }
+.face .foot { margin-top: auto; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; border-top: 1px solid var(--sage-dk); padding-top: 2px; }
 .face ol { margin: 4px 0 0; padding-left: 22px; display: grid; gap: 6px; font-size: 16px; line-height: 1.3; }
 .nights { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
-.nights button { background: var(--paper); border: 1px solid var(--ink); padding: 6px 2px; font: 14px/1.1 var(--print); min-height: 44px; }
-.strip { position: absolute; left: 22px; right: 22px; height: 64px; border: 1px solid var(--ink); background: var(--paper); text-align: left; padding: 6px 12px; font: 400 30px/1 var(--hand); z-index: 1; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; overflow: hidden; }
-.strip small { font: 12px/1.4 var(--print); text-transform: uppercase; white-space: nowrap; padding-top: 4px; }
-.strip.torn { background: var(--tomato); clip-path: polygon(0 0, 100% 0, 100% 100%, 92% 92%, 84% 100%, 76% 93%, 68% 100%, 60% 92%, 52% 100%, 44% 93%, 36% 100%, 28% 92%, 20% 100%, 12% 93%, 4% 100%, 0 94%); }
-.dividers { position: absolute; left: 8px; right: 8px; top: 520px; display: grid; gap: 3px; z-index: 2; }
-.divider { height: 46px; border: 1px solid var(--ink); border-bottom: 0; background: var(--paper); font: 13px/1 var(--print); text-transform: uppercase; padding: 6px 0 0; display: flex; flex-direction: column; align-items: center; gap: 3px; transition: transform .2s; }
-.divider b { font: 400 15px/1 var(--serif); }
-.divider.never { background: var(--tomato); }
-.divider[aria-pressed="true"] { transform: translateY(-8px); border-width: 2px; border-bottom: 0; }
-.tin { position: absolute; left: 0; right: 0; top: 560px; bottom: 0; background: var(--tomato); border: 1px solid var(--ink); z-index: 3; display: flex; align-items: center; justify-content: center; }
-.tin span { background: var(--paper); border: 1px solid var(--ink); padding: 6px 18px; transform: rotate(-2deg); font: 40px/1 var(--hand); }
-.tinprompt { position: absolute; left: 24px; right: 24px; top: 250px; text-align: center; }
+.nights button { background: #fffaf1; border: 1px solid var(--sage-dk); padding: 6px 2px; font: 14px/1.1 var(--print); min-height: 44px; }
+.strip { position: absolute; left: 26px; right: 26px; height: 64px; border: 1px solid #c9bfa8; background: #fbf6ee; text-align: left; padding: 6px 12px; font: 400 30px/1 var(--hand); z-index: 1; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; overflow: hidden; color: var(--ink); }
+.strip small { font: 12px/1.4 var(--print); text-transform: uppercase; white-space: nowrap; padding-top: 4px; color: var(--sage-ink); }
+.strip.torn { background: var(--coral); border-color: var(--coral); clip-path: polygon(0 0, 100% 0, 100% 100%, 92% 92%, 84% 100%, 76% 93%, 68% 100%, 60% 92%, 52% 100%, 44% 93%, 36% 100%, 28% 92%, 20% 100%, 12% 93%, 4% 100%, 0 94%); }
+.strip.torn small { color: var(--ink); }
+.lid { position: absolute; left: 6px; right: 6px; top: 470px; height: 96px; background: var(--coral); clip-path: polygon(0 0, 100% 0, 98% 100%, 2% 100%); z-index: 0; }
+.dividers { position: absolute; left: 14px; right: 14px; top: 512px; display: grid; gap: 4px; z-index: 2; align-items: end; }
+.divider { position: relative; height: 58px; border: 1px solid #c9bfa8; border-bottom: 0; background: #fbf6ee; padding: 0; transition: transform .2s; }
+.divider .tab { position: absolute; top: -1px; left: 4px; right: 4px; height: 30px; background: var(--sage); color: var(--ink); border-radius: 4px 4px 0 0; transform: translateY(-62%); font: 11px/1 var(--print); text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 3px; white-space: nowrap; overflow: hidden; }
+.divider .tab b { font-weight: 700; }
+.divider.never .tab { background: var(--coral); color: var(--ink); }
+.divider[aria-pressed="true"] { transform: translateY(-10px); }
+.tin { position: absolute; left: 0; right: 0; top: 556px; bottom: 6px; background: var(--sage); z-index: 3; display: flex; align-items: center; justify-content: center; border-radius: 3px; box-shadow: inset 0 6px 0 rgba(0,0,0,.08); }
+.tin .plate { position: relative; background: #efe3d0; padding: 8px 24px 6px; font: 34px/1 var(--hand); color: var(--ink); clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0 calc(100% - 8px), 0 8px); }
+.tin .clasp { position: absolute; top: 12px; left: 50%; width: 18px; height: 16px; margin-left: -9px; background: var(--feet); border-radius: 2px; z-index: 1; }
+.tinprompt { position: absolute; left: 24px; right: 24px; top: 230px; text-align: center; }
 .tinprompt b { display: block; font: 400 44px/1 var(--hand); }
 .tinprompt span { display: block; font: 15px/1.3 var(--print); margin-top: 6px; }
 .rec { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: baseline; padding: 8px 0; border-bottom: 1px dotted var(--ink); }
@@ -444,7 +456,7 @@ const SHELVES = [
   { id: "frozen", label: "Freezer", cls: "freezer", shape: "box" },
   { id: "dairy", label: "Top shelf ✶ dairy and eggs", cls: "", shape: "carton" },
   { id: "pantry", label: "Middle shelf ✶ jars, cans, bread", cls: "", shape: "jar" },
-  { id: "produce", label: "Crisper drawer ✶ produce", cls: "crisper", shape: "bag" },
+  { id: "produce", label: "Crisper drawer ✶ produce", cls: "drawer", shape: "bag" },
 ];
 // The planner tags each ingredient with a shelf (week.shelves); this guesses for anything it missed.
 const GUESS = {
@@ -470,17 +482,18 @@ function renderList() {
   const checks = S.checks.items || {};
   const left = buy.filter(i => !checks[i.key]).length;
   const thing = (it, shape) => `<button class="thing ${shape}${checks[it.key] ? " got" : ""}" data-act="tick" data-key="${esc(it.key)}" aria-pressed="${!!checks[it.key]}" title="${esc(it.dishes.join(" · "))}" ${dis}><span>${esc(it.name)}</span></button>`;
-  let inside = "";
-  for (const sh of SHELVES) {
+  const shelf = sh => {
     const items = buy.filter(i => shelfOf(i.name) === sh.id);
-    inside += `<section class="compart ${sh.cls}" aria-label="${esc(sh.label)}"><span>${esc(sh.label)}</span>${items.length ? `<div class="shelfrow">${items.map(i => thing(i, sh.shape)).join("")}</div>` : `<p class="none" style="margin:0">Nothing to buy here.</p>`}</section>`;
-  }
-  inside += `<section class="compart have" aria-label="Already have"><span>Bottom shelf ✶ already have</span>${have.length ? `<div class="shelfrow">${have.map(i => thing(i, "jar staple")).join("")}</div>` : `<p class="none" style="margin:0">None of this week's ingredients are staples.</p>`}</section>`;
+    return `<section class="compart ${sh.cls}" aria-label="${esc(sh.label)}">${sh.id === "frozen" ? `<span class="bottle" aria-hidden="true"></span>` : ""}<span>${esc(sh.label)}</span>${items.length ? `<div class="shelfrow">${items.map(i => thing(i, sh.shape)).join("")}</div>` : `<p class="none" style="margin:0">Nothing to buy here.</p>`}</section>`;
+  };
+  let inside = SHELVES.filter(x => x.id !== "produce").map(shelf).join("");
+  inside += `<section class="compart have" aria-label="Already have"><span>Bottom shelf ✶ already have</span>${have.length ? `<div class="shelfrow">${have.map(i => thing(i, "staple")).join("")}</div>` : `<p class="none" style="margin:0">None of this week's ingredients are staples.</p>`}</section>`;
+  inside += shelf(SHELVES.find(x => x.id === "produce"));
   const open = S.fridgeOpen;
   const door = `<div class="door${open ? " open" : ""}" ${open ? "inert" : ""}><div class="door-face">
-      <div class="fz"><button class="handle" data-act="fridge" data-v="open" aria-label="Open the fridge" style="top:30px;height:52px"></button></div>
-      <button class="handle" data-act="fridge" data-v="open" aria-label="Open the fridge" style="top:162px;height:150px"></button>
-      <div class="doornote"><span class="magnet" aria-hidden="true"></span><b>Groceries inside!</b>${left ? `${left} thing${left > 1 ? "s" : ""} to buy` : "Got everything"}<br>${have.length} staple${have.length === 1 ? "" : "s"} on the bottom shelf</div>
+      <div class="panel fz"><button class="handle" data-act="fridge" data-v="open" aria-label="Open the fridge" style="top:30px;height:66px"></button></div>
+      <div class="panel main"><button class="handle" data-act="fridge" data-v="open" aria-label="Open the fridge" style="top:22px;height:100px"></button>
+      <div class="doornote"><span class="magnet" aria-hidden="true"></span><b>Groceries inside!</b>${left ? `${left} thing${left > 1 ? "s" : ""} to buy` : "Got everything"}<br>${have.length} staple${have.length === 1 ? "" : "s"} on the bottom shelf</div></div>
     </div></div>`;
   const tip = !open && !S.tipSeen ? `<span class="tip" aria-hidden="true">pull to open</span>` : "";
   return `<div style="display:grid;gap:22px">
@@ -529,13 +542,13 @@ function renderRecipes() {
   const tab = tabs.find(t => t.id === T.tab) || null;
   const all = tabs.flatMap(t => t.cards);
   const card = T.card ? all.find(c => c.key === T.card && (c.torn ? T.tab === "never" : true)) : null;
-  let stage = "";
+  let stage = `<div class="lid" aria-hidden="true"></div>`;
   if (!tabs.length) stage += `<div class="tinprompt"><b>The tin is empty</b><span>Tap ♡ on a dinner you loved and it gets a card in here.</span></div>`;
   else if (!T.up && !tab) stage += `<div class="tinprompt"><b>What are we making?</b><span>Tap a divider to flip through the cards behind it.</span></div>`;
   if (tab && !T.up) {
     const n = tab.cards.length, gap = Math.min(52, Math.floor(420 / Math.max(n, 1)));
     tab.cards.forEach((c, i) => {
-      stage += `<button class="strip${c.torn ? " torn" : ""}" data-act="tincard" data-key="${esc(c.key)}" style="top:${520 - 50 - (n - 1 - i) * gap}px">${esc(c.dish)}<small>${c.torn ? "never again" : esc(c.minutes ? c.minutes + " min" : (c.source || ""))}</small></button>`;
+      stage += `<button class="strip${c.torn ? " torn" : ""}" data-act="tincard" data-key="${esc(c.key)}" style="top:${512 - 58 - (n - 1 - i) * gap}px">${esc(c.dish)}<small>${c.torn ? "never again" : esc(c.minutes ? c.minutes + " min" : (c.source || ""))}</small></button>`;
     });
   }
   let faces = "";
@@ -561,8 +574,8 @@ function renderRecipes() {
         <button class="ink" style="font-size:14px;align-self:flex-start" data-act="heartrec" data-key="${esc(card.key)}" ${dis}>Take it out of the tin</button></div>`;
   }
   stage += `<div class="slot${T.up && card ? "" : " down"}"><div class="card3d${T.flipped ? " flipped" : ""}">${faces}</div></div>`;
-  if (tabs.length) stage += `<div class="dividers" role="group" aria-label="Dividers" style="grid-template-columns:repeat(${tabs.length},minmax(0,1fr))">${tabs.map(t => `<button class="divider${t.never ? " never" : ""}" data-act="tintab" data-v="${esc(t.id)}" aria-pressed="${T.tab === t.id}" aria-label="${esc(t.label)}, ${t.cards.length} card${t.cards.length === 1 ? "" : "s"}">${esc(t.label)}<b>${t.cards.length}</b></button>`).join("")}</div>`;
-  stage += `<div class="tin"><span>our recipes</span></div>`;
+  if (tabs.length) stage += `<div class="dividers" role="group" aria-label="Dividers" style="grid-template-columns:repeat(${tabs.length},minmax(0,1fr))">${tabs.map(t => `<button class="divider${t.never ? " never" : ""}" data-act="tintab" data-v="${esc(t.id)}" aria-pressed="${T.tab === t.id}" aria-label="${esc(t.label)}, ${t.cards.length} card${t.cards.length === 1 ? "" : "s"}"><span class="tab">${esc(t.label)} <b>${t.cards.length}</b></span></button>`).join("")}</div>`;
+  stage += `<div class="tin"><span class="clasp" aria-hidden="true"></span><span class="plate">our recipes</span></div>`;
 
   const rec = r => {
     const link = safeLink(r.link); const k = recipeKey(r); const hearted = !!S.box[k];
