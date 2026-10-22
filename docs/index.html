@@ -429,6 +429,11 @@ function chooseWeek() {
   const t = today();
   return ids.find(id => id <= t && t <= addDays(id, 6)) || ids.find(id => id > t) || ids[ids.length - 1];
 }
+function thisMonday() { const d = new Date(); return addDays(today(), -((d.getDay() + 6) % 7)); }
+function weekLabel(id) {
+  const diff = Math.round((new Date(id) - new Date(thisMonday())) / 864e5 / 7);
+  return diff === 0 ? "This week" : diff === 1 ? "Next week" : diff === -1 ? "Last week" : "Week of " + shortDate(id);
+}
 
 /* ---------- render ---------- */
 function showBanner() {
@@ -440,7 +445,7 @@ function showBanner() {
 function render() {
   document.querySelectorAll("nav.tabs button").forEach(b => b.setAttribute("aria-current", b.dataset.tab === S.tab ? "page" : "false"));
   const w = week();
-  document.getElementById("marquee").textContent = w ? `Week of ${shortDate(S.weekId)} ✶ ${w.note ? w.note.split(". ")[0].split(",")[0].replace(/\.$/, "") : "dinners for two"}` : "Pax ✶ dinners for two";
+  document.getElementById("marquee").textContent = S.weekId ? `Week of ${shortDate(S.weekId)} ✶ ${w && w.note ? w.note.split(". ")[0].split(",")[0].replace(/\.$/, "") : "dinners for two"}` : "Pax ✶ dinners for two";
   if (!S.loaded) return;
   const v = document.getElementById("view");
   v.innerHTML = S.tab === "list" ? renderList() : S.tab === "recipes" ? renderRecipes() : renderWeekView();
@@ -452,17 +457,17 @@ function noWeek() {
 }
 
 function renderWeekView() {
-  if (!week()) return noWeek();
+  if (!S.weekId) return noWeek();
   return `<div style="display:grid;gap:72px">${renderWeek()}${S.focus ? renderOpen(nightView(S.focus)) : ""}</div>`;
 }
 
 function renderWeek() {
-  const ids = Object.keys(S.weeks).sort();
-  const i = ids.indexOf(S.weekId);
   const w = week();
   const dis = S.canWrite ? "" : "disabled";
-  let h = `<section aria-labelledby="week-h"><div class="weekhead"><div><h2 id="week-h">This week</h2>${w.note ? `<p>${esc(w.note)}</p>` : ""}</div>
-    <div class="print" style="display:flex;gap:20px"><button class="ink" data-act="week" data-v="${esc(ids[i - 1] || "")}" ${i > 0 ? "" : "disabled"}>← last</button><button class="ink" data-act="week" data-v="${esc(ids[i + 1] || "")}" ${i < ids.length - 1 ? "" : "disabled"}>next →</button></div></div><div class="cal">`;
+  // Unplanned weeks still open, so a link saved to next week shows up before Claude plans it.
+  const note = w ? w.note : addDays(S.weekId, 6) < today() ? "Nothing was planned this week." : "Not planned yet. Claude plans each week the Sunday before; anything you put on a night here stays.";
+  let h = `<section aria-labelledby="week-h"><div class="weekhead"><div><h2 id="week-h">${esc(weekLabel(S.weekId))}</h2>${note ? `<p>${esc(note)}</p>` : ""}</div>
+    <div class="print" style="display:flex;gap:20px"><button class="ink" data-act="week" data-v="${addDays(S.weekId, -7)}">← last</button><button class="ink" data-act="week" data-v="${addDays(S.weekId, 7)}">next →</button></div></div><div class="cal">`;
   const t = today();
   for (const slot of SLOTS) {
     const n = nightView(slot);
@@ -593,7 +598,7 @@ function shelfOf(name) {
 }
 
 function renderList() {
-  if (!week()) return noWeek();
+  if (!S.weekId) return noWeek();
   const { buy, have } = buildList();
   const dis = S.canWrite ? "" : "disabled";
   const checks = S.checks.items || {};
@@ -879,7 +884,7 @@ async function start() {
   let first = true;
   db.collection("weeks").onSnapshot(snap => {
     const m = {}; snap.docs.forEach(d => { if (/^\d{4}-\d{2}-\d{2}$/.test(d.id)) m[d.id] = d.data(); }); S.weeks = m;
-    if (first || !S.weeks[S.weekId]) { first = false; S.loaded = true; selectWeek(chooseWeek()); } else render();
+    if (first || !S.weekId) { first = false; S.loaded = true; selectWeek(chooseWeek()); } else render();
   });
   const coll = (name, key) => db.collection(name).onSnapshot(snap => { const m = {}; snap.docs.forEach(d => m[d.id] = d.data()); S[key] = m; render(); });
   coll("rejects", "rejects"); coll("box", "box");
