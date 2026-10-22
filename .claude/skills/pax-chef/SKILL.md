@@ -98,7 +98,7 @@ Prithvi and Nihal save TikTok and Instagram recipes from the iPhone share sheet 
    - Instagram: try the post page. If you can't read the caption, keep the card pending, tell them in one line, and leave the link and any name they typed alone.
    - If the caption points to a blog ("recipe on my site"), follow it and use that.
 3. Fill the card: `dish` (keep the name they typed if they gave one), `cuisine`, `minutes`, `protein`, `carb`, `veg`, `ingredients` (shopper's names, matching `staples/list` spellings), and a short `tweak`. Use the tweak for what's missing (no protein or veg: suggest one), and flag meat, beef or main-ingredient bell pepper plainly ("Has chicken; swap in white beans"). Don't drop the card.
-4. Set `pending` to false and `merge` the night (send the whole `boxPick`) or `set` the box card. For a night, also `merge` its ingredients into that week's `shelves` map.
+4. Set `pending` to false and `merge` the night (send the whole `boxPick`) or `set` the box card. For a night, also `merge` its ingredients into that week's `shelves` map. The same link can sit in the tin and on several nights as separate copies (the app renames them all together); fill in every copy with the same `link`, not just the first one you find.
 5. Don't paste the recipe's steps onto the card. The link is the recipe.
 
 ## Answering requests

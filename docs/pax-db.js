@@ -96,6 +96,8 @@
 
     return {
       doc: docRef, collection: p => collRef(p),
+      // Every cached document under a path prefix, e.g. all("weeks/").
+      all: prefix => [...cache.entries()].filter(([k]) => k.startsWith(prefix)).map(([path, data]) => ({ path, data })),
       async start() { await loadAll(); subscribe(); },
       refresh: loadAll,
     };
