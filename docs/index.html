@@ -296,8 +296,8 @@ main { padding-block: 16px 64px; gap: 40px; }
 
 /* Nights you're not cooking: soft sage instead of tomato. */
 :root { --sage-lt: #d3d8c4; }
-.note.away { background: var(--sage); }
-.note.away .sub { opacity: 1; }
+.note.away { background: #f6f0e4; box-shadow: inset 7px 0 0 var(--sage); }
+.note.away .dow { padding-left: 4px; }
 .bigstamp { color: var(--sage); }
 /* Who's cooking / OUT / ORDER IN: little paper tags taped on, a touch askew. */
 .note .stamp, .note .who-tag { position: relative; top: auto; right: auto; align-self: center; grid-column: 3; grid-row: 1 / span 2; justify-self: end; background: var(--paper); border: 1px solid var(--ink); padding: 6px 8px 4px; font-size: 11px; line-height: 1; text-transform: uppercase; letter-spacing: .07em; font-family: var(--serif); transform: rotate(-3deg); }
