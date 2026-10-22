@@ -30,7 +30,8 @@ The bar is "we'd actually be excited to eat this", not "technically fits the rul
 - **Dinners they already love** (the benchmark): chili garlic noodles, mapo or crispy tofu over rice, loaded tacos and burritos.
 - **Favourites come back 1 or 2 times a week**: one or two dishes from the tin or ones they kept, the rest new.
 - **Creators they trust:** Rainbow Plant Life, School Night Vegan (free recipes on schoolnightvegan.com only, not the paid Substack), @myvegetarianroots (Instagram and TikTok; no recipe site).
-- **No dislikes beyond bell pepper.**
+- **Peas: never the main veggie.** Fine in small amounts when a recipe calls for them, but don't pick dishes built around peas (matar anything) or add peas as the veg.
+- **No other dislikes** beyond bell pepper and peas.
 
 ## Every dinner
 
