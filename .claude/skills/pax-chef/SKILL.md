@@ -49,7 +49,7 @@ Pull Prithvi's Google Calendar for the week: dinners with other people, travel, 
 
 ## Planning a week
 
-Write one document: collection `weeks`, doc id = that Monday's date (`YYYY-MM-DD`). **Never overwrite a week that already exists** (they may have swapped or rejected things in it). If it exists, stop and say so.
+Write one document: collection `weeks`, doc id = that Monday's date (`YYYY-MM-DD`). **Never overwrite a week that already exists** (they may have swapped or rejected things in it). If it exists, stop and say so. The one exception is a placeholder week with `stub: true`, which appears when they share a link for a week you haven't planned. Plan it with `merge` and drop `stub`. Leave any night that already has a `boxPick` or a `flag` as they set it.
 
 - Every cook night gets 3 options: the pick first, then 2 backups.
 - At least 1 Indian staple per week.
@@ -87,6 +87,19 @@ Write one document: collection `weeks`, doc id = that Monday's date (`YYYY-MM-DD
 - `ingredients`: one item per entry, no quantities, lowercase, named the way a shopper would say it. Use the same name for the same thing across recipes ("garlic", not "garlic cloves" in one and "garlic" in another), and match the names in `staples/list` exactly so staples sort into "Probably have."
 - `steps`: 3 to 5 short steps. The recipe page has the full method.
 - `shelves`: one entry per ingredient across the week, mapping its exact name to where it goes in the app's fridge: "frozen", "dairy" (cheese, cream, eggs, tofu), "pantry" (beans, pasta, rice, tortillas, jars, sauces) or "produce". The List tab shows groceries on those shelves; anything you skip gets guessed.
+
+## Filling in shared links
+
+Prithvi and Nihal save TikTok and Instagram recipes from the iPhone share sheet ("Add to Pax"). Each one lands as a card with `pending: true`, either as a night's `boxPick` (in `weeks/<week>/nights/<day>`) or in `box/<key>`, with only `link`, `source` and `savedBy` (and sometimes a `dish` name they typed). Every time you run, fill them in:
+
+1. Find them: `list` every week's `nights` and `list box`, and pick out cards with `pending: true`.
+2. Read the caption, not the comments.
+   - TikTok: `https://www.tiktok.com/oembed?url=<link>`. The `title` field is the caption, and `author_name` is the creator.
+   - Instagram: try the post page. If you can't read the caption, keep the card pending, tell them in one line, and leave the link and any name they typed alone.
+   - If the caption points to a blog ("recipe on my site"), follow it and use that.
+3. Fill the card: `dish` (keep the name they typed if they gave one), `cuisine`, `minutes`, `protein`, `carb`, `veg`, `ingredients` (shopper's names, matching `staples/list` spellings), and a short `tweak`. Use the tweak for what's missing (no protein or veg: suggest one), and flag meat, beef or main-ingredient bell pepper plainly ("Has chicken; swap in white beans"). Don't drop the card.
+4. Set `pending` to false and `merge` the night (send the whole `boxPick`) or `set` the box card. For a night, also `merge` its ingredients into that week's `shelves` map.
+5. Don't paste the recipe's steps onto the card. The link is the recipe.
 
 ## Answering requests
 

@@ -412,6 +412,7 @@ function nightView(slot) {
 
 function noteText(n) {
   if (n.mode === "cook") {
+    if (n.current && n.current.pending) return { title: n.current.dish, sub: `From ${n.current.source || "a link"}${n.current.savedBy ? " ✶ saved by " + n.current.savedBy : ""}` };
     if (n.current) return { title: n.current.dish, sub: [n.current.minutes ? n.current.minutes + " min" : "", n.current.cuisine].filter(Boolean).join(" ✶ ") };
     return { title: "Nothing yet", sub: "Pick from the recipe box or ask Claude" };
   }
@@ -512,7 +513,9 @@ function renderOpen(n) {
       <div class="cookline"><span class="who">${esc(COOK[n.cook] || "Whoever's home")} cooks</span>
         ${n.cook ? `<button class="ink" data-act="cook" data-slot="${n.slot}" ${dis}>Hand to ${esc(COOK[OTHER[n.cook]])}</button>` : ""}
         <button class="heart" data-act="heart" data-slot="${n.slot}" aria-pressed="${hearted}" aria-label="${hearted ? "Remove from" : "Save to"} recipe box" ${dis}>${hearted ? "♥" : "♡"}</button></div>
-      <div class="tags"><span>Protein: ${esc(c.protein)}</span><span>Carb: ${esc(c.carb)}</span><span>Veg: ${esc(c.veg)}</span></div>`;
+      ${c.protein || c.carb || c.veg ? `<div class="tags"><span>Protein: ${esc(c.protein)}</span><span>Carb: ${esc(c.carb)}</span><span>Veg: ${esc(c.veg)}</span></div>` : ""}`;
+    if (c.pending) sheet += `<p class="tweak">Saved from ${esc(c.source || "a link")}${c.savedBy ? " by " + esc(c.savedBy) : ""}. Claude will read the caption and fill in the dish, protein, carb, veg and ingredients the next time it runs.</p>
+      <form class="addrow" id="rename-form" data-slot="${n.slot}"><input type="text" id="rename-input" aria-label="Dish name" placeholder="Name it, e.g. pumpkin pasta" ${dis}><button ${dis}>Save name</button></form>`;
     if (c.tweak) sheet += `<p class="tweak">${esc(c.tweak)}</p>`;
     if (!link && (c.steps || []).length) sheet += `<ol class="steps">${c.steps.map(s => `<li>${esc(s)}</li>`).join("")}</ol>`;
     if (ui.mode === "swap") {
@@ -522,7 +525,7 @@ function renderOpen(n) {
     } else if (ui.mode === "reject") {
       sheet += `<div class="confirm actions"><span>Never suggest ${esc(c.dish)} again?</span><button class="ink" data-act="reject" data-slot="${n.slot}" ${dis}>Yes, reject it</button><button class="ink" data-act="ui" data-slot="${n.slot}" data-v="">Cancel</button></div>`;
     } else {
-      sheet += `<div class="actions">${link ? `<a href="${esc(link)}" target="_blank" rel="noopener" style="font-size:20px">Open the recipe →</a>` : ""}
+      sheet += `<div class="actions">${link ? `<a href="${esc(link)}" target="_blank" rel="noopener" style="font-size:20px">${c.source === "TikTok" || c.source === "Instagram" ? "Open on " + esc(c.source) : "Open the recipe"} →</a>` : ""}
         <button class="ink" data-act="ui" data-slot="${n.slot}" data-v="swap" ${dis}>Swap${n.backups.length ? ` (${n.backups.length})` : ""}</button>
         <button class="ink" data-act="ui" data-slot="${n.slot}" data-v="reject" ${dis}>Reject</button></div>`;
     }
@@ -679,9 +682,9 @@ function renderRecipes() {
          <div class="nights">${S.weekId ? SLOTS.map(sl => `<button data-act="tincook" data-slot="${sl}" ${dis}>${DAY[sl].slice(0, 3)}<br>${esc(shortDate(slotDate(sl)))}</button>`).join("") : ""}</div>
          <div class="foot"><button class="ink" data-act="tin" data-v="unpick">Never mind</button></div>`
       : `<span class="kick">${esc(card.cuisine || "Saved")} ✶ in the tin</span><span class="dish">${esc(card.dish)}</span><span class="meta">${esc([card.minutes && card.minutes + " min", card.source].filter(Boolean).join(" ✶ "))}</span>
-         <span class="pcv">Protein: ${esc(card.protein || "")}<br>Carb: ${esc(card.carb || "")}<br>Veg: ${esc(card.veg || "")}</span>
+         ${card.protein || card.carb || card.veg ? `<span class="pcv">Protein: ${esc(card.protein || "")}<br>Carb: ${esc(card.carb || "")}<br>Veg: ${esc(card.veg || "")}</span>` : `<span class="meta">Claude will fill in the details from the caption next time it runs.</span>`}
          ${link && card.tweak ? `<span class="meta clamp3" style="font-size:14px">${esc(card.tweak)}</span>` : ""}
-         <div class="foot">${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">Open the recipe →</a>` : `<button class="ink" data-act="tin" data-v="flip">Flip for the steps ↻</button>`}<button class="ink" data-act="tin" data-v="pick" ${S.weekId ? "" : "disabled"} ${dis}>Cook it this week</button></div>
+         <div class="foot">${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">${card.source === "TikTok" || card.source === "Instagram" ? "Open on " + esc(card.source) : "Open the recipe"} →</a>` : `<button class="ink" data-act="tin" data-v="flip">Flip for the steps ↻</button>`}<button class="ink" data-act="tin" data-v="pick" ${S.weekId ? "" : "disabled"} ${dis}>Cook it this week</button></div>
          ${link ? `<button class="ink" style="font-size:14px;align-self:flex-start" data-act="heartrec" data-key="${esc(card.key)}" ${dis}>Take it out of the tin</button>` : ""}`;
     faces = `<div class="face" ${T.flipped ? 'aria-hidden="true"' : ""}>${front}</div>
       <div class="face back" ${T.flipped ? "" : 'aria-hidden="true" inert'}><span class="kick">How to make it</span>
@@ -816,6 +819,14 @@ document.addEventListener("click", e => {
   const h = handlers[el.dataset.act]; if (h) h(el.dataset);
 });
 document.addEventListener("change", e => { const el = e.target.closest("[data-act=check]"); if (el) handlers.check(el.dataset); });
+document.addEventListener("submit", e => {
+  if (e.target.id !== "rename-form") return;
+  e.preventDefault();
+  const slot = e.target.dataset.slot, name = document.getElementById("rename-input").value.trim();
+  const st = S.nights[slot] || {};
+  if (!name || !st.boxPick) return;
+  write(() => saveNight(slot, { boxPick: { ...st.boxPick, dish: name } }), "Named it.");
+});
 document.addEventListener("toggle", e => { if (e.target.id === "staples-box") S.staplesOpen = e.target.open; }, true);
 document.addEventListener("submit", e => {
   if (e.target.id !== "staple-form") return;

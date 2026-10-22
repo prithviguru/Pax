@@ -9,6 +9,7 @@ Prithvi and Nihal's weeknight dinners: the week on the fridge, who cooks each ni
 - `docs/` - the app, served by GitHub Pages: `index.html`, `pax-db.js` (the shared-data layer), `config.js` (Supabase URL and public key), `sw.js`, `manifest.webmanifest`, icons and the paper-cutout art.
 - `supabase/schema.sql` - the database: one `docs` table, a `members` list, live updates.
 - `supabase/open-access.sql` - lets the app read and write without sign-in.
+- `supabase/share-links.sql` - files links from the "Add to Pax" Shortcut onto a night or into the tin.
 - `supabase/seed.sql` - everything from the old claude.ai version (the week of Oct 26, the recipe tin, staples, Monday handed to Prithvi).
 - `tools/paxdb.py` - read and write the database from the command line; the planner uses it.
 - `.claude/skills/pax-chef/SKILL.md` - the planner. It plans each week into Pax and answers "new options" requests.
@@ -21,6 +22,22 @@ Prithvi and Nihal's weeknight dinners: the week on the fridge, who cooks each ni
 4. **Planner access.** In the Claude environment settings, add `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` as environment variables and allow the domain `xzvsxgbsdzwvdmgmclut.supabase.co`.
 
 There's no sign-in: each phone remembers whose it is ("Not you? Switch" in the footer changes it). Anyone with the link can read and change the plan, so don't post it anywhere public.
+
+## Add to Pax from TikTok or Instagram
+
+Run `supabase/share-links.sql` once in the SQL editor. Then each of you builds this Shortcut on your iPhone (Shortcuts app → +):
+
+1. Name it **Add to Pax**. Tap the (i) and turn on **Show in Share Sheet**. Under Share Sheet Types, keep only **URLs**.
+2. Add **List** with these items: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday, Recipe tin.
+3. Add **Choose from List**. Set the prompt to "Which night?"
+4. Add **Get Contents of URL**:
+   - URL: `https://xzvsxgbsdzwvdmgmclut.supabase.co/rest/v1/docs`
+   - Method: **POST**
+   - Headers: `apikey` = `sb_publishable_szxGiVMEmt200pw72wsJqw_f_h67yDp`, `Content-Type` = `application/json`, `Prefer` = `return=minimal`
+   - Request Body: **JSON** with `collection` (Text) = `inbox`, and `data` (Dictionary) holding `url` (Text) = **Shortcut Input**, `night` (Text) = **Chosen Item**, `by` (Text) = your name.
+5. Add **Show Notification**: "Saved to Pax: Chosen Item".
+
+To use it: in TikTok tap Share → **More** (or in Instagram, Share → **Share to…**) → **Add to Pax** → pick a night. The recipe lands on the next one of that night (today counts) and replaces whatever was planned there; the plan stays under Swap. "Recipe tin" keeps it in the tin under **New**. Claude reads the caption and fills in the details on its next run; until then you can name it from the opened night.
 
 ## Shipping a change
 
@@ -46,3 +63,4 @@ Every document is a row in `public.docs` keyed by a slash path:
 | `box/<recipe-key>` | The app or Claude | Recipe tin cards |
 | `staples/list` | The app | `items: [...]` (the fridge's bottom shelf) |
 | `requests/<id>` | The app, closed by Claude | `week`, `slot`, `note`, `status` |
+| `inbox/<id>` | The Shortcut | `url`, `night`, `by`; the database files it and adds `status`, `filedTo` |

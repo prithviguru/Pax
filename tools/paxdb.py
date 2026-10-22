@@ -21,7 +21,9 @@ import json, os, sys, urllib.request, urllib.parse
 
 def _req(method, url, body=None, prefer=None):
     key = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
-    headers = {"apikey": key, "Authorization": "Bearer " + key, "Content-Type": "application/json"}
+    headers = {"apikey": key, "Content-Type": "application/json"}
+    if key.startswith("eyJ"):  # legacy JWT keys also go in Authorization; new sb_secret_ keys don't
+        headers["Authorization"] = "Bearer " + key
     if prefer: headers["Prefer"] = prefer
     data = json.dumps(body).encode() if body is not None else None
     with urllib.request.urlopen(urllib.request.Request(url, data=data, headers=headers, method=method), timeout=30) as r:
