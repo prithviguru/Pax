@@ -10,6 +10,7 @@ Prithvi and Nihal's weeknight dinners: the week on the fridge, who cooks each ni
 - `supabase/schema.sql` - the database: one `docs` table, a `members` list, live updates.
 - `supabase/open-access.sql` - lets the app read and write without sign-in.
 - `supabase/share-links.sql` - files links from the "Add to Pax" Shortcut onto a night or into the tin.
+- `supabase/add-to-pax.sql` - the simple endpoint the Shortcut calls (`url`, `night`, `by`).
 - `supabase/seed.sql` - everything from the old claude.ai version (the week of Oct 26, the recipe tin, staples, Monday handed to Prithvi).
 - `tools/paxdb.py` - read and write the database from the command line; the planner uses it.
 - `.claude/skills/pax-chef/SKILL.md` - the planner. It plans each week into Pax and answers "new options" requests.
@@ -25,17 +26,17 @@ There's no sign-in: each phone remembers whose it is ("Not you? Switch" in the f
 
 ## Add to Pax from TikTok or Instagram
 
-Run `supabase/share-links.sql` once in the SQL editor. Then each of you builds this Shortcut on your iPhone (Shortcuts app → +):
+Run `supabase/share-links.sql` and then `supabase/add-to-pax.sql` once in the SQL editor. Then each of you builds this Shortcut on your iPhone (Shortcuts app → +):
 
 1. Name it **Add to Pax**. Tap the (i) and turn on **Show in Share Sheet**. Under Share Sheet Types, keep only **URLs**.
 2. Add **List** with these items: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday, Recipe tin.
 3. Add **Choose from List**. Set the prompt to "Which night?"
 4. Add **Get Contents of URL**:
-   - URL: `https://xzvsxgbsdzwvdmgmclut.supabase.co/rest/v1/docs`
+   - URL: `https://xzvsxgbsdzwvdmgmclut.supabase.co/rest/v1/rpc/add_to_pax`
    - Method: **POST**
-   - Headers: `apikey` = `sb_publishable_szxGiVMEmt200pw72wsJqw_f_h67yDp`, `Content-Type` = `application/json`, `Prefer` = `return=minimal`
-   - Request Body: **JSON** with `collection` (Text) = `inbox`, and `data` (Dictionary) holding `url` (Text) = **Shortcut Input**, `night` (Text) = **Chosen Item**, `by` (Text) = your name.
-5. Add **Show Notification**: "Saved to Pax: Chosen Item".
+   - Headers: `apikey` = `sb_publishable_szxGiVMEmt200pw72wsJqw_f_h67yDp`, `Content-Type` = `application/json`
+   - Request Body: **JSON** with three **Text** fields: `url` = **Shortcut Input**, `night` = **Selected Item** (called Chosen Item on some iOS versions), `by` = your name. No dictionary needed.
+5. Add **Show Notification**: "Saved to Pax: Selected Item".
 
 To use it: in TikTok tap Share → **More** (or in Instagram, Share → **Share to…**) → **Add to Pax** → pick a night. The recipe lands on the next one of that night (today counts) and replaces whatever was planned there; the plan stays under Swap. "Recipe tin" keeps it in the tin under **New**. Claude reads the caption and fills in the details on its next run; until then you can name it from the opened night.
 
