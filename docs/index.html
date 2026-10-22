@@ -352,7 +352,7 @@ const OTHER = { prithvi: "nihal", nihal: "prithvi" };
 
 const S = {
   db: null, user: null, me: null, canWrite: true,
-  weeks: {}, weekId: null, nights: {}, checks: {}, rejects: {}, box: {}, staples: [], requests: {},
+  weeks: {}, weekId: null, nights: {}, checks: {}, rejects: {}, box: {}, inbox: {}, staples: [], requests: {},
   tab: "tonight", focus: null, ui: {}, loaded: false,
   fridgeOpen: false, tipSeen: false, tin: { tab: null, card: null, up: false, flipped: false, picking: false },
 };
@@ -728,8 +728,23 @@ function renderRecipes() {
           <input class="field" type="text" id="add-name" placeholder="Name it, e.g. pumpkin pasta" aria-label="Dish name" ${dis}>
           <select class="field" id="add-where" aria-label="Where it goes" ${dis}><option value="tin">Just the recipe tin</option>${upcomingNights().map(x => `<option value="${x.date}">${esc(x.label)}</option>`).join("")}</select>
           <button class="field" style="justify-self:start;padding:4px 14px;font-size:18px" ${dis}>Add it</button>
-        </form></details></section>
+        </form></details>
+      ${renderShared()}</section>
     <section class="shelf"><h2>Everything Claude has suggested</h2><p class="empty" style="margin:0 0 6px">Tap ♡ to give one a card in the tin.</p>${planned.map(rec).join("") || `<p class="empty">None yet.</p>`}</section></div>`;
+}
+
+// What the "Add to Pax" Shortcut delivered, and where the database filed each one.
+function renderShared() {
+  const items = Object.entries(S.inbox).map(([id, d]) => ({ id, ...d }));
+  const where = d => {
+    const m = /^weeks\/(\d{4}-\d{2}-\d{2})\/nights\/(\w+)$/.exec(d.filedTo || "");
+    if (m) return { text: `${DAY[m[2]] || m[2]} ${shortDate(addDays(m[1], SLOTS.indexOf(m[2])))}`, week: m[1], slot: m[2] };
+    if (/^box\//.test(d.filedTo || "")) return { text: "the recipe tin" };
+    return { text: d.status ? `nowhere (${d.status})` : "nowhere yet" };
+  };
+  const row = d => { const w = where(d); return `<div class="rec"><div class="t"><b>${esc(siteOf(d.url) === "the web" ? (d.url || "").replace(/^https?:\/\//, "").slice(0, 40) : siteOf(d.url) || "No link")}</b><small>${esc(d.by || "Someone")} picked ${esc(d.night || "?")} ✶ went to ${esc(w.text)}</small></div>${w.week ? `<button class="ink" style="font-size:15px" data-act="gonight" data-week="${w.week}" data-slot="${w.slot}">Open</button>` : ""}</div>`; };
+  return `<details id="shared-box" style="max-width:420px;margin-top:10px" ${S.sharedOpen ? "open" : ""}><summary class="print" style="cursor:pointer;font-size:16px">Shared from your phones (${items.length})</summary>
+    ${items.length ? items.map(row).join("") : `<p class="empty" style="margin:8px 0">Nothing has come through from the Add to Pax Shortcut yet. If you've shared something and it isn't here, the Shortcut's request isn't reaching Pax.</p>`}</details>`;
 }
 
 function resolveNames() {
@@ -813,6 +828,7 @@ const handlers = {
     S.tin = { ...S.tin, up: false, picking: false };
     write(() => saveNight(d.slot, { boxPick: b, flag: "cook" }), `${b.dish} is on for ${DAY[d.slot]}.`);
   },
+  gonight: d => { S.tab = "tonight"; selectWeek(d.week); S.focus = d.slot; render(); scrollTo(0, 0); },
   unstaple: d => saveStaples(S.staples.filter(s => norm(s) !== norm(d.name))),
 };
 
@@ -877,7 +893,7 @@ document.addEventListener("submit", e => {
     S.addOpen = false; S.tab = "tonight"; selectWeek(monday); S.focus = slot; render();
   }, `On for ${DAY[slot]}.`);
 });
-document.addEventListener("toggle", e => { if (e.target.id === "staples-box") S.staplesOpen = e.target.open; if (e.target.id === "add-box") S.addOpen = e.target.open; }, true);
+document.addEventListener("toggle", e => { if (e.target.id === "staples-box") S.staplesOpen = e.target.open; if (e.target.id === "add-box") S.addOpen = e.target.open; if (e.target.id === "shared-box") S.sharedOpen = e.target.open; }, true);
 document.addEventListener("submit", e => {
   if (e.target.id !== "staple-form") return;
   e.preventDefault(); const inp = document.getElementById("staple-input");
@@ -932,7 +948,7 @@ async function start() {
     if (first || !S.weekId) { first = false; S.loaded = true; selectWeek(chooseWeek()); } else render();
   });
   const coll = (name, key) => db.collection(name).onSnapshot(snap => { const m = {}; snap.docs.forEach(d => m[d.id] = d.data()); S[key] = m; render(); });
-  coll("rejects", "rejects"); coll("box", "box");
+  coll("rejects", "rejects"); coll("box", "box"); coll("inbox", "inbox");
   db.collection("requests").where("status", "==", "open").onSnapshot(snap => { const m = {}; snap.docs.forEach(d => m[d.id] = d.data()); S.requests = m; render(); });
   db.collection("staples").doc("list").onSnapshot(d => { S.staples = d.exists ? (d.data().items || []) : []; render(); });
   // Catch up on anything missed while the phone was asleep or offline.
