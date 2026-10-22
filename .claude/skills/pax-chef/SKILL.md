@@ -66,6 +66,14 @@ Everything either of them changes in the app is there the moment they change it:
 
 Pull Prithvi's Google Calendar for the week: dinners with other people, travel, late evenings, workouts. Only her calendar is read. Nihal flags his own nights in the app.
 
+## Queued for a future week
+
+Dishes Prithvi has already OK'd but that didn't fit a week yet. Use these before searching for new ones, and remove each from this list once it's planned:
+
+- Rainbow Plant Life, Spicy Chili Garlic Noodles: https://rainbowplantlife.com/vegan-chili-garlic-noodles/ (add crispy tofu and bok choy or broccoli)
+- Rainbow Plant Life, Tempeh Tacos: https://rainbowplantlife.com/tempeh-tacos/ (about 40 min; give it a lighter night)
+- School Night Vegan, Creamy Gochujang Pasta: https://schoolnightvegan.com/home/vegan-gochujang-pasta/
+
 ## Planning a week
 
 Write one document: collection `weeks`, doc id = that Monday's date (`YYYY-MM-DD`). **Never overwrite a week that already exists** (they may have swapped or rejected things in it). If it exists, stop and say so. The one exception is an old placeholder week with `stub: true`: plan it with `merge` and drop `stub`. A link they share to a week you haven't planned sits in that week's `nights/` docs with no week document; plan the week as usual. Leave any night that already has a `boxPick` or a `flag` as they set it.
@@ -74,6 +82,7 @@ Write one document: collection `weeks`, doc id = that Monday's date (`YYYY-MM-DD
 - At least 1 Indian dish per week (Indo-Chinese counts).
 - Vary the protein across the picks: not tofu every night.
 - No cuisine repeated among the picks. Backups may share the pick's cuisine.
+- Alternate Asian and non-Asian cook nights (Indo-Chinese counts as Asian). With Mon/Tue/Wed cooking, that's Asian, then Mexican, Italian or something else, then Asian; never two stir-fry nights in a row.
 - Favor shared ingredients across the week (one bunch of cilantro doing two jobs).
 - No repeats from the last 4 weeks and never anything in `rejects`.
 - Skip a cook night for a dinner out, travel or a late evening: `kind` "out" (eating somewhere) or "order" (ordering in at home), with the reason in `note` ("9:42pm flight from EWR. Leave by 7:15pm.").
