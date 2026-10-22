@@ -14,7 +14,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300..500&family=Reenie+Beanie&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..600&display=swap">
 <style>
 /* Layout: a zine taped to the fridge. Red marquee, big wordmark, the week as paper notes, the open night as a white sheet with a receipt beside it. Light only, by design. */
 :root {
@@ -23,7 +23,7 @@
   --paper: #ffffff;
   --tape: #efefef;
   --tomato: #ff6347;
-  --serif: "Newsreader", Georgia, "Times New Roman", serif;
+  --serif: "DM Sans", system-ui, sans-serif;
   --hand: "Reenie Beanie", "Bradley Hand", "Segoe Print", cursive;
   --print: "Times New Roman", Times, serif;
   color-scheme: light;
@@ -65,7 +65,7 @@ main { padding-block: 48px 88px; display: grid; gap: 72px; max-width: 1400px; ma
 .signin p { margin: 0; font-family: var(--print); font-size: 17px; }
 .signin input { font: 20px var(--print); border: 1px solid var(--ink); background: var(--paper); padding: 10px 12px; border-radius: 0; width: 100%; color: var(--ink); }
 .signin .label { font-size: 19px; text-align: center; }
-body.out nav.tabs, body.out footer.band .ink { visibility: hidden; }
+body.out nav.tabs, body.out .whoami { visibility: hidden; }
 
 /* Week */
 .weekhead { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 26px; }
@@ -229,6 +229,92 @@ footer.band span:last-child { font-family: var(--print); font-size: 14px; text-t
   .day:nth-child(7n+5) .note-wrap { transform: rotate(-1.1deg); margin-top: 10px; } .day:nth-child(7n+6) .note-wrap { transform: rotate(.8deg); margin-top: 22px; }
   .day:nth-child(7n+7) .note-wrap { transform: rotate(-1.6deg); margin-top: 4px; }
 }
+
+/* ===== One font (DM Sans), compact week, small header ===== */
+:root { --hand: var(--serif); --print: var(--serif); }
+.marquee { white-space: normal; text-overflow: clip; font-size: 14px; line-height: 1.3; padding-block: 7px; letter-spacing: .02em; }
+header.top { min-height: 0; padding-block: 12px 4px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.wordmark { font-size: 34px; line-height: 1; letter-spacing: -0.01em; font-weight: 500; }
+nav.tabs { margin-top: 0; gap: 8px; }
+nav.tabs button { font-size: 16px; padding: 3px 10px; transform: none !important; }
+.v-tomato { width: 120px !important; top: 62px !important; right: -34px !important; }
+main { padding-block: 16px 64px; gap: 40px; }
+.weekhead { margin-bottom: 12px; }
+.weekhead h2 { font-size: 24px; }
+.weekhead p { font-size: 14px; }
+.ink { font-size: 15px; }
+/* compact week rows */
+.cal { grid-template-columns: minmax(0, 1fr) !important; row-gap: 6px !important; }
+.day .note-wrap { transform: none !important; margin: 0 !important; }
+.tape { display: none; }
+.daybtns { display: none !important; }
+.note { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; column-gap: 12px; align-items: center; padding: 8px 12px; min-height: 58px; }
+.note .top { display: none; }
+.note .dow { grid-row: 1 / span 2; display: flex; flex-direction: column; align-items: center; line-height: 1; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
+.note .dow b { font-size: 22px; font-weight: 500; letter-spacing: -0.01em; margin-top: 2px; }
+.note .num { display: none; }
+.note .title { grid-column: 2; font-size: 17px; font-weight: 500; line-height: 1.2; margin: 0; }
+.note .sub { grid-column: 2; font-size: 13px; margin: 2px 0 0; opacity: .8; }
+.note .stamp { position: static; grid-column: 3; grid-row: 1 / span 2; transform: rotate(-4deg); font-size: 12px; text-transform: uppercase; letter-spacing: .05em; padding: 1px 6px; border-width: 1.5px; }
+.note.today { box-shadow: inset 4px 0 0 var(--ink); }
+.note[aria-pressed="true"] { outline-offset: 2px; }
+.note .who-tag { grid-column: 3; grid-row: 1 / span 2; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; }
+.openbtns { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.openbtns .label { text-align: center; font-size: 15px; }
+/* one font: rescale the old handwriting sizes */
+.bigstamp { font-size: 48px; font-style: italic; top: -14px; }
+.open { padding-top: 22px; }
+.sheet { margin-top: 26px; }
+.sheet h2 { font-size: 30px; }
+.cookline .who { font-size: 18px; font-weight: 500; }
+.option b { font-size: 18px; font-weight: 500; }
+.receipt { margin-top: 0; }
+.rec .t a, .rec .t b { font-size: 19px; font-weight: 500; }
+.doornote b { font-size: 24px; font-weight: 500; }
+.tip { font-size: 14px; }
+.face .dish { font-size: 32px; font-weight: 500; line-height: 1.05; }
+.strip { font: 500 18px/1.2 var(--serif); }
+.tin .plate { font: 500 18px/1 var(--serif); padding: 9px 22px 7px; }
+.tinprompt b { font: 500 26px/1.1 var(--serif); }
+/* recipe tin anchored to the bottom so the stage hugs its cards */
+.stage { height: auto; }
+.lid { top: auto; bottom: 94px; }
+.dividers { top: auto; bottom: 100px; }
+.tin { top: auto; bottom: 6px; height: 96px; }
+.slot { top: auto; bottom: 178px; }
+.v-tomato { top: 300px !important; right: -46px !important; }
+.strip { top: auto; }
+
+.weekhead { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 4px 12px; }
+.weekhead > div:first-child { display: contents; }
+.weekhead h2 { grid-column: 1; }
+.weekhead > div:last-child { grid-column: 2; grid-row: 1; gap: 12px !important; }
+.weekhead p { grid-column: 1 / -1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 0; }
+.note .title, .note .sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.note { min-height: 54px; padding-block: 7px; }
+.shelf h2 { font-size: 24px; }
+
+/* Nights you're not cooking: soft sage instead of tomato. */
+:root { --sage-lt: #d3d8c4; }
+.note.away { background: var(--sage-lt); }
+.bigstamp { color: var(--sage); }
+/* Who's cooking / OUT / ORDER IN: little paper tags taped on, a touch askew. */
+.note .stamp, .note .who-tag { position: relative; top: auto; right: auto; align-self: center; grid-column: 3; grid-row: 1 / span 2; justify-self: end; background: var(--paper); border: 1px solid var(--ink); padding: 6px 8px 4px; font-size: 11px; line-height: 1; text-transform: uppercase; letter-spacing: .07em; font-family: var(--serif); transform: rotate(-3deg); }
+.note .stamp { font-weight: 600; }
+.note .stamp::before, .note .who-tag::before { content: ""; position: absolute; top: -6px; left: 50%; width: 24px; height: 9px; margin-left: -12px; background: rgba(239, 239, 239, .92); border: 1px solid rgba(0, 0, 0, .3); transform: rotate(5deg); }
+.day:nth-child(even) .note .stamp, .day:nth-child(even) .note .who-tag { transform: rotate(2.5deg); }
+.day:nth-child(3n) .note .stamp, .day:nth-child(3n) .note .who-tag { transform: rotate(-1.5deg); }
+.whoami { font-size: 13px; color: #5d6449; padding-block: 0 40px; margin: 0; position: relative; z-index: 1; }
+.whoami .ink { font-size: 13px; min-height: 32px; }
+.clamp3 { flex-shrink: 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.face .pcv { line-height: 1.6; }
+/* A fridge as tall as the phone. */
+.fridge { max-width: 340px; }
+.fridge.shut .inside { max-height: none; height: max(560px, calc(100dvh - 180px)); }
+.inside { min-height: max(560px, calc(100dvh - 180px)); }
+.door-face .panel.fz { height: 31%; max-height: 210px; }
+.doornote { top: 18%; }
+.tip { top: auto; }
 </style>
 </head>
 <body>
@@ -250,7 +336,7 @@ footer.band span:last-child { font-family: var(--print); font-size: 14px; text-t
   <div id="banner" class="banner" hidden></div>
   <div id="view"><p class="empty">Getting this week's dinners…</p></div>
 </main>
-<footer class="band gutter"><span>Planned Sunday by Claude. Changed by you two.</span><span>Pax ✶ Prithvi &amp; Nihal ✶ <button class="ink" data-act="signout" style="font-size:14px;min-height:0;text-transform:uppercase">Not you? Switch</button></span></footer>
+<p class="whoami gutter"><span id="whoami"></span> <button class="ink" data-act="signout">Not you? Switch</button></p>
 <div id="toast" class="toast" role="status" hidden></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
@@ -325,7 +411,7 @@ function nightView(slot) {
 
 function noteText(n) {
   if (n.mode === "cook") {
-    if (n.current) return { title: n.current.dish, sub: [COOK[n.cook] ? COOK[n.cook] + " cooks" : "", n.current.minutes ? n.current.minutes + " min" : ""].filter(Boolean).join(", ") };
+    if (n.current) return { title: n.current.dish, sub: [n.current.minutes ? n.current.minutes + " min" : "", n.current.cuisine].filter(Boolean).join(" ✶ ") };
     return { title: "Nothing yet", sub: "Pick from the recipe box or ask Claude" };
   }
   if (n.mode === "flex") return { title: n.plan.label || "Free night", sub: n.plan.note || "Out, in, or leftovers" };
@@ -352,7 +438,7 @@ function showBanner() {
 function render() {
   document.querySelectorAll("nav.tabs button").forEach(b => b.setAttribute("aria-current", b.dataset.tab === S.tab ? "page" : "false"));
   const w = week();
-  document.getElementById("marquee").textContent = w ? `Week of ${shortDate(S.weekId)} ✶ ${w.note ? w.note.split(". ")[0].replace(/\.$/, "") : "dinners for two"} ✶ Week of ${shortDate(S.weekId)}` : "Pax ✶ dinners for two ✶ Pax ✶ dinners for two";
+  document.getElementById("marquee").textContent = w ? `Week of ${shortDate(S.weekId)} ✶ ${w.note ? w.note.split(". ")[0].split(",")[0].replace(/\.$/, "") : "dinners for two"}` : "Pax ✶ dinners for two";
   if (!S.loaded) return;
   const v = document.getElementById("view");
   v.innerHTML = S.tab === "list" ? renderList() : S.tab === "recipes" ? renderRecipes() : renderWeekView();
@@ -373,8 +459,8 @@ function renderWeek() {
   const i = ids.indexOf(S.weekId);
   const w = week();
   const dis = S.canWrite ? "" : "disabled";
-  let h = `<section aria-labelledby="week-h"><div class="weekhead"><div><h2 id="week-h">On the fridge this week</h2>${w.note ? `<p>${esc(w.note)}</p>` : ""}</div>
-    <div class="print" style="display:flex;gap:20px"><button class="ink" data-act="week" data-v="${esc(ids[i - 1] || "")}" ${i > 0 ? "" : "disabled"}>← last week</button><button class="ink" data-act="week" data-v="${esc(ids[i + 1] || "")}" ${i < ids.length - 1 ? "" : "disabled"}>next week →</button></div></div><div class="cal">`;
+  let h = `<section aria-labelledby="week-h"><div class="weekhead"><div><h2 id="week-h">This week</h2>${w.note ? `<p>${esc(w.note)}</p>` : ""}</div>
+    <div class="print" style="display:flex;gap:20px"><button class="ink" data-act="week" data-v="${esc(ids[i - 1] || "")}" ${i > 0 ? "" : "disabled"}>← last</button><button class="ink" data-act="week" data-v="${esc(ids[i + 1] || "")}" ${i < ids.length - 1 ? "" : "disabled"}>next →</button></div></div><div class="cal">`;
   const t = today();
   for (const slot of SLOTS) {
     const n = nightView(slot);
@@ -382,12 +468,12 @@ function renderWeek() {
     const { title, sub } = noteText(n);
     const label = `${DAY[slot]} ${shortDate(n.date)}: ${title}${sub ? ". " + sub : ""}`;
     h += `<div class="day"><div class="note-wrap"><span class="tape" aria-hidden="true"></span>
-      <button class="note${away ? " away" : ""}" data-act="focus" data-slot="${slot}" aria-pressed="${S.focus === slot}" aria-label="${esc(label)}">
-        <span class="top"><span>${DAY[slot]}${n.date === t ? " ✶ today" : ""}</span><span>${esc(shortDate(n.date))}</span></span>
+      <button class="note${away ? " away" : ""}${n.date === t ? " today" : ""}" data-act="focus" data-slot="${slot}" aria-pressed="${S.focus === slot}" aria-label="${esc(label)}">
+        <span class="dow">${DAY[slot].slice(0, 3)}<b>${dayNum(n.date)}</b></span>
         <span class="num">${dayNum(n.date)}</span>
         <span class="title">${esc(title)}</span>
         ${sub ? `<span class="sub">${esc(sub)}</span>` : ""}
-        ${away ? `<span class="stamp" aria-hidden="true">${n.mode === "order" ? "order in" : "out"}</span>` : ""}
+        ${away ? `<span class="stamp" aria-hidden="true">${n.mode === "order" ? "order in" : "out"}</span>` : (n.cook && n.mode === "cook" ? `<span class="who-tag">${esc(COOK[n.cook])}</span>` : "")}
       </button></div>
       <div class="daybtns">${away
         ? `<button class="label" data-act="flag" data-slot="${slot}" data-v="cook" ${dis}>We're cooking after all</button>`
@@ -402,6 +488,8 @@ function renderOpen(n) {
   const time = n.plan.time ? fmtTime(n.plan.time) : "";
   const c = n.mode === "cook" ? n.current : null;
   let sheet = `<span class="kick">${esc(DAY[n.slot])}, ${esc(shortDate(n.date))}${time && c ? " ✶ " + esc(time) : ""}</span>`;
+  const awayNow = n.mode === "out" || n.mode === "order";
+  const inout = `<div class="openbtns">${awayNow ? `<button class="label" style="grid-column:1/-1" data-act="flag" data-slot="${n.slot}" data-v="cook" ${dis}>We're cooking after all</button>` : `<button class="label" data-act="flag" data-slot="${n.slot}" data-v="order" ${dis}>We're ordering in</button><button class="label" data-act="flag" data-slot="${n.slot}" data-v="out" ${dis}>We're eating out</button>`}</div>`;
   let receipt = "";
 
   if (n.mode !== "cook") {
@@ -425,7 +513,7 @@ function renderOpen(n) {
         <button class="heart" data-act="heart" data-slot="${n.slot}" aria-pressed="${hearted}" aria-label="${hearted ? "Remove from" : "Save to"} recipe box" ${dis}>${hearted ? "♥" : "♡"}</button></div>
       <div class="tags"><span>Protein: ${esc(c.protein)}</span><span>Carb: ${esc(c.carb)}</span><span>Veg: ${esc(c.veg)}</span></div>`;
     if (c.tweak) sheet += `<p class="tweak">${esc(c.tweak)}</p>`;
-    if ((c.steps || []).length) sheet += `<ol class="steps">${c.steps.map(s => `<li>${esc(s)}</li>`).join("")}</ol>`;
+    if (!link && (c.steps || []).length) sheet += `<ol class="steps">${c.steps.map(s => `<li>${esc(s)}</li>`).join("")}</ol>`;
     if (ui.mode === "swap") {
       sheet += `<div class="options">${n.backups.map(o => `<button class="option" data-act="pick" data-slot="${n.slot}" data-id="${esc(o.id)}" ${dis}><b>${esc(o.dish)}</b><span>${esc([o.source, o.minutes && o.minutes + " min", o.protein].filter(Boolean).join(", "))}</span></button>`).join("") || `<p class="tweak">No backups left for this night.</p>`}</div>`;
       sheet += renderBoxPicker(n, dis, true);
@@ -440,6 +528,7 @@ function renderOpen(n) {
     if (n.st.by && (n.st.current || n.st.boxPick || (n.st.rejected || []).length || n.st.cook)) sheet += `<p class="tweak" data-by="${esc(n.st.by)}">Last changed by <span class="name">someone</span>.</p>`;
     receipt = (c.ingredients || []).length ? `<ul>${c.ingredients.map(i => `<li>${esc(i)}</li>`).join("")}</ul><p style="margin:10px 0 0;font-size:14px">Quantities are on the recipe page.</p>` : `<p style="margin:10px 0 0;font-size:17px">No ingredient list for this one.</p>`;
   }
+  sheet = sheet.replace("</h2>", "</h2>" + inout);
   return `<section class="open" id="open" aria-labelledby="open-h"><span class="bigstamp" aria-hidden="true">${esc(DAY[n.slot])}</span><button class="ink closer" data-act="close">Close ✕</button>
     <div class="split"><div class="sheet">${sheet}</div><aside class="receipt" aria-label="What goes in it"><div class="rhead">What goes in it</div>${receipt}</aside></div></section>`;
 }
@@ -516,10 +605,10 @@ function renderList() {
   const open = S.fridgeOpen;
   const door = `<div class="door${open ? " open" : ""}" ${open ? "inert" : ""}><div class="door-face">
       <div class="panel fz"><button class="handle" data-act="fridge" data-v="open" aria-label="Open the fridge" style="top:30px;height:66px"></button></div>
-      <div class="panel main"><button class="handle" data-act="fridge" data-v="open" aria-label="Open the fridge" style="top:22px;height:100px"></button>
+      <div class="panel main"><button class="handle" data-act="fridge" data-v="open" aria-label="Open the fridge" style="top:22px;height:110px"></button>${!open && !S.tipSeen ? `<span class="tip" aria-hidden="true" style="top:144px">pull to open</span>` : ""}
       <div class="doornote"><span class="magnet" aria-hidden="true"></span><b>Groceries inside!</b>${left ? `${left} thing${left > 1 ? "s" : ""} to buy` : "Got everything"}<br>${have.length} staple${have.length === 1 ? "" : "s"} on the bottom shelf</div></div>
     </div></div>`;
-  const tip = !open && !S.tipSeen ? `<span class="tip" aria-hidden="true">pull to open</span>` : "";
+  const tip = "";
   return `<div style="display:grid;gap:22px">
     <div class="shelf"><h2>The list</h2><p class="empty" style="margin:0">Everything for the week of ${esc(shortDate(S.weekId))}, built from the dishes you're cooking. Swap a dish or mark a night as out and the fridge restocks itself. Quantities are on the recipe pages.</p></div>
     <div class="fridge${open ? "" : " shut"}"><div class="inside" ${open ? "" : "inert"}>${inside}</div>${tip}${door}</div>
@@ -562,7 +651,9 @@ function tinTabs() {
 
 function renderRecipes() {
   const dis = S.canWrite ? "" : "disabled";
-  const T = S.tin, tabs = tinTabs();
+  const tabs = tinTabs();
+  if (!S.tin.tab && tabs.length) S.tin = { ...S.tin, tab: tabs[0].id };
+  const T = S.tin;
   const tab = tabs.find(t => t.id === T.tab) || null;
   const all = tabs.flatMap(t => t.cards);
   const card = T.card ? all.find(c => c.key === T.card && (c.torn ? T.tab === "never" : true)) : null;
@@ -572,7 +663,7 @@ function renderRecipes() {
   if (tab && !T.up) {
     const n = tab.cards.length, gap = Math.min(52, Math.floor(420 / Math.max(n, 1)));
     tab.cards.forEach((c, i) => {
-      stage += `<button class="strip${c.torn ? " torn" : ""}" data-act="tincard" data-key="${esc(c.key)}" style="top:${512 - 58 - (n - 1 - i) * gap}px">${esc(c.dish)}<small>${c.torn ? "never again" : esc(c.minutes ? c.minutes + " min" : (c.source || ""))}</small></button>`;
+      stage += `<button class="strip${c.torn ? " torn" : ""}" data-act="tincard" data-key="${esc(c.key)}" style="bottom:${166 + (n - 1 - i) * gap}px">${esc(c.dish)}<small>${c.torn ? "never again" : esc(c.minutes ? c.minutes + " min" : (c.source || ""))}</small></button>`;
     });
   }
   let faces = "";
@@ -588,18 +679,22 @@ function renderRecipes() {
          <div class="foot"><button class="ink" data-act="tin" data-v="unpick">Never mind</button></div>`
       : `<span class="kick">${esc(card.cuisine || "Saved")} ✶ in the tin</span><span class="dish">${esc(card.dish)}</span><span class="meta">${esc([card.minutes && card.minutes + " min", card.source].filter(Boolean).join(" ✶ "))}</span>
          <span class="pcv">Protein: ${esc(card.protein || "")}<br>Carb: ${esc(card.carb || "")}<br>Veg: ${esc(card.veg || "")}</span>
-         <div class="foot"><button class="ink" data-act="tin" data-v="flip">Flip for the recipe ↻</button><button class="ink" data-act="tin" data-v="pick" ${S.weekId ? "" : "disabled"} ${dis}>Cook it this week</button></div>`;
+         ${link && card.tweak ? `<span class="meta clamp3" style="font-size:14px">${esc(card.tweak)}</span>` : ""}
+         <div class="foot">${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">Open the recipe →</a>` : `<button class="ink" data-act="tin" data-v="flip">Flip for the steps ↻</button>`}<button class="ink" data-act="tin" data-v="pick" ${S.weekId ? "" : "disabled"} ${dis}>Cook it this week</button></div>
+         ${link ? `<button class="ink" style="font-size:14px;align-self:flex-start" data-act="heartrec" data-key="${esc(card.key)}" ${dis}>Take it out of the tin</button>` : ""}`;
     faces = `<div class="face" ${T.flipped ? 'aria-hidden="true"' : ""}>${front}</div>
       <div class="face back" ${T.flipped ? "" : 'aria-hidden="true" inert'}><span class="kick">How to make it</span>
         ${(card.steps || []).length ? `<ol>${card.steps.map(x => `<li>${esc(x)}</li>`).join("")}</ol>` : `<span class="meta">The steps are on the recipe page.</span>`}
         ${(card.ingredients || []).length ? `<span class="kick" style="margin-top:6px">What goes in it</span><span class="meta">${esc(card.ingredients.join(", "))}</span>` : ""}
         ${card.tweak ? `<span class="kick" style="margin-top:6px">Notes</span><span class="meta">${esc(card.tweak)}</span>` : ""}
-        <div class="foot">${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">Open the recipe →</a>` : ""}<button class="ink" data-act="tin" data-v="flip">Flip back ↻</button></div>
+        <div class="foot"><button class="ink" data-act="tin" data-v="flip">Flip back ↻</button></div>
         <button class="ink" style="font-size:14px;align-self:flex-start" data-act="heartrec" data-key="${esc(card.key)}" ${dis}>Take it out of the tin</button></div>`;
   }
   stage += `<div class="slot${T.up && card ? "" : " down"}"><div class="card3d${T.flipped ? " flipped" : ""}">${faces}</div></div>`;
   if (tabs.length) stage += `<div class="dividers" role="group" aria-label="Dividers" style="grid-template-columns:repeat(${tabs.length},minmax(0,1fr))">${tabs.map(t => `<button class="divider${t.never ? " never" : ""}" data-act="tintab" data-v="${esc(t.id)}" aria-pressed="${T.tab === t.id}" aria-label="${esc(t.label)}, ${t.cards.length} card${t.cards.length === 1 ? "" : "s"}"><span class="tab">${esc(t.label)} <b>${t.cards.length}</b></span></button>`).join("")}</div>`;
   stage += `<div class="tin"><span class="clasp" aria-hidden="true"></span><span class="plate">our recipes</span></div>`;
+  const nStrips = tab && !T.up ? tab.cards.length : 0;
+  const stageH = T.up && card ? 606 : (tabs.length ? 250 + Math.max(0, nStrips - 1) * 52 : 300);
 
   const rec = r => {
     const link = safeLink(r.link); const k = recipeKey(r); const hearted = !!S.box[k];
@@ -608,7 +703,7 @@ function renderRecipes() {
   };
   const planned = allPlanned().filter(r => !S.rejects[recipeKey(r)]);
   return `<div style="display:grid;gap:44px">
-    <section class="shelf" aria-label="Recipe tin"><h2>Our recipes</h2><div class="stage">${stage}</div></section>
+    <section class="shelf" aria-label="Recipe tin"><h2>Our recipes</h2><div class="stage" style="height:${stageH}px">${stage}</div></section>
     <section class="shelf"><h2>Everything Claude has suggested</h2><p class="empty" style="margin:0 0 6px">Tap ♡ to give one a card in the tin.</p>${planned.map(rec).join("") || `<p class="empty">None yet.</p>`}</section></div>`;
 }
 
@@ -764,6 +859,7 @@ async function start() {
   if (!PEOPLE.includes(me)) return renderWho();
   document.body.classList.remove("out");
   S.myName = me;
+  document.getElementById("whoami").textContent = me + "'s phone.";
   const db = window.createPaxDb(sb);
   try { await db.start(); }
   catch (e) { console.error(e); S.offline = !navigator.onLine; toast("Couldn't load the plan. Pull down to retry."); }
