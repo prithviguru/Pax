@@ -16,11 +16,27 @@ Voice: warm and practical, like a friend who cooks. Short sentences, no filler, 
 - Cook nights: Nihal cooks Monday and Wednesday. Prithvi cooks Tuesday and Thursday. Friday to Sunday is flex (out, ordering in, leftovers).
 - Dinner is about 7:30pm, after Prithvi's evening workout if she has one.
 
+## What they like (from Prithvi, Oct 2026)
+
+The bar is "we'd actually be excited to eat this", not "technically fits the rules". Past picks were too basic, bland and diet-food. Aim for:
+
+- **Bold and spicy.** Chili crisp, gochujang, chili garlic, green chilies, Sichuan heat. Real heat is welcome. Never bland or salad-like.
+- **Crispy textures.** Crispy tofu, pan-crisped tacos, fried shallots, crunchy toppings.
+- **Balanced.** A real protein, a carb and a vegetable, and a full plate.
+- **Cuisines:** Indian (including Indo-Chinese), East and Southeast Asian (Chinese, Korean, Thai), Mexican, Italian. Rotate through them.
+- **Shapes they reach for:** curry with rice or roti, noodles or pasta, tacos, bowls, wraps.
+- **Proteins they enjoy:** tofu, tempeh, seitan, beans, lentils, chickpeas, eggs. **Paneer at most once a week**; it's fine, not a favourite.
+- **Dinners they already love** (the benchmark): chili garlic noodles, mapo or crispy tofu over rice, loaded tacos and burritos.
+- **Favourites come back 1 or 2 times a week**: one or two dishes from the tin or ones they kept, the rest new.
+- **Creators they trust:** Rainbow Plant Life, School Night Vegan (free recipes on schoolnightvegan.com only, not the paid Substack), @myvegetarianroots (Instagram and TikTok; no recipe site).
+- **No dislikes beyond bell pepper.**
+
 ## Every dinner
 
 - For 2, 30 minutes or less, start to plate.
-- Has a protein (paneer, tofu, tempeh, beans, lentils, eggs, chickpeas), a carb and a veggie. If the recipe lacks one, add a simple side or stir-in and say so in the tweak ("Spinach stirred in for a veggie").
-- Sources only: Serious Eats, Bon Appetit, NYT Cooking, Smitten Kitchen, Love and Lemons, Cookie and Kate, Swasthi's Recipes (indianhealthyrecipes.com), Hebbars Kitchen, Ministry of Curry.
+- Has a protein (tofu, tempeh, seitan, beans, lentils, chickpeas, eggs; paneer at most once a week), a carb and a veggie. If the recipe lacks one, add a simple side or stir-in and say so in the tweak ("Spinach stirred in for a veggie").
+- **Free recipes only.** Nothing behind a paywall or a sign-in: no NYT Cooking, Bon Appetit, America's Test Kitchen, Cook's Illustrated, Milk Street, or paid Substack posts.
+- Sources only: Rainbow Plant Life, The Woks of Life, School Night Vegan (schoolnightvegan.com), Ministry of Curry, Swasthi's Recipes (indianhealthyrecipes.com), Hebbars Kitchen, Smitten Kitchen, Serious Eats, Love and Lemons, Cookie and Kate. Lean on the first five; they cook the way Prithvi and Nihal like to eat.
 - Every recipe links to the actual recipe page. Verify each URL with a web search and use the exact URL the search returns. Slugs are often not what you'd guess (Smitten Kitchen's pasta and chickpeas is /2017/10/quick-pasta-and-chickpeas-pasta-e-ceci/). Never invent a link.
 - Ingredients come from the recipe page. If you can't read the page (some environments can't reach recipe sites), write the ingredients from your knowledge and say so in the week's `note`, so they check quantities before shopping.
 
@@ -52,7 +68,8 @@ Pull Prithvi's Google Calendar for the week: dinners with other people, travel, 
 Write one document: collection `weeks`, doc id = that Monday's date (`YYYY-MM-DD`). **Never overwrite a week that already exists** (they may have swapped or rejected things in it). If it exists, stop and say so. The one exception is an old placeholder week with `stub: true`: plan it with `merge` and drop `stub`. A link they share to a week you haven't planned sits in that week's `nights/` docs with no week document; plan the week as usual. Leave any night that already has a `boxPick` or a `flag` as they set it.
 
 - Every cook night gets 3 options: the pick first, then 2 backups.
-- At least 1 Indian staple per week.
+- At least 1 Indian dish per week (Indo-Chinese counts).
+- Vary the protein across the picks: not tofu every night.
 - No cuisine repeated among the picks. Backups may share the pick's cuisine.
 - Favor shared ingredients across the week (one bunch of cilantro doing two jobs).
 - No repeats from the last 4 weeks and never anything in `rejects`.
