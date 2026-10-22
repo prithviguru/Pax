@@ -49,7 +49,7 @@ Pull Prithvi's Google Calendar for the week: dinners with other people, travel, 
 
 ## Planning a week
 
-Write one document: collection `weeks`, doc id = that Monday's date (`YYYY-MM-DD`). **Never overwrite a week that already exists** (they may have swapped or rejected things in it). If it exists, stop and say so. The one exception is a placeholder week with `stub: true`, which appears when they share a link for a week you haven't planned. Plan it with `merge` and drop `stub`. Leave any night that already has a `boxPick` or a `flag` as they set it.
+Write one document: collection `weeks`, doc id = that Monday's date (`YYYY-MM-DD`). **Never overwrite a week that already exists** (they may have swapped or rejected things in it). If it exists, stop and say so. The one exception is an old placeholder week with `stub: true`: plan it with `merge` and drop `stub`. A link they share to a week you haven't planned sits in that week's `nights/` docs with no week document; plan the week as usual. Leave any night that already has a `boxPick` or a `flag` as they set it.
 
 - Every cook night gets 3 options: the pick first, then 2 backups.
 - At least 1 Indian staple per week.
