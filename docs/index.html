@@ -139,6 +139,8 @@ textarea { font: 16px/1.3 var(--print); width: 100%; border: 1px solid var(--ink
 .thing.box { border-radius: 2px; background: #eef1ea; }
 .thing.staple { border: 1px dashed var(--sage-ink); background: transparent; }
 .thing.got { opacity: .4; }
+.thing.stocked { background: #e9ecdf; border-color: var(--sage); }
+.compart .stockedlabel { margin-top: 4px; }
 .thing.got span { text-decoration: line-through; text-decoration-thickness: 2px; text-decoration-color: var(--coral); }
 .door { position: absolute; inset: 0 0 16px 0; transform-origin: 0 50%; transition: transform .7s cubic-bezier(.3,.7,.2,1); z-index: 3; }
 .door.open { transform: rotateY(-112deg); pointer-events: none; }
@@ -352,7 +354,7 @@ const OTHER = { prithvi: "nihal", nihal: "prithvi" };
 
 const S = {
   db: null, user: null, me: null, canWrite: true,
-  weeks: {}, weekId: null, nights: {}, checks: {}, rejects: {}, box: {}, inbox: {}, staples: [], requests: {},
+  weeks: {}, weekId: null, nights: {}, checks: {}, rejects: {}, box: {}, inbox: {}, hauls: {}, staples: [], requests: {},
   tab: "tonight", focus: null, ui: {}, loaded: false,
   fridgeOpen: false, tipSeen: false, tin: { tab: null, card: null, up: false, flipped: false, picking: false },
 };
@@ -604,16 +606,39 @@ function shelfOf(name) {
   return "pantry";
 }
 
+// Grocery hauls the planner read from DoorDash receipts (hauls/<order>). Fresh things count as
+// "in the fridge" for a week (frozen for a month); shelf-stable things go to staples instead.
+function recentHaul() {
+  const out = new Map(), t = today();
+  for (const h of Object.values(S.hauls)) {
+    if (!h || !h.date) continue;
+    for (const it of h.items || []) {
+      if (!it || !it.name || it.keep === "pantry" || it.keep === "skip") continue;
+      if (addDays(h.date, it.shelf === "frozen" ? 30 : 7) < t) continue;
+      const key = slug(norm(it.name));
+      if (!out.has(key) || out.get(key).date < h.date) out.set(key, { key, name: it.name, shelf: it.shelf, date: h.date, store: h.store || "" });
+    }
+  }
+  return out;
+}
+// Ticked by hand wins; otherwise anything in a recent haul counts as got.
+function isGot(key) { const items = S.checks.items || {}; return key in items ? !!items[key] : recentHaul().has(key); }
+
 function renderList() {
   if (!S.weekId) return noWeek();
   const { buy, have } = buildList();
   const dis = S.canWrite ? "" : "disabled";
-  const checks = S.checks.items || {};
+  const haul = recentHaul();
+  const checks = Object.fromEntries(buy.map(i => [i.key, isGot(i.key)]));
   const left = buy.filter(i => !checks[i.key]).length;
+  const listed = new Set([...buy, ...have].map(i => i.key));
+  const extras = [...haul.values()].filter(h => !listed.has(h.key));
   const thing = (it, shape) => `<button class="thing ${shape}${checks[it.key] ? " got" : ""}" data-act="tick" data-key="${esc(it.key)}" aria-pressed="${!!checks[it.key]}" title="${esc(it.dishes.join(" · "))}" ${dis}><span>${esc(it.name)}</span></button>`;
+  const stocked = (h, shape) => `<span class="thing ${shape} stocked" title="${esc(`From ${h.store || "your order"}, ${shortDate(h.date)}`)}"><span>${esc(h.name)}</span></span>`;
   const shelf = sh => {
     const items = buy.filter(i => shelfOf(i.name) === sh.id);
-    return `<section class="compart ${sh.cls}" aria-label="${esc(sh.label)}">${sh.id === "frozen" ? `<span class="bottle" aria-hidden="true"></span>` : ""}<span>${esc(sh.label)}</span>${items.length ? `<div class="shelfrow">${items.map(i => thing(i, sh.shape)).join("")}</div>` : `<p class="none" style="margin:0">Nothing to buy here.</p>`}</section>`;
+    const inside = extras.filter(h => (SHELVES.some(x => x.id === h.shelf) ? h.shelf : shelfOf(h.name)) === sh.id);
+    return `<section class="compart ${sh.cls}" aria-label="${esc(sh.label)}">${sh.id === "frozen" ? `<span class="bottle" aria-hidden="true"></span>` : ""}<span>${esc(sh.label)}</span>${items.length ? `<div class="shelfrow">${items.map(i => thing(i, sh.shape)).join("")}</div>` : `<p class="none" style="margin:0">Nothing to buy here.</p>`}${inside.length ? `<span class="stockedlabel">Already in here</span><div class="shelfrow">${inside.map(h => stocked(h, sh.shape)).join("")}</div>` : ""}</section>`;
   };
   let inside = SHELVES.filter(x => x.id !== "produce").map(shelf).join("");
   inside += `<section class="compart have" aria-label="Already have"><span>Bottom shelf ✶ already have</span>${have.length ? `<div class="shelfrow">${have.map(i => thing(i, "staple")).join("")}</div>` : `<p class="none" style="margin:0">None of this week's ingredients are staples.</p>`}</section>`;
@@ -622,7 +647,7 @@ function renderList() {
   const door = `<div class="door${open ? " open" : ""}" ${open ? "inert" : ""}><div class="door-face">
       <div class="panel fz"><button class="handle" data-act="fridge" data-v="open" aria-label="Open the fridge" style="top:30px;height:66px"></button></div>
       <div class="panel main"><button class="handle" data-act="fridge" data-v="open" aria-label="Open the fridge" style="top:22px;height:110px"></button>${!open && !S.tipSeen ? `<span class="tip" aria-hidden="true" style="top:144px">pull to open</span>` : ""}
-      <div class="doornote"><span class="magnet" aria-hidden="true"></span><b>Groceries inside!</b>${left ? `${left} thing${left > 1 ? "s" : ""} to buy` : "Got everything"}<br>${have.length} staple${have.length === 1 ? "" : "s"} on the bottom shelf</div></div>
+      <div class="doornote"><span class="magnet" aria-hidden="true"></span><b>Groceries inside!</b>${left ? `${left} thing${left > 1 ? "s" : ""} to buy` : "Got everything"}<br>${have.length} staple${have.length === 1 ? "" : "s"} on the bottom shelf${extras.length ? `<br>${extras.length} more from your last order` : ""}</div></div>
     </div></div>`;
   const tip = "";
   return `<div style="display:grid;gap:22px">
@@ -799,7 +824,7 @@ const handlers = {
     write(() => S.db.collection("requests").add({ week: S.weekId, slot: d.slot, note: note.trim().slice(0, 500), status: "open", ...stamp() }), "Asked. Claude will add options on its next run.");
   },
   check: d => {
-    const items = { ...(S.checks.items || {}) }; const on = !items[d.key]; items[d.key] = on; S.checks = { ...S.checks, items }; render();
+    const items = { ...(S.checks.items || {}) }; const on = !isGot(d.key); items[d.key] = on; S.checks = { ...S.checks, items }; render();
     write(async () => {
       const ref = S.db.collection("checks").doc(S.weekId);
       try { await ref.update({ items: { [d.key]: on } }); }
@@ -956,7 +981,7 @@ async function start() {
     if (first || !S.weekId) { first = false; S.loaded = true; selectWeek(chooseWeek()); } else render();
   });
   const coll = (name, key) => db.collection(name).onSnapshot(snap => { const m = {}; snap.docs.forEach(d => m[d.id] = d.data()); S[key] = m; render(); });
-  coll("rejects", "rejects"); coll("box", "box"); coll("inbox", "inbox");
+  coll("rejects", "rejects"); coll("box", "box"); coll("inbox", "inbox"); coll("hauls", "hauls");
   db.collection("requests").where("status", "==", "open").onSnapshot(snap => { const m = {}; snap.docs.forEach(d => m[d.id] = d.data()); S.requests = m; render(); });
   db.collection("staples").doc("list").onSnapshot(d => { S.staples = d.exists ? (d.data().items || []) : []; render(); });
   // Catch up on anything missed while the phone was asleep or offline.

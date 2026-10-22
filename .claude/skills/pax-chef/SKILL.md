@@ -130,6 +130,22 @@ Prithvi and Nihal save TikTok and Instagram recipes from the iPhone share sheet 
 4. Set `pending` to false and `merge` the night (send the whole `boxPick`) or `set` the box card. For a night, also `merge` its ingredients into that week's `shelves` map. The same link can sit in the tin and on several nights as separate copies (the app renames them all together); fill in every copy with the same `link`, not just the first one you find.
 5. Don't paste the recipe's steps onto the card. The link is the recipe.
 
+## Grocery hauls (DoorDash)
+
+Every run, read Prithvi's grocery receipts from Gmail so Pax knows what's already in the kitchen. DoorDash only for now: its "Final receipt" emails list every item. Uber Eats receipts don't list items (only a link), and Instacart isn't used; skip both.
+
+1. Search Gmail: `from:no-reply@doordash.com subject:"Final receipt" newer_than:14d`. Read each with `get_thread` (plain text).
+2. Groceries only. Keep receipts from grocery stores (Wegmans, Whole Foods, Trader Joe's, H Mart, Patel Brothers, Key Food, and the like). Skip restaurants, CVS and other non-food stores. The store is in the subject ("Final receipt for Prithvi from Wegmans").
+3. Skip any order already in Pax: the doc id is `hauls/doordash-<YYYY-MM-DD>-<store slug>` (add `-2` for a second order the same day).
+4. Turn each line into a shopper's name, matching the names you use in recipes and in `staples/list` ("Wegmans Baby Cut Carrots (16 oz)" is "carrots", "Huy Fong Vietnamese Chili Garlic Sauce" is "chili garlic sauce", "Large Fresh Limes" is "limes"). Drop drinks, snacks, sweets and household things; keep cooking ingredients, bread and staples.
+5. Give each item `shelf` ("frozen", "dairy", "pantry", "produce") and `keep`:
+   - "fridge": perishable (produce, dairy, tofu, fresh bread). The app shows it in the fridge for a week (frozen for a month) and ticks it off the week's list if a recipe needs it.
+   - "pantry": shelf-stable and long-lasting (sauces, spices, rice, oils, canned beans, pasta). Add it to `staples/list` if it isn't there (read the list, append, `set` it back; never remove anything).
+6. Write `hauls/<id>`: `{ "store": "Wegmans", "source": "DoorDash", "date": "YYYY-MM-DD", "items": [{ "name": "zucchini", "shelf": "produce", "keep": "fridge" }] }`. Date is the receipt's date in New York time.
+7. Plan around it. When dealing the Sunday decks, favour dishes that use fresh things from the last week's hauls, so nothing goes off, and say so in the card's `why` ("Uses the zucchini from Sunday's order").
+
+Never read other email. Never reply to, label, archive or delete anything in Gmail.
+
 ## Answering requests
 
 For each open request in `requests`:
@@ -152,7 +168,7 @@ Read a document right before you change it, and use `merge` for small changes so
 
 - Never order, add to a cart, or buy anything. The ingredient list is theirs.
 - Never change the app's page or code unless Prithvi asks.
-- Never write to `staples`, `box` or `checks`. Those are theirs.
+- Never write to `box` or `checks`; those are theirs. Write to `staples` only to add pantry items from a grocery haul, never to remove one.
 
 ## In chat
 
