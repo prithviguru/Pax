@@ -48,7 +48,7 @@ Edit `docs/`, bump `CACHE` in `docs/sw.js`, merge to `main`. Pages redeploys in 
 
 - **Week (home):** the week as paper notes taped to the fridge. Every night is a cook night unless you tap "We're ordering in" or "We're eating out". Tap a note to open that night's recipe: swap to a backup, reject a dish (it never comes back), hand the night to the other cook, or save it to the recipe tin.
 - **List:** a sage fridge. Pull the handle and the week's groceries sit on freezer, dairy, pantry and crisper-drawer shelves, with staples on the bottom "already have" shelf. Tap anything you've got. The list follows every swap and night out.
-- **Recipes:** a recipe tin with divider tabs by cuisine, plus Quick and Never. Pull a card, flip it for the steps, or "Cook it this week" to drop it onto a night.
+- **Recipes:** a recipe tin with divider tabs by cuisine, plus Quick and Never. Pull a card, flip it for the steps, or "Cook it this week" to drop it onto a night. **Add a recipe** under the tin takes a link and a name and puts it in the tin or on one of the next seven nights, same as the Shortcut; a card Claude hasn't filled in yet can be named from the tin.
 - **Planning:** Claude writes one `weeks/<Monday>` document per week: a pick and 2 backups for every cook night, nights out from Prithvi's calendar, and a `shelves` map for the fridge. See the skill for the shape.
 
 ## Data
