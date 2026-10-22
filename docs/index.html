@@ -862,14 +862,22 @@ document.addEventListener("submit", e => {
   const slot = e.target.dataset.slot, name = document.getElementById("rename-input").value.trim();
   const st = S.nights[slot] || {};
   if (!name || !st.boxPick) return;
-  write(() => saveNight(slot, { boxPick: { ...st.boxPick, dish: name } }), "Named it.");
+  write(() => renameEverywhere(st.boxPick, name), "Named it.");
 });
+// A recipe can sit in the tin and on any number of nights as separate copies; renaming one renames them all.
+async function renameEverywhere(card, name) {
+  const same = c => c && (c.link ? c.link === card.link : c.id === card.id);
+  const jobs = [];
+  for (const { path, data } of S.db.all("box/")) if (same(data)) jobs.push(S.db.doc(path).update({ dish: name }));
+  for (const { path, data } of S.db.all("weeks/")) if (/\/nights\/\w+$/.test(path) && same(data.boxPick)) jobs.push(S.db.doc(path).update({ boxPick: { dish: name }, ...stamp() }));
+  await Promise.all(jobs);
+}
 document.addEventListener("submit", e => {
   if (e.target.id !== "tinname-form") return;
   e.preventDefault();
   const key = e.target.dataset.key, name = document.getElementById("tinname-input").value.trim();
   if (!name || !S.box[key]) return;
-  write(() => S.db.collection("box").doc(key).update({ dish: name }), "Named it.");
+  write(() => renameEverywhere(S.box[key], name), "Named it.");
 });
 document.addEventListener("submit", e => {
   if (e.target.id !== "add-form") return;
