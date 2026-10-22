@@ -32,11 +32,12 @@ Run `supabase/share-links.sql` and then `supabase/add-to-pax.sql` once in the SQ
 2. Add **List** with these items: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday, Recipe tin.
 3. Add **Choose from List**. Set the prompt to "Which night?"
 4. Add **Get Contents of URL**:
-   - URL: `https://xzvsxgbsdzwvdmgmclut.supabase.co/rest/v1/rpc/add_to_pax`
-   - Method: **POST**
-   - Headers: `apikey` = `sb_publishable_szxGiVMEmt200pw72wsJqw_f_h67yDp`, `Content-Type` = `application/json`
+   - URL: `https://xzvsxgbsdzwvdmgmclut.supabase.co/rest/v1/rpc/add_to_pax?apikey=sb_publishable_szxGiVMEmt200pw72wsJqw_f_h67yDp` (the key goes in the URL; a header in Shortcuts is easy to lose, and without it nothing saves)
+   - Method: **POST**. No headers needed.
    - Request Body: **JSON** with three **Text** fields: `url` = **Shortcut Input**, `night` = **Selected Item** (called Chosen Item on some iOS versions), `by` = your name. No dictionary needed.
 5. Add **Show Notification**: "Saved to Pax: Selected Item".
+
+If a share doesn't show up, add **Quick Look** (Contents of URL) after Get Contents of URL and share again: it shows where the link was filed, or Supabase's error. In the app, Recipes → **Shared from your phones** lists everything that came through.
 
 To use it: in TikTok tap Share → **More** (or in Instagram, Share → **Share to…**) → **Add to Pax** → pick a night. The recipe lands on the next one of that night (today counts, so on a Thursday "Friday" means tomorrow, even if Claude hasn't planned that week yet) and replaces whatever was planned there; the plan stays under Swap. "Recipe tin" keeps it in the tin under **New**. Claude reads the caption and fills in the details on its next run; until then you can name it from the opened night.
 
