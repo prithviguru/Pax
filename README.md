@@ -65,4 +65,5 @@ Every document is a row in `public.docs` keyed by a slash path:
 | `box/<recipe-key>` | The app or Claude | Recipe tin cards |
 | `staples/list` | The app | `items: [...]` (the fridge's bottom shelf) |
 | `requests/<id>` | The app, closed by Claude | `week`, `slot`, `note`, `status` |
+| `hauls/<id>` | Claude | Grocery orders read from DoorDash receipts: `store`, `date`, `items` with `name`, `shelf`, `keep` ("fridge" or "pantry") |
 | `inbox/<id>` | The Shortcut | `url`, `night`, `by`; the database files it and adds `status`, `filedTo` |
