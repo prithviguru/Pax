@@ -38,7 +38,7 @@ Run `supabase/share-links.sql` and then `supabase/add-to-pax.sql` once in the SQ
    - Request Body: **JSON** with three **Text** fields: `url` = **Shortcut Input**, `night` = **Selected Item** (called Chosen Item on some iOS versions), `by` = your name. No dictionary needed.
 5. Add **Show Notification**: "Saved to Pax: Selected Item".
 
-To use it: in TikTok tap Share → **More** (or in Instagram, Share → **Share to…**) → **Add to Pax** → pick a night. The recipe lands on the next one of that night in a week Claude has planned (so on a Thursday, "Friday" means the planned week's Friday, not tomorrow if tomorrow isn't planned) and replaces whatever was planned there; the plan stays under Swap. "Recipe tin" keeps it in the tin under **New**. Claude reads the caption and fills in the details on its next run; until then you can name it from the opened night.
+To use it: in TikTok tap Share → **More** (or in Instagram, Share → **Share to…**) → **Add to Pax** → pick a night. The recipe lands on the next one of that night (today counts, so on a Thursday "Friday" means tomorrow, even if Claude hasn't planned that week yet) and replaces whatever was planned there; the plan stays under Swap. "Recipe tin" keeps it in the tin under **New**. Claude reads the caption and fills in the details on its next run; until then you can name it from the opened night.
 
 ## Shipping a change
 
