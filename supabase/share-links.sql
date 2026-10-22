@@ -3,8 +3,8 @@
 -- The Shortcut posts a row like this to /rest/v1/docs:
 --   {"collection": "inbox", "data": {"url": "https://www.tiktok.com/...", "night": "tue", "by": "Prithvi"}}
 -- night is a day name (Monday, tue, ...) or anything with "tin" in it to just keep it in the recipe tin.
--- This trigger files it onto the next one of that night (today counts) in New York time,
--- creating a placeholder week if Claude hasn't planned that week yet.
+-- This trigger files it onto the next one of that night (today counts, New York time) that falls in a
+-- week Claude has planned; if no later week is planned it uses the next one anyway and adds a placeholder week.
 
 create or replace function public.pax_file_shared_link() returns trigger
 language plpgsql security definer set search_path = public as $$
@@ -45,6 +45,14 @@ begin
     new.data := new.data || jsonb_build_object('status', 'unknown night'); return new;
   end if;
   target := today + ((want - extract(isodow from today)::int + 7) % 7);
+  -- Prefer a week Claude has actually planned: skip ahead a week at a time (up to 3)
+  -- while the target's week has no real plan but a later planned week exists.
+  for i in 1..3 loop
+    monday := target - (extract(isodow from target)::int - 1);
+    exit when exists (select 1 from docs where path = 'weeks/' || monday and not coalesce((data ->> 'stub')::boolean, false));
+    exit when not exists (select 1 from docs where collection = 'weeks' and path > 'weeks/' || monday and not coalesce((data ->> 'stub')::boolean, false));
+    target := target + 7;
+  end loop;
   monday := target - (extract(isodow from target)::int - 1);
   slot   := (array['mon','tue','wed','thu','fri','sat','sun'])[want];
 
