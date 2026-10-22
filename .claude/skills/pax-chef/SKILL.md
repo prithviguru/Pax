@@ -28,6 +28,7 @@ The bar is "we'd actually be excited to eat this", not "technically fits the rul
 - **Proteins they enjoy:** tofu, tempeh, seitan, beans, lentils, chickpeas. **Paneer at most once a week**; it's fine, not a favourite.
 - **No egg dinners.** They eat eggs at brunch most days, so eggs are never a dinner's protein, and Nihal doesn't like boiled-egg curries at all. An egg as a small garnish inside a dish is fine.
 - **Dinners they already love** (the benchmark): chili garlic noodles, mapo or crispy tofu over rice, loaded tacos and burritos.
+- **Calibration (Oct 2026 shortlist).** Liked: Ministry of Curry Chilli Tofu, Hebbars Soya Chilli, Rainbow Plant Life Gochujang Noodles, Woks of Life Vegan Pad Krapow. Too flat: Woks of Life Vegan Mapo Tofu, Smitten Kitchen black bean tacos, Rainbow Plant Life chickpea tacos, Smitten Kitchen pasta and white beans, Swasthi tofu bhurji. The winners are sticky, saucy, high-heat stir-fries with something crispy; gentle, earthy or "simple and comforting" dishes read as lacking. When unsure, pick the bolder recipe.
 - **Favourites come back 1 or 2 times a week**: one or two dishes from the tin or ones they kept, the rest new.
 - **Creators they trust:** Rainbow Plant Life, School Night Vegan (free recipes on schoolnightvegan.com only, not the paid Substack), @myvegetarianroots (Instagram and TikTok; no recipe site).
 - **Peas: never the main veggie.** Fine in small amounts when a recipe calls for them, but don't pick dishes built around peas (matar anything) or add peas as the veg.
