@@ -25,7 +25,8 @@ The bar is "we'd actually be excited to eat this", not "technically fits the rul
 - **Balanced.** A real protein, a carb and a vegetable, and a full plate.
 - **Cuisines:** Indian (including Indo-Chinese), East and Southeast Asian (Chinese, Korean, Thai), Mexican, Italian. Rotate through them.
 - **Shapes they reach for:** curry with rice or roti, noodles or pasta, tacos, bowls, wraps.
-- **Proteins they enjoy:** tofu, tempeh, seitan, beans, lentils, chickpeas, eggs. **Paneer at most once a week**; it's fine, not a favourite.
+- **Proteins they enjoy:** tofu, tempeh, seitan, beans, lentils, chickpeas. **Paneer at most once a week**; it's fine, not a favourite.
+- **No egg dinners.** They eat eggs at brunch most days, so eggs are never a dinner's protein, and Nihal doesn't like boiled-egg curries at all. An egg as a small garnish inside a dish is fine.
 - **Dinners they already love** (the benchmark): chili garlic noodles, mapo or crispy tofu over rice, loaded tacos and burritos.
 - **Favourites come back 1 or 2 times a week**: one or two dishes from the tin or ones they kept, the rest new.
 - **Creators they trust:** Rainbow Plant Life, School Night Vegan (free recipes on schoolnightvegan.com only, not the paid Substack), @myvegetarianroots (Instagram and TikTok; no recipe site).
@@ -34,7 +35,7 @@ The bar is "we'd actually be excited to eat this", not "technically fits the rul
 ## Every dinner
 
 - For 2, 30 minutes or less, start to plate.
-- Has a protein (tofu, tempeh, seitan, beans, lentils, chickpeas, eggs; paneer at most once a week), a carb and a veggie. If the recipe lacks one, add a simple side or stir-in and say so in the tweak ("Spinach stirred in for a veggie").
+- Has a protein (tofu, tempeh, seitan, beans, lentils, chickpeas; paneer at most once a week; never eggs), a carb and a veggie. If the recipe lacks one, add a simple side or stir-in and say so in the tweak ("Spinach stirred in for a veggie").
 - **Free recipes only.** Nothing behind a paywall or a sign-in: no NYT Cooking, Bon Appetit, America's Test Kitchen, Cook's Illustrated, Milk Street, or paid Substack posts.
 - Sources only: Rainbow Plant Life, The Woks of Life, School Night Vegan (schoolnightvegan.com), Ministry of Curry, Swasthi's Recipes (indianhealthyrecipes.com), Hebbars Kitchen, Smitten Kitchen, Serious Eats, Love and Lemons, Cookie and Kate. Lean on the first five; they cook the way Prithvi and Nihal like to eat.
 - Every recipe links to the actual recipe page. Verify each URL with a web search and use the exact URL the search returns. Slugs are often not what you'd guess (Smitten Kitchen's pasta and chickpeas is /2017/10/quick-pasta-and-chickpeas-pasta-e-ceci/). Never invent a link.
