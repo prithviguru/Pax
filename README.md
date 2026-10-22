@@ -7,19 +7,20 @@ Prithvi and Nihal's weeknight dinners: the week on the fridge, who cooks each ni
 ## What's here
 
 - `docs/` - the app, served by GitHub Pages: `index.html`, `pax-db.js` (the shared-data layer), `config.js` (Supabase URL and public key), `sw.js`, `manifest.webmanifest`, icons and the paper-cutout art.
-- `supabase/schema.sql` - the database: one `docs` table, a `members` list of the two emails allowed in, row-level security, live updates.
+- `supabase/schema.sql` - the database: one `docs` table, a `members` list, live updates.
+- `supabase/open-access.sql` - lets the app read and write without sign-in.
 - `supabase/seed.sql` - everything from the old claude.ai version (the week of Oct 26, the recipe tin, staples, Monday handed to Prithvi).
 - `tools/paxdb.py` - read and write the database from the command line; the planner uses it.
 - `.claude/skills/pax-chef/SKILL.md` - the planner. It plans each week into Pax and answers "new options" requests.
 
 ## One-time setup
 
-1. **Database.** In Supabase, open SQL Editor → New query. Paste `supabase/schema.sql`, put your two emails in the last lines, and run it. Then paste and run `supabase/seed.sql`.
-2. **Sign-in codes.** Pax signs you in with a 6-digit code (email links open Safari instead of the installed app on iPhone). In Supabase → Authentication → Emails → **Magic Link**, set the body to:
-   `<p>Your Pax code is <strong>{{ .Token }}</strong></p>`
-3. **Hosting.** Make the repo public, then Settings → Pages → Build and deployment → Deploy from a branch → `main`, folder `/docs` → Save.
-4. **Phones.** Open the app link in Safari, sign in with your email and the code, then Share → Add to Home Screen. Nihal does the same with his email.
-5. **Planner access.** In the Claude environment settings, add `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` as environment variables and allow the domain `xzvsxgbsdzwvdmgmclut.supabase.co`. The service role key is secret: it bypasses the two-email rule, so never paste it into chat or commit it.
+1. **Database.** In Supabase, open SQL Editor → New query. Run `supabase/schema.sql` (with your two emails in the last lines), then `supabase/seed.sql`, then `supabase/open-access.sql`. Run each in its own query.
+2. **Hosting.** Make the repo public, then Settings → Pages → Build and deployment → Deploy from a branch → `main`, folder `/docs` → Save.
+3. **Phones.** Open the app link in Safari, tap "I'm Prithvi" or "I'm Nihal", then Share → Add to Home Screen.
+4. **Planner access.** In the Claude environment settings, add `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` as environment variables and allow the domain `xzvsxgbsdzwvdmgmclut.supabase.co`.
+
+There's no sign-in: each phone remembers whose it is ("Not you? Switch" in the footer changes it). Anyone with the link can read and change the plan, so don't post it anywhere public.
 
 ## Shipping a change
 

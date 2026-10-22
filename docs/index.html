@@ -65,7 +65,7 @@ main { padding-block: 48px 88px; display: grid; gap: 72px; max-width: 1400px; ma
 .signin p { margin: 0; font-family: var(--print); font-size: 17px; }
 .signin input { font: 20px var(--print); border: 1px solid var(--ink); background: var(--paper); padding: 10px 12px; border-radius: 0; width: 100%; color: var(--ink); }
 .signin .label { font-size: 19px; text-align: center; }
-body.out nav.tabs { visibility: hidden; }
+body.out nav.tabs, body.out footer.band .ink { visibility: hidden; }
 
 /* Week */
 .weekhead { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 26px; }
@@ -250,7 +250,7 @@ footer.band span:last-child { font-family: var(--print); font-size: 14px; text-t
   <div id="banner" class="banner" hidden></div>
   <div id="view"><p class="empty">Getting this week's dinners…</p></div>
 </main>
-<footer class="band gutter"><span>Planned Sunday by Claude. Changed by you two.</span><span>Pax ✶ Prithvi &amp; Nihal ✶ <button class="ink" data-act="signout" style="font-size:14px;min-height:0;text-transform:uppercase">Sign out</button></span></footer>
+<footer class="band gutter"><span>Planned Sunday by Claude. Changed by you two.</span><span>Pax ✶ Prithvi &amp; Nihal ✶ <button class="ink" data-act="signout" style="font-size:14px;min-height:0;text-transform:uppercase">Not you? Switch</button></span></footer>
 <div id="toast" class="toast" role="status" hidden></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
@@ -290,11 +290,11 @@ function stamp() { return { by: S.myName || null, at: new Date().toISOString() }
 function fmtTime(t) { if (!t) return ""; const [h, m] = t.split(":").map(Number); return ((h % 12) || 12) + (m ? ":" + String(m).padStart(2, "0") : "") + (h >= 12 ? "pm" : "am"); }
 
 async function write(fn, okMsg) {
-  if (!S.db) { toast("Sign in to change the plan."); return; }
+  if (!S.db) { toast("Pax is still loading. Try again in a moment."); return; }
   try { await fn(); if (okMsg) toast(okMsg); }
   catch (e) {
     console.error(e);
-    if (e && (e.code === "42501" || /row-level security/i.test(e.message || ""))) toast("Pax didn't accept that change. Sign out and back in with the email Prithvi added.");
+    if (e && (e.code === "42501" || /row-level security/i.test(e.message || ""))) toast("Pax didn't accept that change. Try again in a moment.");
     else toast("That didn't save. Check your connection and try again.");
   }
 }
@@ -741,64 +741,29 @@ function selectWeek(id) {
 }
 function onErr(e) { console.error(e); }
 
-/* ---------- sign in ---------- */
+/* ---------- who's cooking ---------- */
+// No accounts: each phone remembers whose it is. The name only labels changes ("Last changed by Nihal").
 const sb = window.supabase && window.PAX_CONFIG && !/YOUR_/.test(window.PAX_CONFIG.url)
-  ? window.supabase.createClient(window.PAX_CONFIG.url, window.PAX_CONFIG.anonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false } })
+  ? window.supabase.createClient(window.PAX_CONFIG.url, window.PAX_CONFIG.anonKey, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } })
   : null;
+const PEOPLE = ["Prithvi", "Nihal"];
 
-function renderSignIn(step, email, msg) {
+function renderWho() {
   document.body.classList.add("out");
-  const v = document.getElementById("view");
-  if (!sb) { v.innerHTML = `<div class="signin"><h2>Almost ready</h2><p>Pax isn't connected to its database yet. Add the Supabase URL and key to config.js.</p></div>`; return; }
-  if (step === "code") {
-    v.innerHTML = `<form class="signin" id="code-form"><h2>Check your email</h2><p>We sent a 6-digit code to ${esc(email)}. Type it here.</p>
-      <label for="code-input" class="print" style="font-size:15px;text-transform:uppercase">Code</label>
-      <input id="code-input" inputmode="numeric" autocomplete="one-time-code" maxlength="10" required>
-      <button class="label">Sign in</button>${msg ? `<p>${esc(msg)}</p>` : ""}
-      <button type="button" class="ink" data-act="restart">Use a different email</button></form>`;
-    document.getElementById("code-input").focus();
-  } else {
-    v.innerHTML = `<form class="signin" id="email-form"><h2>Hi! Who's cooking?</h2><p>Sign in with the email Prithvi added to Pax. We'll send you a code.</p>
-      <label for="email-input" class="print" style="font-size:15px;text-transform:uppercase">Email</label>
-      <input id="email-input" type="email" autocomplete="email" required value="${esc(email || "")}">
-      <button class="label">Send me a code</button>${msg ? `<p>${esc(msg)}</p>` : ""}</form>`;
-  }
+  document.getElementById("view").innerHTML = `<div class="signin"><h2>Who's cooking?</h2><p>Pick yourself. This phone will remember.</p>
+    ${PEOPLE.map(n => `<button class="label" data-act="iam" data-v="${n}">I'm ${n}</button>`).join("")}</div>`;
 }
-handlers.restart = () => renderSignIn("email");
-handlers.signout = async () => { await sb.auth.signOut(); location.reload(); };
-
-document.addEventListener("submit", async e => {
-  if (e.target.id === "email-form") {
-    e.preventDefault();
-    const email = document.getElementById("email-input").value.trim();
-    const { error } = await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
-    if (error) renderSignIn("email", email, "Couldn't send a code: " + error.message);
-    else { S.pendingEmail = email; renderSignIn("code", email); }
-  } else if (e.target.id === "code-form") {
-    e.preventDefault();
-    const token = document.getElementById("code-input").value.trim();
-    const { error } = await sb.auth.verifyOtp({ email: S.pendingEmail, token, type: "email" });
-    if (error) renderSignIn("code", S.pendingEmail, "That code didn't work. Check it, or ask for a new one.");
-    else start();
-  }
-});
+handlers.iam = d => { store("local", "pax-me", d.v); start(); };
+handlers.signout = () => { store("local", "pax-me", ""); location.reload(); };
 
 async function start() {
   const tok = (location.hash || "").slice(1);
   if (tok === "list" || tok === "recipes") S.tab = tok;
-  if (!sb) return renderSignIn("email");
-  const { data: { session } } = await sb.auth.getSession();
-  if (!session) return renderSignIn("email");
-  const email = (session.user.email || "").toLowerCase();
-  const { data: members, error: mErr } = await sb.from("members").select("email,name");
-  const me = (members || []).find(m => m.email.toLowerCase() === email);
-  if (!mErr && !me) {
-    document.body.classList.add("out");
-    document.getElementById("view").innerHTML = `<div class="signin"><h2>Not on the list</h2><p>${esc(email)} isn't one of Pax's two cooks. Ask Prithvi to add it, or sign in with a different email.</p><button class="label" data-act="signout">Sign out</button></div>`;
-    return;
-  }
+  if (!sb) { document.getElementById("view").innerHTML = `<div class="signin"><h2>Almost ready</h2><p>Pax isn't connected to its database yet. Add the Supabase URL and key to config.js.</p></div>`; return; }
+  const me = store("local", "pax-me");
+  if (!PEOPLE.includes(me)) return renderWho();
   document.body.classList.remove("out");
-  S.me = session.user.id; S.myName = me ? me.name : email;
+  S.myName = me;
   const db = window.createPaxDb(sb);
   try { await db.start(); }
   catch (e) { console.error(e); S.offline = !navigator.onLine; toast("Couldn't load the plan. Pull down to retry."); }
