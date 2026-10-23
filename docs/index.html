@@ -95,8 +95,9 @@ body.out .tabbar, body.full .tabbar { display: none; }
 .day .name { font-size: 18px; font-weight: 700; line-height: 1.12; letter-spacing: -0.01em; overflow-wrap: anywhere; }
 .day .meta { font-size: 13px; color: var(--muted); }
 .day .chip { justify-self: start; margin-top: 4px; font-size: 10px; font-weight: 700; letter-spacing: .12em; padding: 4px 7px 3px; border: 1.5px solid var(--ink); background: var(--paper); }
-.day .chip.p-prithvi { background: var(--peach); border-color: var(--peach); }
-.day .chip.p-nihal { background: var(--pist); border-color: var(--pist); }
+.day .chip.p-0 { background: var(--peach); border-color: var(--peach); }
+.day .chip.p-1 { background: var(--pist); border-color: var(--pist); }
+.day .chip.p-2 { background: var(--butter); border-color: var(--butter); }
 .day.past { opacity: .5; }
 .day.today .date { background: var(--ink); color: var(--paper); border-right-color: var(--ink); margin: -12px 0; padding: 12px 8px 12px 0; }
 .day.today .date b { color: var(--butter); }
@@ -253,6 +254,31 @@ form.stack, .ownform { display: grid; gap: 10px; }
 .signin { display: grid; gap: 12px; }
 .signin .say { margin: 0 0 6px; }
 .signin h1 { margin: 0; font-size: 40px; font-weight: 700; letter-spacing: -0.03em; }
+.signin section { display: grid; gap: 8px; padding-top: 14px; border-top: 1px solid var(--hair); }
+.steps { margin: 0 0 6px; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 12px; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 30px 1fr; font-size: 15px; line-height: 1.4; }
+.steps li::before { content: counter(s); font-weight: 700; font-size: 22px; line-height: 1; }
+.steps b { font-weight: 700; }
+.linkbox { border: 1.5px dashed var(--ink); padding: 10px 12px; overflow-wrap: anywhere; font-size: 14px; }
+.linkbox code { font-family: inherit; }
+/* Household setup */
+form.setup { display: grid; gap: 18px; }
+form.setup section { display: grid; gap: 8px; }
+.person { display: grid; grid-template-columns: minmax(0, 1fr) auto 40px; gap: 8px; align-items: center; padding-bottom: 10px; border-bottom: 1px solid var(--hair); }
+.person .wide { grid-column: 1 / -1; }
+.person .sq { width: 40px; height: 40px; }
+.tick { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; }
+.tick input, .chip.pick input { accent-color: var(--ink); }
+.chip.pick { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
+.chip.pick:has(input:checked) { background: var(--ink); color: var(--paper); }
+.chip.pick input { position: absolute; opacity: 0; pointer-events: none; }
+.seg label { display: grid; place-items: center; border-left: 1.5px solid var(--ink); padding: 10px 0; font-size: 13px; font-weight: 600; cursor: pointer; }
+.seg label:first-child { border-left: 0; }
+.seg label:has(input:checked) { background: var(--ink); color: var(--cream); }
+.seg label input { position: absolute; opacity: 0; pointer-events: none; }
+.weekgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+.weekgrid label { display: grid; grid-template-columns: 38px 1fr; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.weekgrid select { width: 100%; min-width: 0; border: 1.5px solid var(--ink); background: var(--paper); padding: 8px; font: inherit; font-size: 14px; letter-spacing: 0; text-transform: none; border-radius: 0; }
 .toast { position: fixed; z-index: 30; left: 50%; transform: translateX(-50%); bottom: calc(80px + env(safe-area-inset-bottom)); max-width: calc(100% - 40px); background: var(--ink); color: var(--cream); padding: 11px 14px; font-size: 14px; font-weight: 600; }
 body.full .toast { bottom: calc(24px + env(safe-area-inset-bottom)); }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
@@ -277,8 +303,9 @@ body.full .toast { bottom: calc(24px + env(safe-area-inset-bottom)); }
 <script>
 const SLOTS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 const DAY = { mon: "Monday", tue: "Tuesday", wed: "Wednesday", thu: "Thursday", fri: "Friday", sat: "Saturday", sun: "Sunday" };
-const COOK = { prithvi: "Prithvi", nihal: "Nihal" };
-const OTHER = { prithvi: "nihal", nihal: "prithvi" };
+// Filled from the household profile (applyProfile): key -> name, and who a night hands over to.
+const COOK = {};
+const OTHER = {};
 
 const S = {
   db: null, user: null, me: null, canWrite: true,
@@ -546,7 +573,7 @@ function renderWeekView() {
   if (!S.weekId) return [mast, noWeek() + whoami()];
   return [mast, renderWeek() + whoami()];
 }
-const whoami = () => `<p class="whoami">${esc(S.myName || "")}'s phone · <button data-act="signout">Not you? Switch</button></p>`;
+const whoami = () => `<p class="whoami">${esc(S.myName || "")}'s phone · <button data-act="signout">Not you? Switch</button> · <button data-act="household">${esc((S.household || {}).name || "Household")}</button></p>`;
 
 // Nights off are ink tiles with one icon each, so they read as "not cooking" at a glance.
 const OFF_ICON = {
@@ -568,7 +595,7 @@ function renderWeek() {
     if (n.mode === "cook") {
       const who = n.picking || n.cook;
       thumb = !n.current ? OFF_ICON.open : photo(n.current) || `<img class="art" src="${ART[artFor(n.current || title)]}" alt="" aria-hidden="true">`;
-      chip = who ? `<span class="chip p-${esc(who)}">${n.picking ? (who === me ? "YOUR PICK" : esc((COOK[who] || who).toUpperCase()) + " PICKING") : who === me ? "YOU COOK" : esc((COOK[who] || who).toUpperCase()) + " COOKS"}</span>` : "";
+      chip = who ? `<span class="chip ${personClass(who)}">${n.picking ? (who === me ? "YOUR PICK" : esc((COOK[who] || who).toUpperCase()) + " PICKING") : who === me ? "YOU COOK" : esc((COOK[who] || who).toUpperCase()) + " COOKS"}</span>` : "";
     } else {
       thumb = OFF_ICON[n.mode] || OFF_ICON.flex;
       chip = `<span class="chip">${n.mode === "order" ? "ORDERING IN" : n.mode === "out" ? "EATING OUT" : "FREE NIGHT"}</span>`;
@@ -635,7 +662,7 @@ function renderOpen(n) {
       body += `<div class="confirm"><span>Never suggest ${esc(c.dish)} again?</span><div class="btns"><button class="ghost danger" data-act="reject" data-slot="${n.slot}" ${dis}>Yes, reject it</button><button class="ghost" data-act="ui" data-slot="${n.slot}" data-v="">Cancel</button></div></div>`;
     } else {
       body += `<div class="btns"><button class="ghost" data-act="ui" data-slot="${n.slot}" data-v="swap" ${dis}>Swap${n.backups.length ? ` (${n.backups.length})` : ""}</button>${own}
-        ${n.cook ? `<button class="ghost" data-act="cook" data-slot="${n.slot}" ${dis}>Hand to ${esc(COOK[OTHER[n.cook]])}</button>` : ""}
+        ${n.cook && OTHER[n.cook] ? `<button class="ghost" data-act="cook" data-slot="${n.slot}" ${dis}>Hand to ${esc(COOK[OTHER[n.cook]])}</button>` : ""}
         <button class="ghost" data-act="heart" data-slot="${n.slot}" aria-pressed="${hearted}" ${dis}>${hearted ? ICON.heart + " In the tin" : ICON.heartLine + " Save to tin"}</button>
         ${c.own ? "" : `<button class="ghost danger" data-act="ui" data-slot="${n.slot}" data-v="reject" ${dis}>Reject</button>`}</div>`;
     }
@@ -1183,36 +1210,225 @@ function selectWeek(id) {
 }
 function onErr(e) { console.error(e); }
 
-/* ---------- who's cooking ---------- */
-// No accounts: each phone remembers whose it is. The name only labels changes ("Last changed by Nihal").
+/* ---------- households ---------- */
+// Each phone signs itself in anonymously; an invite link (…/#join=<code>) puts it in a household, and
+// the database only shows it that household's rows. Within a household you just tap your name.
 const sb = window.supabase && window.PAX_CONFIG && !/YOUR_/.test(window.PAX_CONFIG.url)
-  ? window.supabase.createClient(window.PAX_CONFIG.url, window.PAX_CONFIG.anonKey, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } })
+  ? window.supabase.createClient(window.PAX_CONFIG.url, window.PAX_CONFIG.anonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false } })
   : null;
-const PEOPLE = ["Prithvi", "Nihal"];
+const APP_URL = location.origin + location.pathname;
+const inviteLink = code => `${APP_URL}#join=${code}`;
+const CUISINES = ["Indian", "Indo-Chinese", "Chinese", "Thai", "Korean", "Japanese", "Vietnamese", "Italian", "Mexican", "Mediterranean", "Middle Eastern", "American"];
+const SPICE = ["Mild", "Medium", "Hot"];
 
-function renderWho() {
+// Who's in this household, from household/profile. COOK and OTHER are what the rest of the app reads.
+function applyProfile(p) {
+  S.profile = p || {};
+  const people = (S.profile.people || []).filter(x => x && x.name);
+  S.people = people.map((x, i) => ({ ...x, key: x.key || norm(x.name), idx: i }));
+  Object.keys(COOK).forEach(k => delete COOK[k]); Object.keys(OTHER).forEach(k => delete OTHER[k]);
+  S.people.forEach(x => { COOK[x.key] = x.name; });
+  const cooks = S.people.filter(x => x.cooks !== false).map(x => x.key);
+  cooks.forEach((k, i) => { if (cooks.length > 1) OTHER[k] = cooks[(i + 1) % cooks.length]; });
+}
+const personClass = key => "p-" + (((S.people || []).find(x => x.key === key) || { idx: 2 }).idx % 3);
+
+function outScreen(title, body, dateline = "Dinners at home") {
   document.body.classList.add("out");
   const mast = document.getElementById("mast"), v = document.getElementById("view");
-  mast.hidden = false; mast.innerHTML = masthead({ word: "Pax", dateline: "Dinners at home", title: "Who's cooking?", art: "tomato" });
-  v.className = "view";
-  v.innerHTML = `<div class="signin"><p class="say">Pick yourself. This phone will remember.</p>
-    ${PEOPLE.map(n => `<button class="primary" data-act="iam" data-v="${n}">I'm ${n} ${ICON.arrow}</button>`).join("")}</div>`;
+  mast.hidden = false; mast.innerHTML = masthead({ word: "Pax", dateline, title, art: "tomato" });
+  v.className = "view"; v.innerHTML = body; scrollTo(0, 0);
 }
+
+function renderWho() {
+  const people = S.people || [];
+  outScreen("Who's cooking?", `<div class="signin"><p class="say">Pick yourself. This phone will remember.</p>
+    ${people.map(x => `<button class="primary" data-act="iam" data-v="${esc(x.name)}">I'm ${esc(x.name)} ${ICON.arrow}</button>`).join("")}
+    ${people.length ? "" : `<p class="say small">This household has nobody in it yet.</p><button class="ghost" data-act="setupedit">Set it up</button>`}</div>`);
+}
+
+function renderWelcome(err) {
+  outScreen("Dinner, sorted.", `<div class="signin">
+    <ol class="steps">
+      <li><span><b>Claude deals each cook a deck</b> of dinners for the weeks ahead, matched to what your household eats and likes.</span></li>
+      <li><span><b>Swipe to pick.</b> Your week fills in and the grocery list builds itself.</span></li>
+      <li><span><b>Save recipes</b> from TikTok, Instagram or any site straight into your recipe tin.</span></li>
+    </ol>
+    ${err ? `<p class="banner">${esc(err)}</p>` : ""}
+    <button class="primary" data-act="setup">Start a household ${ICON.arrow}</button>
+    <form class="addrow" id="join-form"><input type="text" id="join-input" placeholder="Paste an invite link" aria-label="Invite link"><button>Join</button></form>
+    <p class="say small">Someone already using Pax? Ask them for the invite link in Pax, under Household.</p></div>`, "Welcome");
+}
+
+// The setup form, for a new household or editing this one.
+function renderSetup() {
+  const p = S.setup;
+  const person = (x, i) => `<div class="person" data-i="${i}">
+      <input class="field" type="text" name="name" value="${esc(x.name || "")}" placeholder="Name" aria-label="Name ${i + 1}">
+      <label class="tick"><input type="checkbox" name="cooks" ${x.cooks !== false ? "checked" : ""}> Cooks</label>
+      ${p.people.length > 1 ? `<button type="button" class="sq" data-act="setupdel" data-i="${i}" aria-label="Remove ${esc(x.name || "this person")}">${ICON.x}</button>` : "<span></span>"}
+      <input class="field wide" type="text" name="diet" value="${esc(x.diet || "")}" placeholder="Can't eat? e.g. vegetarian, no beef, nut allergy" aria-label="What ${esc(x.name || "they")} can't eat"></div>`;
+  const cooks = p.people.filter(x => x.name && x.cooks !== false);
+  const t = p.taste || {};
+  const body = `<form class="setup" id="setup-form">
+    <section><div class="k">Your household</div><input class="field" type="text" name="hh" value="${esc(p.name || "")}" placeholder="e.g. The Patels" aria-label="Household name"></section>
+    <section><div class="k">Who's eating</div><p class="say small">Everyone at dinner, and anything they can't eat. Every dinner works for everyone at the table.</p>
+      ${p.people.map(person).join("")}<button type="button" class="ghost" data-act="setupadd">${ICON.plus} Add someone</button></section>
+    <section><div class="k">What you like</div>
+      <div class="chips">${CUISINES.map(c => `<label class="chip pick"><input type="checkbox" name="cuisine" value="${esc(c)}" ${(t.cuisines || []).includes(c) ? "checked" : ""}> ${esc(c)}</label>`).join("")}</div>
+      <div class="seg" role="radiogroup" aria-label="Spice">${SPICE.map(x => `<label><input type="radio" name="spice" value="${x}" ${(t.spice || "Medium") === x ? "checked" : ""}> ${x === "Hot" ? "Spicy" : x}</label>`).join("")}</div>
+      <input class="field" type="text" name="loves" value="${esc(t.loves || "")}" placeholder="Dinners you love, e.g. chana masala, pad thai" aria-label="Dinners you love">
+      <input class="field" type="text" name="avoid" value="${esc(t.avoid || "")}" placeholder="Never put these in, e.g. mushrooms, olives" aria-label="Never put these in"></section>
+    <section><div class="k">A usual week</div><p class="say small">Who cooks which night. You can change any single night later.</p>
+      <div class="weekgrid">${SLOTS.map(sl => `<label><span>${DAY[sl].slice(0, 3)}</span><select name="night-${sl}" aria-label="${DAY[sl]}">
+        <option value="">No one</option>${cooks.map(x => `<option value="${esc(norm(x.name))}" ${(p.week || {})[sl] === norm(x.name) ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></label>`).join("")}</div>
+      ${cooks.length ? "" : `<p class="say small">Add names above, then pick who cooks when.</p>`}</section>
+    <button class="primary" ${p.saving ? "disabled" : ""}>${p.editing ? "Save" : "Create our household"} ${ICON.arrow}</button>
+    <button type="button" class="ghost" data-act="${p.editing ? "setupcancel" : "welcome"}">${p.editing ? "Cancel" : "Back"}</button>
+  </form>`;
+  outScreen(p.editing ? "Your household" : "Set up", body, p.editing ? "Household" : "New household");
+}
+// Read the form back into S.setup (so adding a person keeps what's typed).
+function readSetup() {
+  const f = document.getElementById("setup-form"); if (!f) return S.setup;
+  const p = S.setup;
+  p.name = f.hh.value.trim();
+  p.people = [...f.querySelectorAll(".person")].map(r => ({ name: r.querySelector("[name=name]").value.trim(), cooks: r.querySelector("[name=cooks]").checked, diet: r.querySelector("[name=diet]").value.trim() }));
+  p.taste = { cuisines: [...f.querySelectorAll("[name=cuisine]:checked")].map(x => x.value), spice: (f.querySelector("[name=spice]:checked") || {}).value || "Medium", loves: f.loves.value.trim(), avoid: f.avoid.value.trim() };
+  p.week = Object.fromEntries(SLOTS.map(sl => [sl, f["night-" + sl].value]).filter(([, v]) => v));
+  return p;
+}
+function profileFromSetup(p) {
+  const people = p.people.filter(x => x.name).map(x => ({ key: norm(x.name), name: x.name, cooks: x.cooks !== false, diet: x.diet || "" }));
+  const keys = new Set(people.filter(x => x.cooks).map(x => x.key));
+  return { name: p.name, people, taste: p.taste, week: Object.fromEntries(Object.entries(p.week || {}).filter(([, k]) => keys.has(k))) };
+}
+
+function renderInvite() {
+  const h = S.household || {};
+  const link = inviteLink(h.invite_code || "");
+  outScreen("Invite them", `<div class="signin">
+    <p class="say">You're set up. Send this link to everyone else in the household; opening it on their phone puts them in.</p>
+    <div class="linkbox"><code>${esc(link)}</code></div>
+    <div class="btns"><button class="primary" data-act="share">Share the link ${ICON.out}</button><button class="ghost" data-act="copy" data-v="${esc(link)}">Copy</button></div>
+    <button class="ghost" data-act="done">Go to the week ${ICON.arrow}</button>
+    <p class="say small">Claude deals your first decks within a day. Until then, add recipes to the tin or put something on a night yourself.</p></div>`, h.name || "Household");
+}
+
+// Pax > Household: who's in it, the invite link, the Shortcut token.
+function renderHousehold() {
+  const h = S.household || {};
+  const link = inviteLink(h.invite_code || "");
+  outScreen(h.name || "Household", `<div class="signin">
+    <button class="ghost" data-act="hhclose" style="justify-self:start">${ICON.left} Back</button>
+    <section><div class="k">Who's eating</div><div class="list">${(S.people || []).map(x => `<div class="rec"><div class="t"><b>${esc(x.name)}</b><small>${esc([x.cooks !== false ? "Cooks" : "Doesn't cook", x.diet || "Eats everything"].join(" · "))}</small></div></div>`).join("")}</div>
+      <button class="ghost" data-act="setupedit">Edit the household</button></section>
+    <section><div class="k">Invite link · ${h.phones || 1} phone${h.phones === 1 ? "" : "s"} in</div><div class="linkbox"><code>${esc(link)}</code></div>
+      <div class="btns"><button class="primary" data-act="share">Share ${ICON.out}</button><button class="ghost" data-act="copy" data-v="${esc(link)}">Copy</button><button class="ghost" data-act="newlink">Make a new link</button></div>
+      <p class="say small">A new link stops the old one working. Phones already in stay in.</p></section>
+    <section><div class="k">"Add to Pax" Shortcut</div><p class="say small">In the Shortcut's Get Contents of URL step, add one more Text field to the request body: <b>token</b>, set to the code below. It files what you share into this household.</p>
+      <div class="linkbox"><code>${esc(h.share_token || "")}</code></div><div class="btns"><button class="ghost" data-act="copy" data-v="${esc(h.share_token || "")}">Copy the token</button></div></section>
+    <section><div class="k">This phone</div><p class="say small">${esc(S.myName || "Someone")}'s phone, in ${esc(h.name || "this household")}.</p>
+      <div class="btns"><button class="ghost" data-act="signout">I'm someone else</button><button class="ghost danger" data-act="leave">Leave this household</button></div></section></div>`, "Household");
+}
+
 handlers.iam = d => { store("local", "pax-me", d.v); start(); };
 handlers.signout = () => { store("local", "pax-me", ""); location.reload(); };
+handlers.welcome = () => renderWelcome();
+handlers.setup = () => { S.setup = { people: [{ name: "", cooks: true }, { name: "", cooks: true }], taste: { cuisines: [], spice: "Medium" }, week: {} }; renderSetup(); };
+handlers.setupedit = () => { const p = S.profile || {}; S.setup = { editing: true, name: p.name || (S.household || {}).name || "", people: (S.people || []).map(x => ({ name: x.name, cooks: x.cooks, diet: x.diet })), taste: p.taste || {}, week: p.week || {} }; if (!S.setup.people.length) S.setup.people.push({ name: "", cooks: true }); renderSetup(); };
+handlers.setupadd = () => { readSetup().people.push({ name: "", cooks: true }); renderSetup(); };
+handlers.setupdel = d => { readSetup().people.splice(Number(d.i), 1); renderSetup(); };
+handlers.setupcancel = () => renderHousehold();
+handlers.household = () => renderHousehold();
+handlers.hhclose = () => { document.body.classList.remove("out"); render(); scrollTo(0, 0); };
+handlers.done = () => start();
+handlers.copy = async d => { try { await navigator.clipboard.writeText(d.v); toast("Copied."); } catch (_) { toast("Couldn't copy. Press and hold the text instead."); } };
+handlers.share = async () => {
+  const url = inviteLink((S.household || {}).invite_code);
+  if (navigator.share) { try { await navigator.share({ title: "Pax", text: `Join ${(S.household || {}).name || "our household"} on Pax:`, url }); } catch (_) {} }
+  else handlers.copy({ v: url });
+};
+handlers.newlink = async () => {
+  if (!confirm("Make a new invite link? The old one will stop working.")) return;
+  const { data, error } = await sb.rpc("new_invite_code");
+  if (error) return toast("Couldn't make a new link. Try again.");
+  S.household = { ...S.household, invite_code: data }; renderHousehold(); toast("New link made.");
+};
+handlers.leave = async () => {
+  if (!confirm(`Take this phone out of ${(S.household || {}).name || "this household"}? You can come back with the invite link.`)) return;
+  await sb.rpc("leave_household"); store("local", "pax-me", ""); location.reload();
+};
+
+document.addEventListener("submit", async e => {
+  if (e.target.id === "join-form") {
+    e.preventDefault();
+    const raw = document.getElementById("join-input").value.trim(), code = (/join=([a-z0-9]+)/i.exec(raw) || [, raw])[1];
+    if (code) { location.hash = "join=" + code; start(); }
+    return;
+  }
+  if (e.target.id !== "setup-form") return;
+  e.preventDefault();
+  const p = readSetup(), prof = profileFromSetup(p);
+  if (!prof.people.length) return toast("Add at least one person.");
+  if (!prof.people.some(x => x.cooks)) return toast("Someone has to cook.");
+  if (p.editing) {
+    const next = { ...(S.profile || {}), ...prof };
+    await write(() => S.db.doc("household/profile").set({ ...next, ...stamp() }), "Saved.");
+    applyProfile(next); return renderHousehold();
+  }
+  p.saving = true; renderSetup();
+  const { data, error } = await sb.rpc("create_household", { p_name: prof.name, p_profile: prof });
+  if (error) { p.saving = false; renderSetup(); return toast("Couldn't create it: " + error.message); }
+  const info = await sb.rpc("household_info");
+  S.household = info.data || { ...data, phones: 1 };
+  if (prof.people.length === 1) store("local", "pax-me", prof.people[0].name);
+  renderInvite();
+});
+
+// Make sure this phone is signed in and in a household. Returns the household, or null after
+// showing the right screen (welcome, or an error).
+async function ensureHousehold() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) {
+    const { error } = await sb.auth.signInAnonymously();
+    if (error) { outScreen("Can't sign in", `<p class="say">This phone couldn't sign in to Pax${navigator.onLine ? "" : "; it's offline"}. Try again in a minute.</p><p class="say small">${esc(error.message || "")}</p>`); return null; }
+  }
+  const join = /join=([a-z0-9]+)/i.exec(location.hash || "");
+  if (join) {
+    history.replaceState(null, "", APP_URL);
+    const { error } = await sb.rpc("join_household", { p_code: join[1].toLowerCase() });
+    if (error) { renderWelcome(error.message); return null; }
+    store("local", "pax-me", "");
+  }
+  const { data, error } = await sb.rpc("household_info");
+  if (error) { outScreen("Can't load", `<p class="say">Pax couldn't reach its database. Check your connection and open it again.</p>`); return null; }
+  if (!data) { renderWelcome(); return null; }
+  return data;
+}
 
 async function start() {
   const tok = (location.hash || "").slice(1);
   if (tok === "list" || tok === "recipes") S.tab = tok;
   if (!sb) { document.getElementById("view").innerHTML = `<div class="signin" style="padding:40px 20px"><h1>Almost ready</h1><p class="say">Pax isn't connected to its database yet. Add the Supabase URL and key to config.js.</p></div>`; return; }
+  const household = await ensureHousehold(); if (!household) return;
+  const fresh = !S.db || !S.household || S.household.id !== household.id;
+  S.household = household;
+  if (fresh) {
+    if (S.db) location.reload();   // switched households: start clean
+    const db = window.createPaxDb(sb, household.id);
+    try { await db.start(); }
+    catch (e) { console.error(e); S.offline = !navigator.onLine; toast("Couldn't load the plan. Pull down to retry."); }
+    S.db = db;
+    db.doc("household/profile").onSnapshot(d => { applyProfile(d.exists ? d.data() : {}); if (S.started) render(); });
+  }
   const me = store("local", "pax-me");
-  if (!PEOPLE.includes(me)) return renderWho();
+  if (!(S.people || []).some(x => x.name === me)) return renderWho();
   document.body.classList.remove("out");
   S.myName = me;
-  const db = window.createPaxDb(sb);
-  try { await db.start(); }
-  catch (e) { console.error(e); S.offline = !navigator.onLine; toast("Couldn't load the plan. Pull down to retry."); }
-  S.db = db;
+  if (S.started) return render();
+  S.started = true;
+  const db = S.db;
   let first = true;
   db.collection("weeks").onSnapshot(snap => {
     const m = {}; snap.docs.forEach(d => { if (/^\d{4}-\d{2}-\d{2}$/.test(d.id)) m[d.id] = d.data(); }); S.weeks = m;
