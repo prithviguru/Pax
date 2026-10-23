@@ -17,16 +17,24 @@ Prithvi and Nihal's weeknight dinners: the week on the fridge, who cooks each ni
 
 ## One-time setup
 
-1. **Database.** In Supabase, open SQL Editor → New query. Run `supabase/schema.sql` (with your two emails in the last lines), then `supabase/seed.sql`, then `supabase/open-access.sql`. Run each in its own query.
-2. **Hosting.** Make the repo public, then Settings → Pages → Build and deployment → Deploy from a branch → `main`, folder `/docs` → Save.
-3. **Phones.** Open the app link in Safari, tap "I'm Prithvi" or "I'm Nihal", then Share → Add to Home Screen.
-4. **Planner access.** In the Claude environment settings, set Network access to Custom and allow `xzvsxgbsdzwvdmgmclut.supabase.co`. The planner uses the same public key as the app, so no secret is needed.
+1. **Database.** In Supabase, open SQL Editor → New query and run, each in its own query: `supabase/schema.sql`, `supabase/seed.sql`, `supabase/open-access.sql`, `supabase/share-links.sql`, `supabase/add-to-pax.sql`, then `supabase/households.sql`.
+2. **Sign-in.** Authentication → Sign In / Providers → turn on **Allow anonymous sign-ins** (do this before running `households.sql`).
+3. **Hosting.** Make the repo public, then Settings → Pages → Build and deployment → Deploy from a branch → `main`, folder `/docs` → Save.
+4. **Planner access.** In the Claude environment settings: Network access → Custom, allow `xzvsxgbsdzwvdmgmclut.supabase.co`; and add a secret environment variable `SUPABASE_SERVICE_ROLE_KEY` with the project's service role (secret) key from Supabase → Project Settings → API Keys. It never goes in the repo.
 
-There's no sign-in: each phone remembers whose it is ("Not you? Switch" in the footer changes it). Anyone with the link can read and change the plan, so don't post it anywhere public.
+## Households and invite links
+
+Pax is for a few households, each walled off from the others. There are no passwords:
+
+- Each phone signs itself in anonymously the first time it opens Pax.
+- **Start a household** on the welcome screen: who's eating (and what they can't eat), what you like, and who usually cooks which night. You then get an **invite link** to send the rest of the household; opening it on a phone puts that phone in. Within the household you just tap your name.
+- **Household** (in the footer of the week) shows who's in it, the invite link, **Make a new link** (the old one stops working; phones already in stay in), the Shortcut token, and **Leave this household**.
+- A new phone, or clearing Safari's data, means opening the invite link again.
+- Everything from before households is Prithvi & Nihal's household. `households.sql` prints its invite code and Shortcut token at the end.
 
 ## Add to Pax from TikTok or Instagram
 
-Run `supabase/share-links.sql` and then `supabase/add-to-pax.sql` once in the SQL editor. Then each of you builds this Shortcut on your iPhone (Shortcuts app → +):
+Each person builds this Shortcut on their iPhone (Shortcuts app → +):
 
 1. Name it **Add to Pax**. Tap the (i) and turn on **Show in Share Sheet**. Under Share Sheet Types, keep only **URLs**.
 2. Add **List** with these items: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday, Recipe tin.
@@ -35,7 +43,7 @@ Run `supabase/share-links.sql` and then `supabase/add-to-pax.sql` once in the SQ
 4. Add **Get Contents of URL**:
    - URL: `https://xzvsxgbsdzwvdmgmclut.supabase.co/rest/v1/rpc/add_to_pax?apikey=sb_publishable_szxGiVMEmt200pw72wsJqw_f_h67yDp` (the key goes in the URL; a header in Shortcuts is easy to lose, and without it nothing saves)
    - Method: **POST**. No headers needed.
-   - Request Body: **JSON** with four **Text** fields: `url` = **Shortcut Input**, `night` = **Selected Item** (called Chosen Item on some iOS versions), `by` = your name, `title` = **Provided Input**. No dictionary needed.
+   - Request Body: **JSON** with five **Text** fields: `url` = **Shortcut Input**, `night` = **Selected Item** (called Chosen Item on some iOS versions), `by` = your name, `title` = **Provided Input**, `token` = your household's token from Pax → Household. No dictionary needed.
 5. Add **Show Notification**: "Saved to Pax: Selected Item".
 
 If a share doesn't show up, add **Quick Look** (Contents of URL) after Get Contents of URL and share again: it shows where the link was filed, or Supabase's error. In the app, Recipe tin → **Shared from your phones** lists everything that came through.
@@ -60,10 +68,11 @@ The tab bar along the bottom has **Week**, **Fridge** and **Recipe tin**.
 
 Recipe cards carry an optional `image` (the recipe page's `og:image`); without one, the app shows a coloured tile with a paper cutout.
 
-Every document is a row in `public.docs` keyed by a slash path:
+Every document is a row in `public.docs` keyed by its household and a slash path (`households` and `household_members` say who's in which):
 
 | Path | Written by | What |
 |---|---|---|
+| `household/profile` | Setup in the app | `name`, `people` (`key`, `name`, `cooks`, `diet`), `taste` (`cuisines`, `spice`, `loves`, `avoid`), `week` (night → who usually cooks) |
 | `weeks/<YYYY-MM-DD>` | Claude | The week's plan |
 | `weeks/<week>/nights/<mon..sun>` | The app | `current`, `rejected`, `boxPick`, `cook`, `flag` (order, out, cook), `by`, `at` |
 | `checks/<week>` | The app | `items: {<item-slug>: true}` (ticked groceries) |
