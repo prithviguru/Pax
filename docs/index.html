@@ -139,6 +139,10 @@ textarea { font: 16px/1.3 var(--print); width: 100%; border: 1px solid var(--ink
 .thing.box { border-radius: 2px; background: #eef1ea; }
 .thing.staple { border: 1px dashed var(--sage-ink); background: transparent; }
 .thing.got { opacity: .4; }
+.decklink { display: block; margin-top: 8px; padding: 0; background: none; border: 0; font: inherit; font-size: 15px; color: var(--ink); text-decoration: underline; text-underline-offset: 4px; text-align: left; grid-column: 1 / -1; }
+.sheethead { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.pencil { width: 44px; height: 44px; flex: none; display: grid; place-items: center; border: 1px solid var(--ink); border-radius: 50%; background: var(--paper); color: var(--ink); padding: 0; }
+.pencil[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
 .ownform { display: grid; gap: 10px; margin-top: 10px; }
 .ownform label { display: grid; gap: 4px; font-size: 15px; }
 .ownform label small { font-size: 13px; opacity: .75; }
@@ -460,11 +464,13 @@ function nightView(slot) {
   const rejected = new Set(st.rejected || []);
   const opts = (plan.options || []).filter(o => !rejected.has(o.id) && !S.rejects[recipeKey(o)]);
   let current = null;
-  if (st.boxPick && !S.rejects[recipeKey(st.boxPick)]) current = { ...st.boxPick, fromBox: true };
+  const blank = !!(st.boxPick && st.boxPick.blank);
+  if (blank) { current = null; picking = null; }
+  else if (st.boxPick && !S.rejects[recipeKey(st.boxPick)]) current = { ...st.boxPick, fromBox: true };
   else current = opts.find(o => o.id === st.current) || opts[0] || null;
   const backups = opts.filter(o => !current || o.id !== current.id);
   const request = Object.values(S.requests).find(r => r.week === S.weekId && r.slot === slot && r.status === "open");
-  return { slot, date: slotDate(slot), plan, st, pk, mode, cook, current, backups, request, picking };
+  return { slot, date: slotDate(slot), plan, st, pk, mode, cook, current, backups, request, picking, blank };
 }
 
 function noteText(n) {
@@ -472,6 +478,7 @@ function noteText(n) {
     if (n.current && n.current.pending) return { title: n.current.dish, sub: `From ${n.current.source || "a link"}${n.current.savedBy ? " ✶ saved by " + n.current.savedBy : ""}` };
     if (n.current && n.current.own) return { title: n.current.dish, sub: "Your own" + (n.current.by ? " ✶ " + n.current.by : "") };
     if (n.current) return { title: n.current.dish, sub: [n.current.minutes ? n.current.minutes + " min" : "", n.current.cuisine].filter(Boolean).join(" ✶ ") };
+    if (n.blank) return { title: "Nothing planned", sub: "" };
     if (n.picking) return n.picking === myKey() ? { title: "Your pick", sub: "Heart it in your Sunday picks" } : { title: `${COOK[n.picking]}'s picking`, sub: "From the Sunday deck" };
     return { title: "Nothing yet", sub: "Pick from the recipe box or ask Claude" };
   }
@@ -590,7 +597,10 @@ function renderWeek() {
   // Unplanned weeks still open, so a link saved to next week shows up before Claude plans it.
   const deckNote = deckFor(S.weekId) && !deckPast(S.weekId) ? Object.keys(deckFor(S.weekId).people || {}).filter(p => p !== myKey()).map(p => { const pk = picksFor(S.weekId, p); return pk.done ? `${COOK[p] || p} has picked.` : `${COOK[p] || p}: ${Math.min((pk.hearts || []).length, deckNights(S.weekId, p).length)} of ${deckNights(S.weekId, p).length} picked.`; }).join(" ") : "";
   const note = w ? [w.note, deckNote].filter(Boolean).join(" ") : addDays(S.weekId, 6) < today() ? "Nothing was planned this week." : "Not planned yet. Claude plans each week the Sunday before; anything you put on a night here stays.";
-  let h = `<section aria-labelledby="week-h"><div class="weekhead"><div><h2 id="week-h">${esc(weekLabel(S.weekId))}</h2>${note ? `<p>${esc(note)}</p>` : ""}</div>
+  const myDeck = deckNights(S.weekId, myKey()).length && deckCards(S.weekId, myKey()).length;
+  const myPk = picksFor(S.weekId, myKey());
+  const deckLink = myDeck ? `<button class="decklink" data-act="deck" data-v="${S.weekId}">Your Sunday picks ✶ ${myPk.done ? "done, tap to change" : (myPk.pos || 0) > 0 ? "keep going" : deckNights(S.weekId, myKey()).some(sl => (((week() || {}).nights || {})[sl] || {}).options?.length) ? "picking again" : "not started"} →</button>` : "";
+  let h = `<section aria-labelledby="week-h"><div class="weekhead"><div><h2 id="week-h">${esc(weekLabel(S.weekId))}</h2>${note ? `<p>${esc(note)}</p>` : ""}${deckLink}</div>
     <div class="print" style="display:flex;gap:20px"><button class="ink" data-act="week" data-v="${addDays(S.weekId, -7)}">← last</button><button class="ink" data-act="week" data-v="${addDays(S.weekId, 7)}">next →</button></div></div><div class="cal">`;
   const t = today();
   for (const slot of SLOTS) {
@@ -618,27 +628,34 @@ function renderOpen(n) {
   const ui = S.ui[n.slot] || {};
   const time = n.plan.time ? fmtTime(n.plan.time) : "";
   const c = n.mode === "cook" ? n.current : null;
-  let sheet = `<span class="kick">${esc(DAY[n.slot])}, ${esc(shortDate(n.date))}${time && c ? " ✶ " + esc(time) : ""}</span>`;
+  const editing = ui.mode === "edit";
+  let sheet = `<div class="sheethead"><span class="kick">${esc(DAY[n.slot])}, ${esc(shortDate(n.date))}${time && c ? " ✶ " + esc(time) : ""}</span><button class="pencil" data-act="ui" data-slot="${n.slot}" data-v="${editing ? "" : "edit"}" aria-label="${editing ? "Stop editing" : "Edit " + DAY[n.slot]}" aria-pressed="${editing}" ${dis}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg></button></div>`;
   const awayNow = n.mode === "out" || n.mode === "order";
   const inout = `<div class="openbtns">${awayNow ? `<button class="label" style="grid-column:1/-1" data-act="flag" data-slot="${n.slot}" data-v="cook" ${dis}>We're cooking after all</button>` : `<button class="label" data-act="flag" data-slot="${n.slot}" data-v="order" ${dis}>We're ordering in</button><button class="label" data-act="flag" data-slot="${n.slot}" data-v="out" ${dis}>We're eating out</button>`}</div>`;
   let receipt = "";
 
-  if (n.mode !== "cook") {
+  if (editing) {
+    sheet += renderEditForm(n, dis);
+    receipt = `<p style="margin:10px 0 0;font-size:17px">Whatever you list under "What goes in it" lands here and on the grocery list.</p>`;
+  } else if (n.mode !== "cook") {
     const { title, sub } = noteText(n);
     sheet += `<h2 id="open-h">${esc(title)}</h2>`;
     if (sub) sheet += `<p class="tweak">${esc(sub)}</p>`;
-    if (n.mode === "flex") sheet += renderBoxPicker(n, dis, true) + renderOwnForm(n, dis, false);
+    if (n.mode === "flex") sheet += renderBoxPicker(n, dis, true);
     if (n.st.flag && n.st.by) sheet += `<p class="tweak" data-by="${esc(n.st.by)}">Marked by <span class="name">someone</span>.</p>`;
     receipt = `<p style="margin:10px 0 0;font-size:17px">Nothing to shop for. This night is off the list.</p>`;
   } else if (!c && n.picking) {
     const mine = n.picking === myKey();
     sheet += `<h2 id="open-h">${mine ? "Your pick" : esc(COOK[n.picking]) + " is picking"}</h2><p class="tweak">${mine ? "Heart a dish in your Sunday picks and it lands here." : `This night comes from ${esc(COOK[n.picking])}'s Sunday deck. If nothing's picked by the deadline, Claude's top pick goes on.`}</p>`;
     if (mine) sheet += `<button class="label" data-act="deck" data-v="${S.weekId}">Open your Sunday picks</button>`;
-    sheet += renderOwnForm(n, dis, false);
     receipt = `<p style="margin:10px 0 0;font-size:17px">The dish's ingredients show up once it's picked.</p>`;
+  } else if (!c && n.blank) {
+    sheet += `<h2 id="open-h">Nothing planned</h2><p class="tweak">Tap the pencil to put something on ${esc(DAY[n.slot])}.</p>`;
+    sheet += `<div class="actions"><button class="ink" data-act="ownclear" data-slot="${n.slot}" ${dis}>Go back to the plan</button></div>`;
+    receipt = `<p style="margin:10px 0 0;font-size:17px">Nothing to shop for.</p>`;
   } else if (!c) {
     sheet += `<h2 id="open-h">Nothing left for ${esc(DAY[n.slot])}</h2><p class="tweak">${(n.plan.options || []).length ? "Both backups are gone." : "Nothing was planned for this night."} Pick something from your recipe box, or ask Claude for two new options.</p>`;
-    sheet += renderBoxPicker(n, dis, false) + renderOwnForm(n, dis, false) + renderRequest(n, dis);
+    sheet += renderBoxPicker(n, dis, false) + renderRequest(n, dis);
     receipt = `<p style="margin:10px 0 0;font-size:17px">Pick a dish and its ingredients show up here.</p>`;
   } else {
     const link = safeLink(c.link);
@@ -657,15 +674,11 @@ function renderOpen(n) {
       sheet += `<div class="options">${n.backups.map(o => `<button class="option" data-act="pick" data-slot="${n.slot}" data-id="${esc(o.id)}" ${dis}><b>${esc(o.dish)}</b><span>${esc([o.source, o.minutes && o.minutes + " min", o.protein].filter(Boolean).join(", "))}</span></button>`).join("") || `<p class="tweak">No backups left for this night.</p>`}</div>`;
       sheet += renderBoxPicker(n, dis, true);
       sheet += `<div class="actions"><button class="ink" data-act="ui" data-slot="${n.slot}" data-v="">Keep ${esc(c.dish)}</button></div>`;
-    } else if (ui.mode === "own") {
-      sheet += renderOwnForm(n, dis, true);
-      sheet += `<div class="actions"><button class="ink" data-act="ui" data-slot="${n.slot}" data-v="">Cancel</button></div>`;
     } else if (ui.mode === "reject") {
       sheet += `<div class="confirm actions"><span>Never suggest ${esc(c.dish)} again?</span><button class="ink" data-act="reject" data-slot="${n.slot}" ${dis}>Yes, reject it</button><button class="ink" data-act="ui" data-slot="${n.slot}" data-v="">Cancel</button></div>`;
     } else {
       sheet += `<div class="actions">${link ? `<a href="${esc(link)}" target="_blank" rel="noopener" style="font-size:20px">${c.source === "TikTok" || c.source === "Instagram" ? "Open on " + esc(c.source) : "Open the recipe"} →</a>` : ""}
         <button class="ink" data-act="ui" data-slot="${n.slot}" data-v="swap" ${dis}>Swap${n.backups.length ? ` (${n.backups.length})` : ""}</button>
-        <button class="ink" data-act="ui" data-slot="${n.slot}" data-v="own" ${dis}>${c.own ? "Edit" : "Make my own"}</button>
         ${c.own ? "" : `<button class="ink" data-act="ui" data-slot="${n.slot}" data-v="reject" ${dis}>Reject</button>`}</div>`;
     }
     if (n.st.by && (n.st.current || n.st.boxPick || (n.st.rejected || []).length || n.st.cook)) sheet += `<p class="tweak" data-by="${esc(n.st.by)}">Last changed by <span class="name">someone</span>.</p>`;
@@ -683,18 +696,17 @@ function renderBoxPicker(n, dis, compact) {
     `<button class="option" data-act="boxpick" data-slot="${n.slot}" data-key="${esc(recipeKey(b))}" ${dis}><b>${esc(b.dish)}</b><span>${esc([b.source, b.minutes && b.minutes + " min", b.protein].filter(Boolean).join(", "))}</span></button>`).join("")}</div></details>`;
 }
 
-// Cooking something that isn't a preset recipe: name it, list what goes in it, optionally link it.
-function renderOwnForm(n, dis, open) {
-  const c = n.current && n.current.own ? n.current : null;
-  const val = (x) => esc(x || "");
-  return `<details id="own-${n.slot}" ${open ? "open" : ""}><summary class="print" style="cursor:pointer;font-size:16px">${c ? "Edit what you're making" : "Making your own thing?"}</summary>
-    <form class="ownform" id="own-form" data-slot="${n.slot}">
-      <label>What you're making<input type="text" id="own-dish" required value="${val(c && c.dish)}" placeholder="e.g. Mom's rajma, or leftovers fried rice" ${dis}></label>
-      <label>What goes in it <small>(one per line or commas; goes on the list)</small><textarea id="own-ing" rows="3" placeholder="kidney beans, onion, tomatoes, rice" ${dis}>${val(c && (c.ingredients || []).join(", "))}</textarea></label>
+// The pencil: edit what's on a night in place. Clear the name to leave the night blank.
+function renderEditForm(n, dis) {
+  const c = n.current, val = x => esc(x || "");
+  const hasOverride = !!(n.st.boxPick);
+  return `<form class="ownform" id="own-form" data-slot="${n.slot}">
+      <label>What you're making<input type="text" id="own-dish" value="${val(c && c.dish)}" placeholder="Leave blank for nothing planned" ${dis}></label>
+      <label>What goes in it <small>(one per line or commas; goes on the list)</small><textarea id="own-ing" rows="4" placeholder="kidney beans, onion, tomatoes, rice" ${dis}>${val(c && (c.ingredients || []).join(", "))}</textarea></label>
       <label>Link <small>(optional)</small><input type="url" id="own-link" value="${val(c && c.link)}" placeholder="https://…" ${dis}></label>
       <label>Notes <small>(optional)</small><input type="text" id="own-note" value="${val(c && c.tweak)}" placeholder="e.g. double the garlic" ${dis}></label>
-      <div class="actions" style="margin:0"><button class="label" style="width:auto" ${dis}>${c ? "Save changes" : `Put it on ${esc(DAY[n.slot])}`}</button>${c ? `<button type="button" class="ink" data-act="ownclear" data-slot="${n.slot}" ${dis}>Go back to the plan</button>` : ""}</div>
-    </form></details>`;
+      <div class="actions" style="margin:0"><button class="label" style="width:auto" ${dis}>Save</button><button type="button" class="ink" data-act="ui" data-slot="${n.slot}" data-v="">Cancel</button>${hasOverride ? `<button type="button" class="ink" data-act="ownclear" data-slot="${n.slot}" ${dis}>Go back to the plan</button>` : ""}</div>
+    </form>`;
 }
 
 function renderRequest(n, dis) {
@@ -930,7 +942,9 @@ function renderDeck() {
     const slots = pk.slots || {};
     body = `<h2>You're set.</h2><p>Your nights are on the week and the grocery list.${other && !picksFor(w, other).done ? ` ${esc(COOK[other])} hasn't picked yet. Anything still open at the deadline gets Claude's top picks.` : ""}</p>
       <div class="deckrows">${nights.map(sl => { const c = byId(slots[sl]); return row(sl, c, c ? [c.cuisine, c.minutes && c.minutes + " min", (pk.auto || []).includes(c.id) ? "Claude's pick" : "You picked it"].filter(Boolean).join(" ✶ ") : ""); }).join("")}</div>
-      <button class="pill go" data-act="deckclose">Back to the week</button>`;
+      <button class="pill go" data-act="deckclose">Back to the week</button>
+      <button class="pill" data-act="deckredo" ${dis}>Change my picks</button>
+      <p class="small">Changing starts your deck over. Your nights keep the current picks until you put new ones on the week.</p>`;
   } else if (hearts.length >= need) {
     const order = (D.order || bestOrder(hearts, nights, (deckFor(w) || {}).lean).map(c => c.id)).map(byId);
     D.order = order.map(c => c.id);
@@ -1121,6 +1135,13 @@ const handlers = {
   },
   deckswap: d => { const o = S.deck.order, i = Number(d.i); [o[i], o[i + 1]] = [o[i + 1], o[i]]; render(); },
   deckok: () => deckConfirm(),
+  deckredo: () => {
+    const D = S.deck, w = D.week, me = myKey();
+    const fresh = { pos: 0, hearts: [], never: [], skipped: [], auto: [] };
+    D.history = []; D.order = null; D.started = true;
+    S.picks = { ...S.picks, [w]: { ...(S.picks[w] || {}), [me]: fresh } }; render();
+    write(() => S.db.doc(`decks/${w}/picks/${me}`).set({ ...fresh, ...stamp() }));
+  },
   ownclear: d => write(() => { S.ui = {}; return saveNight(d.slot, { boxPick: null }); }, "Back to the plan."),
   unstaple: d => saveStaples(S.staples.filter(s => norm(s) !== norm(d.name))),
 };
@@ -1198,12 +1219,14 @@ document.addEventListener("submit", e => {
   if (e.target.id !== "own-form") return;
   e.preventDefault();
   const slot = e.target.dataset.slot, val = id => document.getElementById(id).value.trim();
-  const dish = val("own-dish"); if (!dish) return;
-  const link = val("own-link");
+  const dish = val("own-dish"), link = val("own-link");
+  if (!dish) { write(() => { S.ui = {}; return saveNight(slot, { boxPick: { id: "blank", blank: true, own: true, dish: "" } }); }, `${DAY[slot]} is blank.`); return; }
   if (link && !safeLink(link)) return toast("That link needs to start with https://");
+  const cur = nightView(slot).current, ing = val("own-ing").split(/[\n,]+/).map(x => x.trim()).filter(Boolean);
+  if (cur && cur.dish === dish && (cur.link || "") === link && (cur.tweak || "") === val("own-note") && (cur.ingredients || []).join("|") === ing.join("|")) { S.ui = {}; render(); return; }
   const prev = (S.nights[slot] || {}).boxPick;
-  const card = { id: prev && prev.own ? prev.id : "own-" + Date.now().toString(36), dish, own: true, link, source: siteOf(link),
-    ingredients: val("own-ing").split(/[\n,]+/).map(x => x.trim()).filter(Boolean), tweak: val("own-note"), by: S.myName };
+  const card = { id: prev && prev.own && !prev.blank ? prev.id : "own-" + Date.now().toString(36), dish, own: true, link, source: siteOf(link),
+    ingredients: ing, tweak: val("own-note"), by: S.myName };
   write(() => { S.ui = {}; return saveNight(slot, { boxPick: card, flag: "cook" }); }, `${dish} is on for ${DAY[slot]}.`);
 });
 document.addEventListener("toggle", e => { if (e.target.id === "staples-box") S.staplesOpen = e.target.open; if (e.target.id === "add-box") S.addOpen = e.target.open; if (e.target.id === "shared-box") S.sharedOpen = e.target.open; }, true);
