@@ -447,9 +447,11 @@ function nightView(slot) {
   let plan = (w.nights || {})[slot] || { kind: "flex" };
   let picking = null;
   // A cook night dealt as a Sunday deck has no options until its cook picks. After the deadline, Claude's picks stand in.
-  if (planKind(plan.kind) === "cook" && !(plan.options || []).length && plan.cook && deckNights(S.weekId, plan.cook).includes(slot)) {
-    if (deckPast(S.weekId)) { const f = autoFill(S.weekId, plan.cook)[slot]; if (f) plan = { ...plan, options: [{ ...f.card, auto: true }, ...f.backups] }; }
-    else picking = plan.cook;
+  // Whoever's deck holds this night picks it, even if the night was handed over after the deck was dealt.
+  const dealtTo = planKind(plan.kind) === "cook" && !(plan.options || []).length ? Object.keys((deckFor(S.weekId) || {}).people || {}).find(p => deckNights(S.weekId, p).includes(slot)) : null;
+  if (dealtTo) {
+    if (deckPast(S.weekId)) { const f = autoFill(S.weekId, dealtTo)[slot]; if (f) plan = { ...plan, options: [{ ...f.card, auto: true }, ...f.backups] }; }
+    else picking = dealtTo;
   }
   const st = S.nights[slot] || {};
   const pk = planKind(plan.kind);
