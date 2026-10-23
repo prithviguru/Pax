@@ -1,5 +1,5 @@
 // Bump CACHE on every change you ship, or installed phones keep the old version.
-const CACHE = "pax-v18";
+const CACHE = "pax-v19";
 const SHELL = ["./", "index.html", "pax-db.js", "config.js", "manifest.webmanifest", "art/tomato.png", "art/peas.png", "art/carrots.png", "icon-192.png", "apple-touch-icon.png"];
 
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
