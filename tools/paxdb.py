@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Read and write Pax's shared database (Supabase) from the command line.
 
-Needs two environment variables, set in the environment's settings, never in code:
-  SUPABASE_URL               e.g. https://xzvsxgbsdzwvdmgmclut.supabase.co
-  SUPABASE_SERVICE_ROLE_KEY  the secret key; it bypasses the members-only rules, so keep it out of chat and git
+Uses the app's own public URL and key from docs/config.js (the database is open to that key,
+see supabase/open-access.sql), so the only setup is allowing the Supabase domain in the
+environment's network settings. SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY override them if set.
 
 Documents use the same slash paths the app uses:
   weeks/2026-10-26            the week's plan
@@ -17,10 +17,14 @@ Usage:
   paxdb.py merge <path> <file.json|->     deep-merge into a document (creates it if missing)
   paxdb.py delete <path>
 """
-import json, os, sys, urllib.request, urllib.parse
+import json, os, re, sys, urllib.request, urllib.parse
+
+def _config():
+    src = open(os.path.join(os.path.dirname(__file__), "..", "docs", "config.js")).read()
+    return dict(re.findall(r'(url|anonKey):\s*"([^"]+)"', src))
 
 def _req(method, url, body=None, prefer=None):
-    key = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
+    key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY") or _config()["anonKey"]
     headers = {"apikey": key, "Content-Type": "application/json"}
     if key.startswith("eyJ"):  # legacy JWT keys also go in Authorization; new sb_secret_ keys don't
         headers["Authorization"] = "Bearer " + key
@@ -30,7 +34,7 @@ def _req(method, url, body=None, prefer=None):
         raw = r.read()
         return json.loads(raw) if raw else None
 
-def _base(): return os.environ["SUPABASE_URL"].rstrip("/") + "/rest/v1"
+def _base(): return (os.environ.get("SUPABASE_URL") or _config()["url"]).rstrip("/") + "/rest/v1"
 def _q(v): return urllib.parse.quote(v, safe="")
 def _parent(path): return path.rsplit("/", 1)[0]
 def _read(arg): return json.load(sys.stdin if arg == "-" else open(arg))

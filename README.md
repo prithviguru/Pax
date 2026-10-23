@@ -20,7 +20,7 @@ Prithvi and Nihal's weeknight dinners: the week on the fridge, who cooks each ni
 1. **Database.** In Supabase, open SQL Editor → New query. Run `supabase/schema.sql` (with your two emails in the last lines), then `supabase/seed.sql`, then `supabase/open-access.sql`. Run each in its own query.
 2. **Hosting.** Make the repo public, then Settings → Pages → Build and deployment → Deploy from a branch → `main`, folder `/docs` → Save.
 3. **Phones.** Open the app link in Safari, tap "I'm Prithvi" or "I'm Nihal", then Share → Add to Home Screen.
-4. **Planner access.** In the Claude environment settings, add `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` as environment variables and allow the domain `xzvsxgbsdzwvdmgmclut.supabase.co`.
+4. **Planner access.** In the Claude environment settings, set Network access to Custom and allow `xzvsxgbsdzwvdmgmclut.supabase.co`. The planner uses the same public key as the app, so no secret is needed.
 
 There's no sign-in: each phone remembers whose it is ("Not you? Switch" in the footer changes it). Anyone with the link can read and change the plan, so don't post it anywhere public.
 
