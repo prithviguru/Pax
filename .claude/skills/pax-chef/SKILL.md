@@ -152,10 +152,10 @@ Prithvi and Nihal save TikTok and Instagram recipes from the iPhone share sheet 
 
 1. Find them: `list` every week's `nights` and `list box`, and pick out cards with `pending: true`.
 2. Read the caption, not the comments.
-   - TikTok: `https://www.tiktok.com/oembed?url=<link>`. The `title` field is the caption, and `author_name` is the creator.
-   - Instagram: try the post page. If you can't read the caption, keep the card pending, tell them in one line, and leave the link and any name they typed alone.
+   - Run `python3 tools/caption.py <link>`. It follows TikTok short links, reads the caption from oEmbed or, for photo posts, from the page, and prints `{url, author, caption}`.
+   - Instagram usually hides captions (and may be blocked by the network settings). If the caption comes back empty, keep the card pending, tell them in one line, and leave the link and any name they typed alone.
    - If the caption points to a blog ("recipe on my site"), follow it and use that.
-3. Fill the card: `dish` (keep the name they typed if they gave one), `cuisine`, `minutes`, `protein`, `carb`, `veg`, `ingredients` (shopper's names, matching `staples/list` spellings), and a short `tweak`. Use the tweak for what's missing (no protein or veg: suggest one), and flag meat, beef or main-ingredient bell pepper plainly ("Has chicken; swap in white beans"). Don't drop the card.
+3. Fill the card: `dish` (keep the name they typed if they gave one; otherwise a real dish name, in Title Case, from the caption: "Your new fave Korean side dish… broccoli, sesame oil" is "Korean Sesame Broccoli (Banchan)", not the caption's first line), `author` ("@recipeswithamy"), `cuisine`, `minutes`, `protein`, `carb`, `veg`, `ingredients` (shopper's names, matching `staples/list` spellings), and a short `tweak`. Use the tweak for what's missing (no protein or veg: suggest one), and flag meat, beef or main-ingredient bell pepper plainly ("Has chicken; swap in white beans"). Don't drop the card.
 4. Set `pending` to false and `merge` the night (send the whole `boxPick`) or `set` the box card. For a night, also `merge` its ingredients into that week's `shelves` map. The same link can sit in the tin and on several nights as separate copies (the app renames them all together); fill in every copy with the same `link`, not just the first one you find.
 5. Don't paste the recipe's steps onto the card. The link is the recipe.
 
