@@ -66,6 +66,14 @@ Everything either of them changes in the app is there the moment they change it:
 
 Pull Prithvi's Google Calendar for the week: dinners with other people, travel, late evenings, workouts. Only her calendar is read. Nihal flags his own nights in the app.
 
+## Waiting to be written
+
+`plans/2026-10-26.json` is Prithvi's approved Mon to Wed for the week of Oct 26 (Soya Chilli or Chilli Tofu; Vodka Rigatoni, Sausage & Fennel Pasta or Burrito Bowl; Pad Krapow or Gochujang Noodles). It replaces the bland options planned earlier. As soon as you can reach Supabase, and before Oct 26:
+
+1. `python3 tools/paxdb.py merge weeks/2026-10-26 plans/2026-10-26.json` (arrays replace, so this swaps the Mon to Wed `options`, the `note` and the `shelves` map; Thu to Sun stay as they are).
+2. Leave `weeks/2026-10-26/nights/*` alone: if Monday was handed over or a night flagged, that still holds.
+3. If you can read the recipe pages, correct the ingredient lists, then delete the file and this section in a PR.
+
 ## Queued for a future week
 
 Dishes Prithvi has already OK'd but that didn't fit a week yet. Use these before searching for new ones, and remove each from this list once it's planned:
@@ -78,16 +86,37 @@ Dishes Prithvi has already OK'd but that didn't fit a week yet. Use these before
 
 Write one document: collection `weeks`, doc id = that Monday's date (`YYYY-MM-DD`). **Never overwrite a week that already exists** (they may have swapped or rejected things in it). If it exists, stop and say so. The one exception is an old placeholder week with `stub: true`: plan it with `merge` and drop `stub`. A link they share to a week you haven't planned sits in that week's `nights/` docs with no week document; plan the week as usual. Leave any night that already has a `boxPick` or a `flag` as they set it.
 
-- Every cook night gets 3 options: the pick first, then 2 backups.
-- At least 1 Indian dish per week (Indo-Chinese counts).
-- Vary the protein across the picks: not tofu every night.
-- No cuisine repeated among the picks. Backups may share the pick's cuisine.
-- Alternate Asian and non-Asian cook nights (Indo-Chinese counts as Asian). With Mon/Tue/Wed cooking, that's Asian, then Mexican, Italian or something else, then Asian; never two stir-fry nights in a row.
+- Cook nights are chosen by their cook from a **Sunday deck** (below), not planned by you. Write each cook night as `{ "kind": "cook", "cook": "nihal", "time": "19:30" }` with **no `options`**; the app fills `options` when the cook picks.
+- Across each deck: at least 1 Indian dish (Indo-Chinese counts), proteins varied (not all tofu), and no two cards the same dish.
+- Asian and non-Asian nights alternate so there are never two stir-fry nights in a row, and each cook gets a mix. For Mon/Tue/Wed/Thu that's `lean` mon "asian", tue "other", wed "other", thu "asian". For other cook-night sets, alternate in date order, then check each cook has at least one of each where they have 2+ nights.
 - Favor shared ingredients across the week (one bunch of cilantro doing two jobs).
 - No repeats from the last 4 weeks and never anything in `rejects`.
 - Skip a cook night for a dinner out, travel or a late evening: `kind` "out" (eating somewhere) or "order" (ordering in at home), with the reason in `note` ("9:42pm flight from EWR. Leave by 7:15pm.").
 - Dinners with other people become `kind` "out", with the person in `label` ("Dinner with Saniha & Kunal") and the place in `note`.
 - Flex nights get an entry only when there's something worth saying ("Order in, you land at 5:40"). Otherwise leave them out. The app shows them as free nights.
+
+### The Sunday deck
+
+Next to the week document, write `decks/<Monday>`. Each cook hearts as many cards as they have cook nights, then puts them on their nights; the rest of their deck becomes those nights' backups. Never is a permanent reject (the app writes `rejects`); not this week is just a skip.
+
+```json
+{
+  "weekOf": "2026-11-02",
+  "deadline": "2026-11-01T21:00:00-04:00",
+  "lean": { "mon": "asian", "tue": "other", "wed": "other", "thu": "asian" },
+  "people": {
+    "nihal":   { "nights": ["mon", "wed"], "cards": [ /* about 10 */ ] },
+    "prithvi": { "nights": ["tue", "thu"], "cards": [ /* about 10 */ ] }
+  }
+}
+```
+
+- `deadline`: 9pm New York time the Sunday before, with the correct UTC offset (EDT is -04:00, EST is -05:00). After it, any night still unpicked gets that cook's hearts, then their deck's top cards, shown automatically. You don't need to run again.
+- `nights`: only nights they're actually cooking. A night out or ordering in gets no card. A cook with no cook nights gets no entry.
+- `cards`: about 10 per person (5 for one night), in the order you'd rank them, alternating Asian and non-Asian so the deck matches their nights' `lean`. The two decks never share a dish. Each card is a normal option (`id`, `dish`, `cuisine`, `minutes`, `source`, `link`, `protein`, `carb`, `veg`, `ingredients`, `tweak`) plus `why`: one line on why it's worth hearting ("Hot oil over chili and garlic, your favourite done properly"). Ids are unique across both decks.
+- Use the "Queued for a future week" dishes first, and dishes using fresh things from recent hauls.
+- Put every card's ingredients in the week's `shelves` map, since any card can end up on the list.
+- What they did with last week's deck is in `decks/<last Monday>/picks/<person>`: `hearts` (liked), `skipped` (not this week), `never` (also in `rejects`). Lean towards what they heart; let skipped dishes come back after a few weeks.
 
 ### Week document shape
 
@@ -112,7 +141,7 @@ Write one document: collection `weeks`, doc id = that Monday's date (`YYYY-MM-DD
 ```
 
 - `kind`: "cook", "out", "order" or "flex". Every night is a cook night unless the calendar says otherwise; either of them can flip a night to ordering in or eating out in the app (`flag` on the night), so never treat a flagged night as a rejection. `cook`: "prithvi" or "nihal". `time`: "HH:MM" or omitted.
-- `id`: a short slug, unique within the week.
+- `id`: a short slug, unique within the week and its deck.
 - `ingredients`: one item per entry, no quantities, lowercase, named the way a shopper would say it. Use the same name for the same thing across recipes ("garlic", not "garlic cloves" in one and "garlic" in another), and match the names in `staples/list` exactly so staples sort into "Probably have."
 - `steps`: 3 to 5 short steps. The recipe page has the full method.
 - `shelves`: one entry per ingredient across the week, mapping its exact name to where it goes in the app's fridge: "frozen", "dairy" (cheese, cream, eggs, tofu), "pantry" (beans, pasta, rice, tortillas, jars, sauces) or "produce". The List tab shows groceries on those shelves; anything you skip gets guessed.

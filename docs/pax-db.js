@@ -97,6 +97,8 @@
     return {
       doc: docRef, collection: p => collRef(p),
       // Every cached document under a path prefix, e.g. all("weeks/").
+      // Live view of every document under a path prefix, e.g. onPrefix("decks/", snap => ...).
+      onPrefix: (prefix, next) => watch(() => ({ docs: [...cache.keys()].filter(k => k.startsWith(prefix)).sort().map(k => ({ id: k, exists: true, data: () => cache.get(k) })) }), next),
       all: prefix => [...cache.entries()].filter(([k]) => k.startsWith(prefix)).map(([path, data]) => ({ path, data })),
       async start() { await loadAll(); subscribe(); },
       refresh: loadAll,
