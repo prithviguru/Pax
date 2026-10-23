@@ -20,7 +20,7 @@ Prithvi and Nihal's weeknight dinners: the week on the fridge, who cooks each ni
 1. **Database.** In Supabase, open SQL Editor → New query and run, each in its own query: `supabase/schema.sql`, `supabase/seed.sql`, `supabase/open-access.sql`, `supabase/share-links.sql`, `supabase/add-to-pax.sql`, then `supabase/households.sql`.
 2. **Sign-in.** Authentication → Sign In / Providers → turn on **Allow anonymous sign-ins** (do this before running `households.sql`).
 3. **Hosting.** Make the repo public, then Settings → Pages → Build and deployment → Deploy from a branch → `main`, folder `/docs` → Save.
-4. **Planner access.** In the Claude environment settings: Network access → Custom, allow `xzvsxgbsdzwvdmgmclut.supabase.co`; and add a secret environment variable `SUPABASE_SERVICE_ROLE_KEY` with the project's service role (secret) key from Supabase → Project Settings → API Keys. It never goes in the repo.
+4. **Planner access.** In the Claude environment's settings: Network access → Custom, allow `xzvsxgbsdzwvdmgmclut.supabase.co`. Then Add secret: website `xzvsxgbsdzwvdmgmclut.supabase.co`, path prefix `/rest/v1/`, one custom header named `apikey` with no prefix, value = a Supabase secret key (Project Settings → API Keys → Secret keys; make one just for the planner). Claude's network adds it to the planner's requests, so it never appears in a session or the repo. Only the person who runs the planner does this; other households never do.
 
 ## Households and invite links
 
