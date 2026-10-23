@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Pax</title>
 <meta name="description" content="Prithvi and Nihal's weeknight dinners: who cooks, the recipe, nights in or out, the fridge and the recipe tin.">
-<meta name="theme-color" content="#ff6347">
+<meta name="theme-color" content="#ffffff">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -14,383 +14,265 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: a zine taped to the fridge. Red marquee, big wordmark, the week as paper notes, the open night as a white sheet with a receipt beside it. Light only, by design. */
+/* Pax: an editorial kitchen magazine. Familjen Grotesk, square corners, black rules.
+   White for the week, pistachio for the fridge, peach for the recipe tin; tomato red only for tonight, hearts and ticks.
+   One paper cutout per screen. Light only, by design. */
 :root {
-  --linen: #eee2d4;
-  --ink: #000000;
+  --ink: #1d1c1a;
   --paper: #ffffff;
-  --tape: #efefef;
-  --tomato: #ff6347;
-  --serif: "DM Sans", system-ui, sans-serif;
-  --hand: "Reenie Beanie", "Bradley Hand", "Segoe Print", cursive;
-  --print: "Times New Roman", Times, serif;
+  --cream: #fbf7ec;
+  --peach: #f6d8c2;
+  --pist: #e3ecc4;
+  --butter: #f4e7bf;
+  --red: #d8492f;
+  --red-ink: #b23a24;
+  --muted: #6f6a5c;
+  --hair: #e6e3dd;
+  --font: "Familjen Grotesk", system-ui, -apple-system, sans-serif;
+  --ground: var(--paper);
   color-scheme: light;
 }
+body[data-tab="list"] { --ground: var(--pist); }
+body[data-tab="recipes"] { --ground: var(--peach); }
 * { box-sizing: border-box; }
-html { background: var(--linen); overflow-x: clip; }
-body { margin: 0; position: relative; background: var(--linen); color: var(--ink); font: 20px/1.3 var(--serif); overflow-x: hidden; overflow-x: clip; }
-.gutter { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-h1, h2, h3 { font-weight: 400; margin: 0; text-wrap: balance; }
-a { color: var(--ink); text-underline-offset: 5px; text-decoration-thickness: 1px; }
-button { font: inherit; color: inherit; cursor: pointer; border-radius: 0; }
-button:disabled { opacity: .45; cursor: default; }
-:focus-visible { outline: 2px solid var(--tomato); outline-offset: 3px; }
-.print { font-family: var(--print); }
-.hand { font-family: var(--hand); font-weight: 400; }
+html { background: var(--paper); overflow-x: clip; -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.35 var(--font); overflow-x: hidden; overflow-x: clip; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; border-radius: 0; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+.app { max-width: 560px; margin: 0 auto; min-height: 100dvh; position: relative; background: var(--paper); }
+@media (min-width: 600px) { .app { border-left: 2px solid var(--ink); border-right: 2px solid var(--ink); } }
+.hide { display: none !important; }
+.k { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.muted { color: var(--muted); }
 
-.marquee { background: var(--tomato); color: var(--ink); font-size: 20px; line-height: 1; padding-block: 9px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* masthead */
+.mast { position: relative; overflow: hidden; background: var(--ground); padding: calc(18px + env(safe-area-inset-top)) 20px 16px; border-bottom: 2px solid var(--ink); }
+.mast .art { position: absolute; right: -36px; top: calc(-24px + env(safe-area-inset-top)); width: 138px; transform: rotate(8deg); pointer-events: none; }
+.mast .art.peas { right: -18px; top: calc(-30px + env(safe-area-inset-top)); transform: rotate(-20deg); width: 128px; }
+.mast .art.carrots { right: -28px; top: calc(-34px + env(safe-area-inset-top)); transform: rotate(28deg); }
+.mast .line { position: relative; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; border-bottom: 1px solid var(--ink); padding-bottom: 8px; margin-right: 84px; }
+.mast .word { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+.mast .row { position: relative; display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; margin-top: 12px; }
+.mast h1 { margin: 0; font-size: 38px; font-weight: 700; letter-spacing: -0.03em; line-height: .95; }
+.mast .sub { position: relative; font-size: 14px; margin-top: 7px; max-width: calc(100% - 96px); }
+.mast .note { position: relative; font-size: 14px; margin: 8px 0 0; color: var(--ink); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.arrows { display: flex; flex: none; }
+.sq { width: 38px; height: 38px; border: 1.5px solid var(--ink); background: transparent; display: grid; place-items: center; padding: 0; }
+.arrows .sq + .sq { border-left: 0; }
+.bar { position: relative; margin-top: 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px; width: 100%; padding: 12px 14px; background: var(--ink); color: var(--cream); border: 0; text-align: left; font-size: 15px; font-weight: 600; text-decoration: none; }
+.bar span span { font-weight: 400; opacity: .8; }
+.textlink { position: relative; display: inline-block; margin-top: 8px; padding: 0; border: 0; background: none; font-size: 14px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
 
-header.top { position: relative; padding-block: 18px 0; min-height: 210px; }
-.decor { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
-.decor img { position: absolute; display: block; height: auto; max-width: none; }
-.v-tomato { top: 52px; right: -70px; width: 360px; transform: rotate(6deg); }
-.v-peas { top: 120px; left: 46%; width: 230px; transform: rotate(18deg); }
-.v-carrots { bottom: 150px; left: -70px; width: 320px; transform: rotate(-6deg); }
-.marquee, header.top, main, footer.band { position: relative; z-index: 1; }
-.wordmark { position: relative; z-index: 1; font-size: clamp(120px, 20vw, 230px); line-height: .82; letter-spacing: -0.035em; font-weight: 300; }
-nav.tabs { position: relative; z-index: 1; display: flex; gap: 13px; flex-wrap: wrap; margin-top: 18px; }
-nav.tabs button { background: var(--paper); border: 1px solid var(--ink); padding: 2px 12px; font-size: 26px; line-height: 1.2; }
-nav.tabs button:nth-child(1) { transform: rotate(-2deg); }
-nav.tabs button:nth-child(2) { transform: rotate(1.5deg); }
-nav.tabs button:nth-child(3) { transform: rotate(-1deg); }
-nav.tabs button[aria-current="page"] { background: var(--ink); color: var(--paper); }
+main.view { padding: 18px 20px calc(110px + env(safe-area-inset-bottom)); }
+.banner { margin: 0 0 12px; padding: 10px 12px; border: 1.5px solid var(--ink); background: var(--butter); font-size: 14px; }
 
-main { padding-block: 48px 88px; display: grid; gap: 72px; max-width: 1400px; margin: 0 auto; }
-.banner { background: var(--paper); border: 1px solid var(--ink); padding: 10px 12px; font-family: var(--print); font-size: 16px; max-width: 640px; }
+/* bottom tabs */
+.tabbar { position: fixed; z-index: 20; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 560px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 8px 18px calc(10px + env(safe-area-inset-bottom)); background: var(--paper); border-top: 2px solid var(--ink); }
+.tabbar button { display: flex; flex-direction: column; align-items: center; gap: 3px; border: 0; background: none; padding: 4px 0; font-size: 11px; font-weight: 700; letter-spacing: .06em; color: #8a8370; }
+.tabbar button[aria-current="page"] { color: var(--ink); }
+body.out .tabbar, body.full .tabbar { display: none; }
 
-.signin { display: grid; gap: 14px; max-width: 360px; }
-.signin h2 { font-size: 40px; line-height: 1; }
-.signin p { margin: 0; font-family: var(--print); font-size: 17px; }
-.signin input { font: 20px var(--print); border: 1px solid var(--ink); background: var(--paper); padding: 10px 12px; border-radius: 0; width: 100%; color: var(--ink); }
-.signin .label { font-size: 19px; text-align: center; }
-body.out nav.tabs, body.out .whoami { visibility: hidden; }
+/* week */
+.week { display: grid; gap: 10px; }
+.tile { position: relative; display: block; width: 100%; min-height: 112px; border: 0; padding: 0; text-align: left; color: #ffffff; background: var(--ink); overflow: visible; }
+.tile .ph { position: absolute; inset: 0; overflow: hidden; }
+.tile .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.tile .shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(18,17,15,.82) 0%, rgba(18,17,15,.32) 65%, rgba(18,17,15,0) 100%); }
+.tile .in { position: relative; min-height: 112px; padding: 12px 14px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px; }
+.tile .day { font-size: 11px; font-weight: 700; letter-spacing: .12em; }
+.tile .name { display: block; font-size: 22px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.05; max-width: 72%; }
+.tile .meta { display: block; font-size: 13px; margin-top: 4px; opacity: .92; }
+.tile.flat { color: var(--ink); }
+.tile.flat .day { color: var(--muted); }
+.tile.flat .ph img.art { inset: auto; right: -22px; top: -14px; width: 132px; height: auto; object-fit: contain; pointer-events: none; }
+.tile.today .day { color: var(--butter); }
+.tile.flat.today .day { color: var(--red-ink); }
+.washi { position: absolute; z-index: 2; top: -9px; left: 22px; width: 74px; height: 20px; background: rgba(216,73,47,.88); transform: rotate(-3deg); pointer-events: none; }
+.tag { position: absolute; z-index: 1; right: 12px; top: 12px; background: var(--cream); color: var(--ink); font-size: 11px; font-weight: 700; letter-spacing: .1em; padding: 6px 9px 4px; }
+.tag::before { content: ""; position: absolute; top: -6px; left: 50%; width: 26px; height: 10px; margin-left: -13px; background: rgba(236,232,222,.92); border: 1px solid rgba(0,0,0,.12); }
+.tag.p-prithvi { background: var(--peach); }
+.tag.p-nihal { background: var(--pist); }
+.tile.flat .tag { right: 120px; }
+.off { display: grid; grid-template-columns: 58px minmax(0, 1fr) auto; align-items: center; gap: 8px; width: 100%; padding: 11px 0; border: 0; border-bottom: 1px solid var(--hair); background: none; text-align: left; font-size: 15px; }
+.offs { border-top: 2px solid var(--ink); margin-top: 6px; }
+.off b { font-size: 11px; font-weight: 700; letter-spacing: .12em; color: var(--muted); }
+.off small { color: var(--muted); font-size: 13px; }
+.off.today b { color: var(--red-ink); }
+.stamp { font-size: 10px; font-weight: 700; letter-spacing: .12em; border: 1.5px solid var(--ink); padding: 3px 6px 2px; white-space: nowrap; }
+.whoami { margin: 22px 0 0; font-size: 13px; color: var(--muted); }
+.whoami button { border: 0; background: none; padding: 0; font-size: 13px; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
 
-/* Week */
-.weekhead { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 26px; }
-.weekhead h2 { font-size: 34px; }
-.weekhead p { margin: 6px 0 0; font-family: var(--print); font-size: 16px; max-width: 620px; }
-.ink { background: none; border: 0; padding: 0 2px; font-size: 18px; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 5px; min-height: 40px; }
-.cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); column-gap: 18px; row-gap: 40px; align-items: start; }
-.day { display: grid; gap: 10px; min-width: 0; }
-.note-wrap { position: relative; }
-.tape { position: absolute; top: -10px; left: 50%; width: 58px; height: 18px; margin-left: -29px; background: var(--tape); border: 1px solid var(--ink); transform: rotate(-4deg); z-index: 1; pointer-events: none; }
-.note { display: block; width: 100%; border: 1px solid var(--ink); background: var(--paper); padding: 14px 12px 12px; text-align: left; position: relative; }
-.note.away { background: var(--tomato); }
-.note[aria-pressed="true"] { outline: 2px solid var(--ink); outline-offset: 5px; }
-.note .top { display: flex; justify-content: space-between; font-family: var(--print); font-size: 14px; text-transform: uppercase; }
-.note .num { display: block; font-size: 60px; line-height: .95; letter-spacing: -0.03em; margin-top: 2px; font-weight: 300; }
-.note .title { display: block; font-family: var(--hand); font-size: 34px; line-height: .95; margin-top: 8px; overflow-wrap: anywhere; }
-.note .sub { display: block; font-family: var(--print); font-size: 15px; line-height: 1.25; margin-top: 8px; }
-.note .stamp { position: absolute; right: -8px; top: 34px; transform: rotate(-10deg); border: 2px solid var(--ink); background: var(--tomato); padding: 0 8px; font-family: var(--hand); font-size: 30px; line-height: 1.1; }
-.label { display: block; width: 100%; background: var(--paper); border: 1px solid var(--ink); padding: 6px 8px; font-size: 17px; line-height: 1.15; text-align: left; min-height: 40px; }
-.label:hover:not(:disabled) { background: var(--ink); color: var(--paper); }
-.daybtns { display: grid; gap: 6px; }
-
-/* Open night */
-.open { position: relative; padding-top: 34px; scroll-margin-top: 16px; }
-.bigstamp { position: absolute; top: -34px; left: -4px; font-family: var(--hand); font-size: clamp(84px, 11vw, 140px); line-height: 1; color: var(--tomato); transform: rotate(-3deg); pointer-events: none; z-index: 0; }
-.closer { position: absolute; top: 0; right: 0; z-index: 2; font-family: var(--print); font-size: 16px; }
-.split { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 44px; align-items: start; }
-.sheet { background: var(--paper); border: 1px solid var(--ink); padding: 22px; display: grid; gap: 16px; margin-top: 44px; min-width: 0; }
-.sheet .kick { font-family: var(--print); font-size: 15px; text-transform: uppercase; }
-.sheet h2 { font-size: clamp(38px, 5vw, 54px); line-height: 1; letter-spacing: -0.02em; }
-.sheet h2 a { text-decoration-thickness: 1px; }
-.sheet .src { font-family: var(--print); font-size: 16px; }
-.tags { display: flex; flex-wrap: wrap; gap: 10px; }
-.tags span { border: 1px solid var(--ink); padding: 1px 8px; font-size: 17px; }
-.cookline { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
-.cookline .who { font-family: var(--hand); font-size: 36px; line-height: 1; }
-ol.steps { margin: 0; padding-left: 26px; display: grid; gap: 8px; font-size: 20px; }
-.tweak { font-family: var(--print); font-size: 16px; margin: 0; }
-.actions { display: flex; flex-wrap: wrap; gap: 6px 22px; align-items: center; border-top: 1px solid var(--ink); padding-top: 8px; }
+/* night */
+.hero { position: relative; height: 260px; border-bottom: 2px solid var(--ink); background: var(--peach); overflow: hidden; }
+.hero.p-nihal { background: var(--pist); }
+.hero img.photo { width: 100%; height: 100%; object-fit: cover; display: block; }
+.hero .art { position: absolute; right: -20px; bottom: -30px; width: 190px; }
+.hero .sq { position: absolute; top: calc(14px + env(safe-area-inset-top)); background: var(--cream); border: 0; }
+.hero .back { left: 14px; }
+.hero .pencil { right: 14px; }
+.hero .pencil[aria-pressed="true"] { background: var(--ink); color: var(--cream); }
+.kicker { position: absolute; left: 20px; bottom: 12px; background: var(--red); color: #ffffff; padding: 7px 10px 6px; }
+.kicker.plain { background: var(--ink); }
+.night { padding: 20px 20px calc(40px + env(safe-area-inset-bottom)); display: grid; gap: 14px; }
+.night h1 { margin: 0; font-size: 30px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.02; }
+.night .src { font-size: 14px; color: var(--muted); margin-top: 6px; }
+.seg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1.5px solid var(--ink); }
+.seg button { border: 0; border-left: 1.5px solid var(--ink); background: transparent; font-size: 13px; font-weight: 600; padding: 10px 0; }
+.seg button:first-child { border-left: 0; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--cream); }
+.pcv { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 2px solid var(--ink); border-bottom: 1px solid var(--ink); }
+.pcv div { padding: 9px 10px 10px 0; min-width: 0; }
+.pcv div + div { border-left: 1px solid var(--hair); padding-left: 10px; }
+.pcv small { display: block; font-size: 10px; font-weight: 700; letter-spacing: .12em; color: var(--muted); }
+.pcv span { display: block; font-size: 14px; margin-top: 3px; line-height: 1.25; overflow-wrap: anywhere; }
+.primary { display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 50px; padding: 0 16px; background: var(--ink); color: var(--cream); border: 0; font-size: 16px; font-weight: 600; text-decoration: none; width: 100%; text-align: left; }
+.primary.red { background: var(--red); color: #ffffff; }
+.btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.ghost { min-height: 40px; padding: 0 12px; border: 1.5px solid var(--ink); background: var(--paper); font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+.ghost[aria-pressed="true"] { background: var(--ink); color: var(--cream); }
+.ghost.danger { border-color: var(--red-ink); color: var(--red-ink); }
+.say { margin: 0; font-size: 15px; line-height: 1.45; }
+.say.small { font-size: 13px; color: var(--muted); }
+.receipt { position: relative; background: var(--cream); padding: 12px 14px 20px; border: 1px solid var(--hair); margin-bottom: 8px; }
+.receipt::after { content: ""; position: absolute; left: -1px; right: -1px; bottom: -8px; height: 8px; background: linear-gradient(-45deg, transparent 6px, var(--cream) 0) 0 0/12px 8px repeat-x, linear-gradient(45deg, transparent 6px, var(--cream) 0) 0 0/12px 8px repeat-x; }
+.receipt .rh { display: flex; justify-content: space-between; padding-bottom: 7px; border-bottom: 1px dashed var(--ink); }
+.receipt ul { list-style: none; margin: 0; padding: 0; }
+.receipt li { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px dotted #d9d0bb; font-size: 15px; }
+.receipt li:last-child { border-bottom: 0; }
+.receipt li small { font-size: 12px; color: var(--muted); }
 .options { display: grid; gap: 8px; }
-.option { text-align: left; background: var(--linen); border: 1px solid var(--ink); padding: 10px 12px; display: grid; gap: 2px; width: 100%; }
-.option b { font-family: var(--hand); font-weight: 400; font-size: 30px; line-height: 1; }
-.option span { font-family: var(--print); font-size: 15px; }
-.confirm { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; font-size: 18px; }
-textarea { font: 16px/1.3 var(--print); width: 100%; border: 1px solid var(--ink); background: var(--linen); padding: 8px 10px; border-radius: 0; color: var(--ink); }
-.receipt { background: var(--paper); border: 1px solid var(--ink); padding: 16px 18px 20px; transform: rotate(1.5deg); font-family: var(--print); margin-top: 92px; min-width: 0; }
-.receipt .rhead { font-size: 15px; text-transform: uppercase; text-align: center; border-bottom: 1px dashed var(--ink); padding-bottom: 8px; }
-.receipt ul { margin: 0; padding: 8px 0 0; list-style: none; font-size: 18px; line-height: 1.7; }
-.receipt li { border-bottom: 1px dotted var(--ink); }
+.option { display: grid; gap: 2px; width: 100%; padding: 10px 12px; border: 1.5px solid var(--ink); background: var(--paper); text-align: left; }
+.option b { font-size: 15px; }
+.option span { font-size: 13px; color: var(--muted); }
+details summary { cursor: pointer; font-size: 14px; font-weight: 600; list-style: none; padding: 10px 0; border-top: 1px solid var(--hair); }
+details summary::-webkit-details-marker { display: none; }
+details summary::after { content: "+"; float: right; font-weight: 700; }
+details[open] summary::after { content: "–"; }
+form.stack, .ownform { display: grid; gap: 10px; }
+.ownform label, form.stack label { display: grid; gap: 4px; font-size: 14px; font-weight: 600; }
+.ownform label small { font-weight: 400; color: var(--muted); }
+.field, .ownform input, .ownform textarea, form.stack input, form.stack select, textarea { width: 100%; min-width: 0; border: 1.5px solid var(--ink); background: var(--paper); padding: 10px 12px; border-radius: 0; font-size: 16px; font-weight: 400; }
+.addrow { display: flex; gap: 8px; }
+.addrow input { flex: 1; min-width: 0; border: 1.5px solid var(--ink); padding: 9px 12px; border-radius: 0; }
+.addrow button { flex: none; border: 0; background: var(--ink); color: var(--cream); padding: 0 14px; font-weight: 600; }
+.confirm { display: grid; gap: 10px; padding: 12px; border: 1.5px solid var(--red-ink); }
 
-/* List: the fridge (sage pantry) */
-:root { --sage: #85906d; --sage-dk: #697056; --sage-ink: #4f553f; --cream: #f0e2cb; --cream-lt: #fbf4e6; --side: #e2d4b8; --coral: #e56a4f; --feet: #3a3b38; }
-.fridge { position: relative; width: 100%; max-width: 350px; perspective: 1600px; padding-bottom: 16px; }
-.fridge::before, .fridge::after { content: ""; position: absolute; bottom: 0; width: 34px; height: 18px; background: var(--feet); border-radius: 0 0 3px 3px; }
-.fridge::before { left: 22px; } .fridge::after { right: 22px; }
-.fridge.shut .inside { min-height: 0; max-height: 430px; }
-.inside { position: relative; min-height: 640px; max-height: 2400px; transition: max-height .6s ease; background: var(--cream); border: 14px solid var(--sage); border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; box-shadow: inset 12px 0 0 var(--side), inset -12px 0 0 var(--side); }
-.compart { position: relative; padding: 10px 22px 12px; border-bottom: 8px solid var(--sage-dk); display: grid; gap: 6px; }
-.compart.freezer { min-height: 104px; align-content: start; }
-.compart.have { border-bottom: 0; align-content: start; }
-.compart.drawer { margin: 0 10px 10px; padding: 18px 12px 12px; background: var(--cream-lt); border: 0; border-top: 6px solid var(--sage); box-shadow: 0 0 0 1px var(--side); }
-.compart.drawer::before { content: ""; position: absolute; top: 6px; left: 50%; width: 64px; margin-left: -32px; height: 7px; background: var(--sage-dk); border-radius: 0 0 6px 6px; }
-.compart > span { font-family: var(--print); font-size: 12px; text-transform: uppercase; color: var(--sage-ink); letter-spacing: .03em; }
-.compart .none { font-family: var(--print); font-size: 14px; color: var(--sage-ink); }
-.bottle { position: absolute; top: 12px; right: 24px; width: 18px; height: 46px; background: var(--coral); clip-path: polygon(35% 0, 65% 0, 65% 22%, 100% 40%, 100% 100%, 0 100%, 0 40%, 35% 22%); }
-.shelfrow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; align-items: end; }
-.thing { display: flex; flex-direction: column; justify-content: flex-end; min-height: 48px; background: #fffaf1; border: 1px solid #b4aa8f; padding: 4px 6px; font: 14px/1.15 var(--print); text-align: left; color: var(--ink); overflow-wrap: anywhere; }
-.thing.jar { border-radius: 4px 4px 8px 8px; border-top: 5px solid var(--sage); }
-.thing.carton { clip-path: polygon(0 18%, 50% 0, 100% 18%, 100% 100%, 0 100%); padding-top: 12px; border-color: transparent; background: #fffaf1; }
-.thing.bag { border-radius: 14px 14px 6px 6px; }
-.thing.box { border-radius: 2px; background: #eef1ea; }
-.thing.staple { border: 1px dashed var(--sage-ink); background: transparent; }
-.thing.got { opacity: .4; }
-.decklink { display: block; margin-top: 8px; padding: 0; background: none; border: 0; font: inherit; font-size: 15px; color: var(--ink); text-decoration: underline; text-underline-offset: 4px; text-align: left; grid-column: 1 / -1; }
-.sheethead { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-.pencil { width: 44px; height: 44px; flex: none; display: grid; place-items: center; border: 1px solid var(--ink); border-radius: 50%; background: var(--paper); color: var(--ink); padding: 0; }
-.pencil[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
-.ownform { display: grid; gap: 10px; margin-top: 10px; }
-.ownform label { display: grid; gap: 4px; font-size: 15px; }
-.ownform label small { font-size: 13px; opacity: .75; }
-.ownform input { font: 16px var(--print); border: 1px solid var(--ink); background: var(--paper); padding: 8px 10px; border-radius: 0; color: var(--ink); min-width: 0; }
-.deckcta { display: grid; gap: 4px; width: 100%; text-align: left; background: var(--ink); color: var(--paper); border: 1px solid var(--ink); padding: 14px 16px; font: inherit; }
-.deckcta .k { font-size: 12px; text-transform: uppercase; letter-spacing: .07em; opacity: .8; }
-.deckcta b { font-size: 21px; font-weight: 500; line-height: 1.15; }
-.deckcta span:last-child { font-size: 14px; opacity: .85; }
-.deck { display: grid; gap: 14px; max-width: 520px; }
-.deck h2 { margin: 0; font-size: 32px; font-weight: 500; line-height: 1.05; }
-.deck p { margin: 0; font-size: 16px; }
-.deck p.small { font-size: 14px; }
-.pill { font: inherit; font-size: 16px; color: var(--ink); background: var(--paper); border: 1px solid var(--ink); border-radius: 999px; min-height: 48px; padding: 0 18px; }
-.pill.go { background: var(--ink); color: var(--paper); }
-.pill.small { min-height: 40px; font-size: 14px; justify-self: start; }
-.pill.dashed { border-style: dashed; min-height: 40px; font-size: 14px; justify-self: start; background: transparent; }
-.deckbtns { display: grid; grid-template-columns: auto 1fr; gap: 8px; }
-.deckchips { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 8px; }
-.deckchips .chip { border: 1px dashed var(--ink); padding: 8px 10px; font-size: 13px; line-height: 1.25; }
-.deckchips .chip b { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .07em; font-weight: 600; }
-.deckchips .chip.now { border-style: solid; background: var(--paper); }
-.deckchips .chip.on { border-style: solid; background: #f6f0e4; box-shadow: inset 6px 0 0 var(--sage); }
-.deckmeta { display: flex; justify-content: space-between; font-size: 13px; }
-.deckcard { touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: grab; }
-.deckcard[data-dir]::after { content: "Heart"; position: absolute; top: 22px; left: 18px; border: 2px solid var(--sage-ink); color: var(--sage-ink); background: var(--paper); padding: 4px 10px; font-size: 18px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; transform: rotate(-12deg); opacity: var(--o, 0); }
-.deckcard[data-dir="skip"]::after { content: "Not this week"; left: auto; right: 18px; border-color: var(--ink); color: var(--ink); transform: rotate(10deg); }
-.swipebtns { display: grid; grid-template-columns: 64px minmax(0, 1fr) 64px; align-items: center; gap: 12px; }
-.swipebtns .hint { font-size: 13px; text-align: center; opacity: .8; }
-.round { width: 64px; height: 64px; border-radius: 50%; border: 1px solid var(--ink); background: var(--paper); color: var(--ink); font-size: 26px; line-height: 1; }
-.round.go { background: var(--ink); color: var(--paper); }
-.deckfoot { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-.deckcard { position: relative; background: var(--paper); border: 1px solid var(--ink); padding: 26px 20px 18px; display: grid; gap: 10px; transform: rotate(-1deg); margin-top: 8px; }
-.deckcard::before { content: ""; position: absolute; top: -10px; left: 50%; width: 64px; height: 18px; margin-left: -32px; background: rgba(239, 239, 239, .92); border: 1px solid rgba(0, 0, 0, .3); transform: rotate(-4deg); }
-.deckcard .k { font-size: 12px; text-transform: uppercase; letter-spacing: .07em; }
-.deckcard h3 { margin: 0; font-size: 30px; font-weight: 500; line-height: 1.05; }
-.deckcard .src { font-size: 14px; }
-.deckcard p { font-size: 15px; }
-.deckcard .pcv { display: grid; grid-template-columns: 64px minmax(0, 1fr); row-gap: 4px; font-size: 15px; border-top: 1px solid var(--ink); padding-top: 10px; }
-.deckcard .pcv span:nth-child(odd) { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; padding-top: 2px; }
-.deckcard a { font-size: 15px; justify-self: start; }
-.deckrows { display: grid; gap: 8px; }
-.deckrow { display: grid; grid-template-columns: 44px minmax(0, 1fr); column-gap: 12px; align-items: center; border: 1px solid var(--ink); background: var(--paper); padding: 10px 12px; }
-.deckrow .d { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; text-align: center; line-height: 1; }
-.deckrow .d b { display: block; font-size: 22px; font-weight: 500; margin-top: 2px; }
-.deckrow b { display: block; font-size: 17px; font-weight: 500; }
-.deckrow small { display: block; font-size: 13px; }
-.thing.stocked { background: #e9ecdf; border-color: var(--sage); }
-.compart .stockedlabel { margin-top: 4px; }
-.thing.got span { text-decoration: line-through; text-decoration-thickness: 2px; text-decoration-color: var(--coral); }
-.door { position: absolute; inset: 0 0 16px 0; transform-origin: 0 50%; transition: transform .7s cubic-bezier(.3,.7,.2,1); z-index: 3; }
-.door.open { transform: rotateY(-112deg); pointer-events: none; }
-.door-face { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 5px; background: var(--sage-dk); border-radius: 18px 18px 16px 16px; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
-.door-face .panel { position: relative; background: var(--sage); border-radius: 18px 18px 6px 6px; }
-.door-face .panel.fz { height: 128px; }
-.door-face .panel.main { flex: 1; border-radius: 6px 6px 16px 16px; }
-.handle { position: absolute; right: 22px; width: 13px; background: var(--cream); border: 0; border-radius: 3px; padding: 0; box-shadow: -2px 0 0 rgba(0,0,0,.12); }
-.doornote { position: absolute; left: 7%; top: 30px; width: min(196px, 60%); background: var(--coral); padding: 22px 14px 14px; transform: rotate(-3deg); font-family: var(--print); font-size: 15px; color: var(--ink); }
-.doornote b { display: block; font-family: var(--hand); font-weight: 400; font-size: 38px; line-height: .95; margin-bottom: 8px; }
-.magnet { position: absolute; top: -10px; left: 50%; margin-left: -12px; width: 24px; height: 22px; background: var(--feet); clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); }
-.tip { position: absolute; right: 4px; top: 266px; z-index: 4; background: var(--paper); border: 1px solid var(--ink); padding: 2px 8px; font: 24px/1 var(--hand); pointer-events: none; transform: rotate(-2deg); }
-.tip::before { content: ""; position: absolute; top: -7px; right: 20px; width: 10px; height: 10px; background: var(--paper); border-left: 1px solid var(--ink); border-top: 1px solid var(--ink); transform: rotate(45deg); }
-.fridgebar { display: flex; justify-content: space-between; align-items: center; gap: 12px; max-width: 350px; font-family: var(--print); font-size: 15px; }
-.chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip { background: var(--paper); border: 1px solid var(--ink); padding: 2px 10px; font-family: var(--print); font-size: 15px; }
-.addrow { display: flex; gap: 8px; margin-top: 10px; max-width: 350px; }
-.addrow input { flex: 1; min-width: 0; font: 16px var(--print); border: 1px solid var(--ink); background: var(--paper); padding: 6px 10px; border-radius: 0; }
-.addrow button { background: var(--paper); border: 1px solid var(--ink); padding: 4px 14px; font-size: 18px; }
-.field { font: 16px var(--print); border: 1px solid var(--ink); background: var(--paper); color: var(--ink); padding: 6px 10px; border-radius: 0; min-width: 0; }
+/* fridge */
+.progress { display: grid; grid-template-columns: repeat(10, 9px); gap: 3px; flex: none; }
+.progress span { height: 9px; border: 1.5px solid var(--ink); }
+.progress span.on { background: var(--red); border-color: var(--red); }
+.fridge { background: var(--paper); border: 2px solid var(--ink); box-shadow: 6px 6px 0 var(--pist); }
+.shelf { padding: 8px 14px 6px; border-bottom: 5px solid var(--ink); }
+.shelf.drawer { background: #f3f7e6; }
+.shelf .sh { display: flex; justify-content: space-between; padding: 4px 0; }
+.item { display: flex; align-items: center; gap: 11px; width: 100%; padding: 9px 0; border: 0; border-top: 1px solid #ece3cc; background: none; text-align: left; font-size: 15px; }
+.item .box { width: 20px; height: 20px; border: 1.5px solid var(--ink); flex: none; display: grid; place-items: center; background: var(--paper); }
+.item.got span.nm { color: #9d967f; text-decoration: line-through; }
+.item.got .box { background: var(--red); border-color: var(--red); color: #ffffff; }
+.item small { margin-left: auto; font-size: 12px; color: var(--muted); text-align: right; }
+.item.in { cursor: default; color: var(--muted); }
+.item.in .box { border-style: dashed; }
+.none { margin: 0; padding: 8px 0 10px; font-size: 14px; color: var(--muted); border-top: 1px solid #ece3cc; }
+.door { background: var(--ink); color: var(--cream); }
+.door summary { border: 0; padding: 12px 14px; color: var(--cream); }
+.door .inner { background: var(--paper); color: var(--ink); padding: 12px 14px 14px; display: grid; gap: 10px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1.5px solid var(--ink); background: var(--paper); padding: 5px 8px 4px; font-size: 13px; font-weight: 600; }
+.chip.plain { cursor: default; }
 
-/* Recipes: the tin */
-.shelf { display: grid; gap: 4px; }
-.shelf h2 { font-size: 34px; margin-bottom: 6px; }
-.stage { position: relative; width: 100%; max-width: 400px; height: 660px; overflow: hidden; }
-.slot { position: absolute; left: 14px; right: 14px; top: 50px; height: 418px; perspective: 1300px; z-index: 1; transition: transform .55s cubic-bezier(.3,.7,.2,1); }
-.slot.down { transform: translateY(480px); visibility: hidden; transition: transform .55s cubic-bezier(.3,.7,.2,1), visibility 0s .55s; }
-.card3d { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .6s cubic-bezier(.3,.7,.2,1); }
-.card3d.flipped { transform: rotateY(180deg); }
-.face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border: 1px solid #c9bfa8; background-color: #fbf6ee; background-image: repeating-linear-gradient(to bottom, transparent 0 31px, #e6dccb 31px 32px); background-position: 0 58px; box-shadow: inset 0 52px 0 -50px var(--coral); padding: 16px 16px 12px; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
-.face.back { transform: rotateY(180deg); overflow-y: auto; }
-.face.torn { background: var(--coral); background-image: none; box-shadow: none; border-color: var(--coral); }
-.face .kick { font-family: var(--print); font-size: 13px; text-transform: uppercase; color: var(--sage-ink); }
-.face.torn .kick { color: var(--ink); }
-.face .dish { font-family: var(--hand); font-size: 52px; line-height: .9; margin-top: 16px; overflow-wrap: anywhere; }
-.face .meta { font-family: var(--print); font-size: 15px; }
-.face .pcv { font-size: 17px; line-height: 2; }
-.face .foot { margin-top: auto; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; border-top: 1px solid var(--sage-dk); padding-top: 2px; }
-.face ol { margin: 4px 0 0; padding-left: 22px; display: grid; gap: 6px; font-size: 16px; line-height: 1.3; }
-.nights { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
-.nights button { background: #fffaf1; border: 1px solid var(--sage-dk); padding: 6px 2px; font: 14px/1.1 var(--print); min-height: 44px; }
-.strip { position: absolute; left: 26px; right: 26px; height: 64px; border: 1px solid #c9bfa8; background: #fbf6ee; text-align: left; padding: 6px 12px; font: 400 30px/1 var(--hand); z-index: 1; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; overflow: hidden; color: var(--ink); }
-.strip small { font: 12px/1.4 var(--print); text-transform: uppercase; white-space: nowrap; padding-top: 4px; color: var(--sage-ink); }
-.strip.torn { background: var(--coral); border-color: var(--coral); clip-path: polygon(0 0, 100% 0, 100% 100%, 92% 92%, 84% 100%, 76% 93%, 68% 100%, 60% 92%, 52% 100%, 44% 93%, 36% 100%, 28% 92%, 20% 100%, 12% 93%, 4% 100%, 0 94%); }
-.strip.torn small { color: var(--ink); }
-.lid { position: absolute; left: 6px; right: 6px; top: 470px; height: 96px; background: var(--coral); clip-path: polygon(0 0, 100% 0, 98% 100%, 2% 100%); z-index: 0; }
-.dividers { position: absolute; left: 14px; right: 14px; top: 512px; display: grid; gap: 4px; z-index: 2; align-items: end; }
-.divider { position: relative; height: 58px; border: 1px solid #c9bfa8; border-bottom: 0; background: #fbf6ee; padding: 0; transition: transform .2s; }
-.divider .tab { position: absolute; top: -1px; left: 4px; right: 4px; height: 30px; background: var(--sage); color: var(--ink); border-radius: 4px 4px 0 0; transform: translateY(-62%); font: 11px/1 var(--print); text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 3px; white-space: nowrap; overflow: hidden; }
-.divider .tab b { font-weight: 700; }
-.divider.never .tab { background: var(--coral); color: var(--ink); }
-.divider[aria-pressed="true"] { transform: translateY(-10px); }
-.tin { position: absolute; left: 0; right: 0; top: 556px; bottom: 6px; background: var(--sage); z-index: 3; display: flex; align-items: center; justify-content: center; border-radius: 3px; box-shadow: inset 0 6px 0 rgba(0,0,0,.08); }
-.tin .plate { position: relative; background: #efe3d0; padding: 8px 24px 6px; font: 34px/1 var(--hand); color: var(--ink); clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0 calc(100% - 8px), 0 8px); }
-.tin .clasp { position: absolute; top: 12px; left: 50%; width: 18px; height: 16px; margin-left: -9px; background: var(--feet); border-radius: 2px; z-index: 1; }
-.tinprompt { position: absolute; left: 24px; right: 24px; top: 230px; text-align: center; }
-.tinprompt b { display: block; font: 400 44px/1 var(--hand); }
-.tinprompt span { display: block; font: 15px/1.3 var(--print); margin-top: 6px; }
-.rec { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: baseline; padding: 8px 0; border-bottom: 1px dotted var(--ink); }
-.rec .t a, .rec .t b { font-family: var(--hand); font-weight: 400; font-size: 32px; line-height: 1; }
-.rec .t small { display: block; font-family: var(--print); font-size: 14px; }
-.heart { background: none; border: 0; font-size: 24px; line-height: 1; padding: 4px 6px; min-width: 40px; min-height: 40px; }
-.heart[aria-pressed="true"] { color: var(--tomato); }
-.empty { font-family: var(--print); font-size: 17px; max-width: 560px; }
-@media (prefers-reduced-motion: reduce) { .door, .slot, .slot.down, .card3d, .divider { transition: none; } }
+/* recipe tin */
+.filters { position: relative; display: flex; margin-top: 14px; overflow-x: auto; scrollbar-width: none; }
+.filters::-webkit-scrollbar { display: none; }
+.filters button { flex: none; font-size: 13px; font-weight: 600; padding: 8px 11px 7px; border: 1.5px solid var(--ink); border-left: 0; background: var(--cream); }
+.filters button:first-child { border-left: 1.5px solid var(--ink); }
+.filters button[aria-pressed="true"] { background: var(--ink); color: var(--cream); }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 12px; }
+.rtile { display: block; width: 100%; border: 0; padding: 0; background: none; text-align: left; }
+.rtile .ph { position: relative; display: block; aspect-ratio: 1 / 1; overflow: hidden; background: var(--pist); }
+.rtile .ph img.photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.rtile .ph img.art { position: absolute; right: -18px; bottom: -16px; width: 72%; }
+.rtile .nm { display: block; font-size: 15px; font-weight: 700; line-height: 1.15; margin-top: 7px; letter-spacing: -0.01em; }
+.rtile .mt { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+.rtile.torn .ph { filter: grayscale(1); opacity: .6; }
+.new { position: absolute; z-index: 1; left: 8px; top: 8px; background: var(--red); color: #ffffff; padding: 4px 6px 3px; }
+.boxed { display: flex; justify-content: space-between; align-items: center; gap: 10px; width: 100%; padding: 11px 12px; border: 1.5px solid var(--ink); background: var(--paper); font-size: 14px; text-align: left; }
+.list .rec { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--hair); }
+.list .rec .t { min-width: 0; }
+.list .rec b, .list .rec a { display: block; font-size: 15px; font-weight: 600; }
+.list .rec small { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+.heart { flex: none; width: 40px; height: 40px; border: 1.5px solid var(--ink); background: var(--paper); display: grid; place-items: center; padding: 0; }
+.heart[aria-pressed="true"] { background: var(--ink); color: var(--red); }
+.section-h { display: flex; justify-content: space-between; align-items: baseline; margin: 26px 0 6px; padding-top: 10px; border-top: 2px solid var(--ink); }
+.section-h h2 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.01em; }
+.nights7 { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border: 1.5px solid var(--ink); }
+.nights7 button { border: 0; border-left: 1.5px solid var(--ink); background: var(--paper); padding: 8px 0; font-size: 12px; font-weight: 600; line-height: 1.2; }
+.nights7 button:first-child { border-left: 0; }
 
-footer.band { background: var(--tomato); padding-block: 48px; display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap; }
-footer.band span:first-child { font-size: 30px; line-height: 1.1; max-width: 520px; }
-footer.band span:last-child { font-family: var(--print); font-size: 14px; text-transform: uppercase; }
-.toast { position: fixed; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%) rotate(-1deg); background: var(--paper); border: 1px solid var(--ink); padding: 8px 14px; font-family: var(--print); font-size: 16px; max-width: calc(100% - 32px); z-index: 20; }
+/* deck */
+.deck { min-height: 100dvh; background: var(--paper); display: flex; flex-direction: column; padding: calc(18px + env(safe-area-inset-top)) 20px calc(22px + env(safe-area-inset-bottom)); position: relative; overflow: hidden; }
+.deck > .art { position: absolute; right: -40px; top: calc(-26px + env(safe-area-inset-top)); width: 138px; transform: rotate(10deg); pointer-events: none; }
+.deck .line { display: flex; justify-content: space-between; align-items: center; gap: 12px; border-bottom: 1px solid var(--ink); padding-bottom: 8px; margin-right: 84px; }
+.deck .line .sq { width: 32px; height: 32px; }
+.deck h1 { margin: 12px 0 0; font-size: 34px; font-weight: 700; letter-spacing: -0.03em; line-height: .95; }
+.deck .lede { margin: 8px 0 0; font-size: 15px; }
+.deck .stage { position: relative; flex: 1; min-height: 380px; margin: 22px 0 0; }
+.deckcard { position: absolute; inset: 0; background: var(--cream); border: 2px solid var(--ink); box-shadow: 8px 8px 0 var(--ink); display: flex; flex-direction: column; touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: grab; }
+.deckcard .ph { position: relative; flex: 1; min-height: 140px; overflow: hidden; border-bottom: 2px solid var(--ink); background: var(--peach); }
+.deckcard .ph.p-nihal { background: var(--pist); }
+.deckcard .ph img.photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.deckcard .ph img.art { position: absolute; right: -16px; bottom: -22px; width: 58%; pointer-events: none; }
+.deckcard .body { padding: 14px 16px 16px; }
+.deckcard .top { display: flex; justify-content: space-between; gap: 10px; }
+.deckcard h2 { margin: 6px 0 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.02; }
+.deckcard p { margin: 8px 0 0; font-size: 15px; line-height: 1.4; }
+.deckcard .chips { margin-top: 10px; }
+.deckcard a { font-size: 14px; font-weight: 600; display: inline-block; margin-top: 10px; }
+.deckcard[data-dir]::after { content: "Heart"; position: absolute; z-index: 3; top: 20px; left: 16px; border: 2.5px solid var(--red); color: var(--red); background: var(--cream); padding: 4px 10px; font-size: 18px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; transform: rotate(-10deg); opacity: var(--o, 0); }
+.deckcard[data-dir="skip"]::after { content: "Not this week"; left: auto; right: 16px; border-color: var(--ink); color: var(--ink); transform: rotate(8deg); }
+.tape { position: absolute; z-index: 4; top: -10px; left: 50%; width: 86px; height: 22px; margin-left: -43px; background: rgba(216,73,47,.88); transform: rotate(-3deg); pointer-events: none; }
+.choose { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 26px; }
+.choose button { min-height: 58px; display: flex; align-items: center; justify-content: center; gap: 10px; border: 2px solid var(--ink); background: var(--cream); font-size: 16px; font-weight: 600; }
+.choose button.go { background: var(--ink); color: var(--cream); }
+.deckfoot { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 12px; font-size: 14px; }
+.deckfoot button { border: 0; background: none; padding: 6px 0; font-size: 14px; text-decoration: underline; text-underline-offset: 3px; }
+.deckfoot span { font-size: 12px; color: var(--muted); }
+.hearts { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 8px; margin-top: 14px; }
+.hearts span { border: 1.5px dashed var(--ink); padding: 7px 9px; font-size: 13px; line-height: 1.25; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hearts span b { display: block; }
+.hearts span.on { border-style: solid; background: var(--peach); }
+.hearts span.now { border-style: solid; }
+.deckrows { display: grid; gap: 8px; margin-top: 18px; }
+.deckrow { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 12px; align-items: center; border: 1.5px solid var(--ink); background: var(--paper); padding: 10px 12px; }
+.deckrow .d { text-align: center; line-height: 1; }
+.deckrow .d b { display: block; font-size: 22px; font-weight: 700; margin-top: 3px; }
+.deckrow strong { display: block; font-size: 16px; }
+.deckrow small { display: block; font-size: 13px; color: var(--muted); }
+.deck .actions2 { display: grid; gap: 10px; margin-top: auto; padding-top: 22px; }
 
-@media (max-width: 1150px) { .cal { grid-template-columns: repeat(2, minmax(0, 1fr)); } .split { grid-template-columns: minmax(0, 1fr); } .receipt { margin-top: 0; } }
-@media (max-width: 620px) {
-  .cal { grid-template-columns: minmax(0, 1fr); row-gap: 34px; }
-  .day:nth-child(odd) .note-wrap { transform: rotate(-1deg); margin-right: 10px; }
-  .day:nth-child(even) .note-wrap { transform: rotate(1deg); margin-left: 10px; }
-  .daybtns { grid-template-columns: 1fr 1fr; gap: 6px; }
-  .daybtns .label { font-size: 15px; padding: 4px 6px; min-height: 38px; text-align: center; white-space: nowrap; }
-  .daybtns .label:only-child { grid-column: 1 / -1; width: auto; justify-self: start; padding-inline: 12px; }
-  .v-tomato { width: 200px; right: -50px; top: 40px; }
-  .v-peas { width: 190px; top: 1500px; left: auto; right: -70px; transform: rotate(-8deg); }
-  .v-carrots { width: 210px; left: -60px; bottom: 120px; }
-  header.top { min-height: 0; }
-  .sheet { padding: 16px; }
-}
-@media (min-width: 621px) {
-  .day:nth-child(7n+1) .note-wrap { transform: rotate(-1.5deg); } .day:nth-child(7n+2) .note-wrap { transform: rotate(1.2deg); margin-top: 20px; }
-  .day:nth-child(7n+3) .note-wrap { transform: rotate(-.6deg); margin-top: 6px; } .day:nth-child(7n+4) .note-wrap { transform: rotate(1.6deg); margin-top: 26px; }
-  .day:nth-child(7n+5) .note-wrap { transform: rotate(-1.1deg); margin-top: 10px; } .day:nth-child(7n+6) .note-wrap { transform: rotate(.8deg); margin-top: 22px; }
-  .day:nth-child(7n+7) .note-wrap { transform: rotate(-1.6deg); margin-top: 4px; }
-}
-
-/* ===== One font (DM Sans), compact week, small header ===== */
-:root { --hand: var(--serif); --print: var(--serif); }
-.marquee { white-space: normal; text-overflow: clip; font-size: 14px; line-height: 1.3; padding-block: 7px; letter-spacing: .02em; }
-header.top { min-height: 0; padding-block: 12px 4px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.wordmark { font-size: 34px; line-height: 1; letter-spacing: -0.01em; font-weight: 500; }
-nav.tabs { margin-top: 0; gap: 8px; }
-nav.tabs button { font-size: 16px; padding: 3px 10px; transform: none !important; }
-.v-tomato { width: 120px !important; top: 62px !important; right: -34px !important; }
-main { padding-block: 16px 64px; gap: 40px; }
-.weekhead { margin-bottom: 12px; }
-.weekhead h2 { font-size: 24px; }
-.weekhead p { font-size: 14px; }
-.ink { font-size: 15px; }
-/* compact week rows */
-.cal { grid-template-columns: minmax(0, 1fr) !important; row-gap: 6px !important; }
-.day .note-wrap { transform: none !important; margin: 0 !important; }
-.tape { display: none; }
-.daybtns { display: none !important; }
-.note { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; column-gap: 12px; align-items: center; padding: 8px 12px; min-height: 58px; }
-.note .top { display: none; }
-.note .dow { grid-row: 1 / span 2; display: flex; flex-direction: column; align-items: center; line-height: 1; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
-.note .dow b { font-size: 22px; font-weight: 500; letter-spacing: -0.01em; margin-top: 2px; }
-.note .num { display: none; }
-.note .title { grid-column: 2; font-size: 17px; font-weight: 500; line-height: 1.2; margin: 0; }
-.note .sub { grid-column: 2; font-size: 13px; margin: 2px 0 0; opacity: .8; }
-.note .stamp { position: static; grid-column: 3; grid-row: 1 / span 2; transform: rotate(-4deg); font-size: 12px; text-transform: uppercase; letter-spacing: .05em; padding: 1px 6px; border-width: 1.5px; }
-.note.today { box-shadow: inset 4px 0 0 var(--ink); }
-.note[aria-pressed="true"] { outline-offset: 2px; }
-.note .who-tag { grid-column: 3; grid-row: 1 / span 2; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; }
-.openbtns { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-.openbtns .label { text-align: center; font-size: 15px; }
-/* one font: rescale the old handwriting sizes */
-.bigstamp { font-size: 48px; font-style: italic; top: -14px; }
-.open { padding-top: 22px; }
-.sheet { margin-top: 26px; }
-.sheet h2 { font-size: 30px; }
-.cookline .who { font-size: 18px; font-weight: 500; }
-.option b { font-size: 18px; font-weight: 500; }
-.receipt { margin-top: 0; }
-.rec .t a, .rec .t b { font-size: 19px; font-weight: 500; }
-.doornote b { font-size: 24px; font-weight: 500; }
-.tip { font-size: 14px; }
-.face .dish { font-size: 32px; font-weight: 500; line-height: 1.05; }
-.strip { font: 500 18px/1.2 var(--serif); }
-.tin .plate { font: 500 18px/1 var(--serif); padding: 9px 22px 7px; }
-.tinprompt b { font: 500 26px/1.1 var(--serif); }
-/* recipe tin anchored to the bottom so the stage hugs its cards */
-.stage { height: auto; }
-.lid { top: auto; bottom: 94px; }
-.dividers { top: auto; bottom: 100px; }
-.tin { top: auto; bottom: 6px; height: 96px; }
-.slot { top: auto; bottom: 178px; }
-.v-tomato { top: 300px !important; right: -46px !important; }
-.strip { top: auto; }
-
-.weekhead { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 4px 12px; }
-.weekhead > div:first-child { display: contents; }
-.weekhead h2 { grid-column: 1; }
-.weekhead > div:last-child { grid-column: 2; grid-row: 1; gap: 12px !important; }
-.weekhead p { grid-column: 1 / -1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 0; }
-.note .title, .note .sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.note { min-height: 54px; padding-block: 7px; }
-.shelf h2 { font-size: 24px; }
-
-/* Nights you're not cooking: soft sage instead of tomato. */
-:root { --sage-lt: #d3d8c4; }
-.note.away { background: #f6f0e4; box-shadow: inset 7px 0 0 var(--sage); }
-.note.away .dow { padding-left: 4px; }
-.bigstamp { color: var(--sage); }
-/* Who's cooking / OUT / ORDER IN: little paper tags taped on, a touch askew. */
-.note .stamp, .note .who-tag { position: relative; top: auto; right: auto; align-self: center; grid-column: 3; grid-row: 1 / span 2; justify-self: end; background: var(--paper); border: 1px solid var(--ink); padding: 6px 8px 4px; font-size: 11px; line-height: 1; text-transform: uppercase; letter-spacing: .07em; font-family: var(--serif); transform: rotate(-3deg); }
-.note .stamp { font-weight: 600; }
-.note .stamp::before, .note .who-tag::before { content: ""; position: absolute; top: -6px; left: 50%; width: 24px; height: 9px; margin-left: -12px; background: rgba(239, 239, 239, .92); border: 1px solid rgba(0, 0, 0, .3); transform: rotate(5deg); }
-.day:nth-child(even) .note .stamp, .day:nth-child(even) .note .who-tag { transform: rotate(2.5deg); }
-.day:nth-child(3n) .note .stamp, .day:nth-child(3n) .note .who-tag { transform: rotate(-1.5deg); }
-.whoami { font-size: 13px; color: #5d6449; padding-block: 0 40px; margin: 0; position: relative; z-index: 1; }
-.whoami .ink { font-size: 13px; min-height: 32px; }
-.clamp3 { flex-shrink: 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-.face .pcv { line-height: 1.6; }
-/* A fridge as tall as the phone. */
-.fridge { max-width: 340px; }
-.fridge.shut .inside { max-height: none; height: max(560px, calc(100dvh - 180px)); }
-.inside { min-height: max(560px, calc(100dvh - 180px)); }
-.door-face .panel.fz { height: 31%; max-height: 210px; }
-.doornote { top: 18%; }
-.tip { top: auto; }
+/* who / toast */
+.signin { display: grid; gap: 12px; }
+.signin .say { margin: 0 0 6px; }
+.signin h1 { margin: 0; font-size: 40px; font-weight: 700; letter-spacing: -0.03em; }
+.toast { position: fixed; z-index: 30; left: 50%; transform: translateX(-50%); bottom: calc(80px + env(safe-area-inset-bottom)); max-width: calc(100% - 40px); background: var(--ink); color: var(--cream); padding: 11px 14px; font-size: 14px; font-weight: 600; }
+body.full .toast { bottom: calc(24px + env(safe-area-inset-bottom)); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 </head>
-<body>
-<div class="decor" aria-hidden="true">
-  <img class="v-tomato" alt="" src="art/tomato.png">
-  <img class="v-peas" alt="" src="art/peas.png">
-  <img class="v-carrots" alt="" src="art/carrots.png">
-</div>
-<div class="marquee gutter" id="marquee">Pax ✶ dinners for two ✶ Pax ✶ dinners for two</div>
-<header class="top gutter">
-  <h1 class="wordmark">Pax</h1>
-  <nav class="tabs" aria-label="Sections">
-    <button id="tab-tonight" data-tab="tonight">Week</button>
-    <button id="tab-list" data-tab="list">List</button>
-    <button id="tab-recipes" data-tab="recipes">Recipes</button>
-  </nav>
-</header>
-<main class="gutter">
+<body data-tab="tonight">
+<div class="app">
+  <header class="mast" id="mast"><div class="line"><span class="word">Pax</span></div></header>
   <div id="banner" class="banner" hidden></div>
-  <div id="view"><p class="empty">Getting this week's dinners…</p></div>
-</main>
-<p class="whoami gutter"><span id="whoami"></span> <button class="ink" data-act="signout">Not you? Switch</button></p>
+  <main class="view" id="view"><p class="say">Getting this week's dinners…</p></main>
+</div>
+<nav class="tabbar" aria-label="Sections">
+  <button id="tab-tonight" data-tab="tonight"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Week</button>
+  <button id="tab-list" data-tab="list"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19"/><path d="M6 9h12M9 5.5v1.5M9 12v3"/></svg>Fridge</button>
+  <button id="tab-recipes" data-tab="recipes"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" aria-hidden="true"><rect x="3" y="9" width="18" height="11"/><path d="M6 9V5.5h5l1.5 1.5H18V9"/></svg>Recipe tin</button>
+</nav>
 <div id="toast" class="toast" role="status" hidden></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
@@ -406,12 +288,10 @@ const S = {
   db: null, user: null, me: null, canWrite: true,
   weeks: {}, weekId: null, nights: {}, checks: {}, rejects: {}, box: {}, inbox: {}, hauls: {}, decks: {}, picks: {}, deck: null, staples: [], requests: {},
   tab: "tonight", focus: null, ui: {}, loaded: false,
-  fridgeOpen: false, tipSeen: false, tin: { tab: null, card: null, up: false, flipped: false, picking: false },
+  tin: { tab: "all", card: null, picking: false },
 };
 // Per-viewer conveniences only: the fridge stays open for the session, and the handle tip shows once per phone.
 function store(kind, key, val) { try { const st = kind === "session" ? sessionStorage : localStorage; if (val === undefined) return st.getItem(key); st.setItem(key, val); } catch (_) { return null; } }
-S.fridgeOpen = store("session", "pax-fridge-open") === "1";
-S.tipSeen = store("local", "pax-fridge-tip") === "1";
 let unsubWeek = [];
 
 /* ---------- helpers ---------- */
@@ -475,9 +355,9 @@ function nightView(slot) {
 
 function noteText(n) {
   if (n.mode === "cook") {
-    if (n.current && n.current.pending) return { title: n.current.dish, sub: `From ${n.current.source || "a link"}${n.current.savedBy ? " ✶ saved by " + n.current.savedBy : ""}` };
-    if (n.current && n.current.own) return { title: n.current.dish, sub: "Your own" + (n.current.by ? " ✶ " + n.current.by : "") };
-    if (n.current) return { title: n.current.dish, sub: [n.current.minutes ? n.current.minutes + " min" : "", n.current.cuisine].filter(Boolean).join(" ✶ ") };
+    if (n.current && n.current.pending) return { title: n.current.dish, sub: `From ${n.current.source || "a link"}${n.current.savedBy ? " · saved by " + n.current.savedBy : ""}` };
+    if (n.current && n.current.own) return { title: n.current.dish, sub: "Your own" + (n.current.by ? " · " + n.current.by : "") };
+    if (n.current) return { title: n.current.dish, sub: [n.current.minutes ? n.current.minutes + " min" : "", n.current.cuisine].filter(Boolean).join(" · ") };
     if (n.blank) return { title: "Nothing planned", sub: "" };
     if (n.picking) return n.picking === myKey() ? { title: "Your pick", sub: "Heart it in your Sunday picks" } : { title: `${COOK[n.picking]}'s picking`, sub: "From the Sunday deck" };
     return { title: "Nothing yet", sub: "Pick from the recipe box or ask Claude" };
@@ -559,68 +439,109 @@ function weekLabel(id) {
 }
 
 /* ---------- render ---------- */
+const ICON = {
+  left: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>',
+  right: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>',
+  arrow: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  out: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg>',
+  x: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  heart: '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>',
+  heartLine: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>',
+  pencil: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M16.5 3.5l4 4L8 20H4v-4z"/></svg>',
+  tick: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="square" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>',
+  plus: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
+  down: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>',
+};
+const ART = { tomato: "art/tomato.png", peas: "art/peas.png", carrots: "art/carrots.png" };
+const artFor = s => ["peas", "tomato", "carrots"][[...String(s || "")].reduce((n, ch) => n + ch.charCodeAt(0), 0) % 3];
+// A recipe's photo, if it has one; a broken link quietly falls back to the coloured tile.
+const photo = c => { const u = safeLink(c && c.image); return u ? `<img class="photo" src="${esc(u)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ""; };
+function isoWeek(iso) { const d = new Date(iso + "T12:00"); d.setDate(d.getDate() + 3 - ((d.getDay() + 6) % 7)); const y = new Date(d.getFullYear(), 0, 4); return 1 + Math.round(((d - y) / 864e5 - 3 + ((y.getDay() + 6) % 7)) / 7); }
+const dayUp = iso => new Date(iso + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }).toUpperCase();
+
 function showBanner() {
   const b = document.getElementById("banner");
-  if (S.offline) { b.textContent = "You're offline. Showing the plan as it was; changes will save once you're back online."; b.hidden = false; }
+  if (S.offline) { b.textContent = "You're offline. Showing the plan as it was; changes save once you're back online."; b.hidden = false; }
   else b.hidden = true;
 }
 
 function render() {
-  document.querySelectorAll("nav.tabs button").forEach(b => b.setAttribute("aria-current", b.dataset.tab === S.tab ? "page" : "false"));
-  const w = week();
-  document.getElementById("marquee").textContent = S.deck ? `Week of ${shortDate(S.deck.week)} ✶ Sunday picks` : S.weekId ? `Week of ${shortDate(S.weekId)} ✶ ${w && w.note ? w.note.split(". ")[0].split(",")[0].replace(/\.$/, "") : "dinners for two"}` : "Pax ✶ dinners for two";
+  const full = !!(S.deck || (S.tab === "tonight" && S.focus));
+  document.body.dataset.tab = S.tab;
+  document.body.classList.toggle("full", full);
+  document.querySelectorAll(".tabbar button").forEach(b => b.setAttribute("aria-current", b.dataset.tab === S.tab ? "page" : "false"));
   if (!S.loaded) return;
-  const v = document.getElementById("view");
-  v.innerHTML = S.deck ? renderDeck() : S.tab === "list" ? renderList() : S.tab === "recipes" ? renderRecipes() : renderWeekView();
+  const mast = document.getElementById("mast"), v = document.getElementById("view");
+  if (S.deck) { mast.innerHTML = ""; mast.hidden = true; v.className = ""; v.innerHTML = renderDeck(); }
+  else if (S.tab === "tonight" && S.focus && S.weekId) { mast.innerHTML = ""; mast.hidden = true; v.className = ""; v.innerHTML = renderOpen(nightView(S.focus)); }
+  else {
+    mast.hidden = false; v.className = "view";
+    const [m, body] = S.tab === "list" ? renderList() : S.tab === "recipes" ? renderRecipes() : renderWeekView();
+    mast.innerHTML = m; v.innerHTML = body;
+  }
   resolveNames();
 }
 
+function masthead({ word, dateline, title, art, side = "", extra = "" }) {
+  return `<img class="art ${art}" src="${ART[art]}" alt="" aria-hidden="true">
+    <div class="line"><span class="word">${esc(word)}</span><span class="k">${esc(dateline)}</span></div>
+    <div class="row"><h1>${title}</h1>${side}</div>${extra}`;
+}
+
 function noWeek() {
-  return `<div class="shelf"><h2>Nothing on the fridge yet</h2><p class="empty">Claude plans each week on Sunday afternoon: a dish for every cook night with two backups, and a note for nights you're out. It'll show up here.</p></div>`;
+  return `<p class="say">Nothing planned yet. Claude deals the Sunday picks every Sunday evening, and the week shows up here.</p>`;
 }
 
 function deckBanner() {
   const w = openDeckWeek(); if (!w) return "";
   const me = myKey(), nights = deckNights(w, me), n = deckCards(w, me).length, pk = picksFor(w, me);
-  const started = (pk.pos || 0) > 0;
-  return `<button class="deckcta" data-act="deck" data-v="${w}"><span class="k">Your Sunday picks ✶ week of ${esc(shortDate(w))}</span><b>${n} dishes. Heart ${nights.length} for ${esc(nights.map(sl => DAY[sl].slice(0, 3)).join(" and "))}.</b><span>${started ? "Pick up where you left off →" : "Takes about a minute →"}</span></button>`;
+  const label = nights.length === 1 ? `Pick ${DAY[nights[0]]}'s dinner` : `Pick ${nights.length} dinners`;
+  return `<button class="bar" data-act="deck" data-v="${w}"><span>${esc(label)} <span>· ${n} dishes${(pk.pos || 0) > 0 ? " · keep going" : ""} · by 9pm Sun</span></span>${ICON.arrow}</button>`;
 }
 
 function renderWeekView() {
-  if (!S.weekId) return deckBanner() || noWeek();
-  return `<div style="display:grid;gap:72px"><div style="display:grid;gap:22px">${deckBanner()}${renderWeek()}</div>${S.focus ? renderOpen(nightView(S.focus)) : ""}</div>`;
+  const me = myKey();
+  const w = week();
+  const id = S.weekId || thisMonday();
+  const deckNote = S.weekId && deckFor(S.weekId) && !deckPast(S.weekId) ? Object.keys(deckFor(S.weekId).people || {}).filter(p => p !== me).map(p => { const pk = picksFor(S.weekId, p); return pk.done ? `${COOK[p] || p} has picked.` : `${COOK[p] || p}: ${Math.min((pk.hearts || []).length, deckNights(S.weekId, p).length)} of ${deckNights(S.weekId, p).length} picked.`; }).join(" ") : "";
+  const note = !S.weekId ? "" : w ? [w.note, deckNote].filter(Boolean).join(" ") : addDays(S.weekId, 6) < today() ? "Nothing was planned this week." : "Not planned yet. Anything you put on a night stays when Claude plans it.";
+  const myDeck = S.weekId && deckNights(S.weekId, me).length && deckCards(S.weekId, me).length;
+  const myPk = S.weekId ? picksFor(S.weekId, me) : {};
+  const deckLink = myDeck && !(openDeckWeek() === S.weekId && !myPk.done) ? `<button class="textlink" data-act="deck" data-v="${S.weekId}">Your Sunday picks · ${myPk.done ? "done, tap to change" : (myPk.pos || 0) > 0 ? "keep going" : deckNights(S.weekId, me).some(sl => (((week() || {}).nights || {})[sl] || {}).options?.length) ? "picking again" : "not started"}</button>` : "";
+  const arrows = S.weekId ? `<span class="arrows"><button class="sq" data-act="week" data-v="${addDays(S.weekId, -7)}" aria-label="Last week">${ICON.left}</button><button class="sq" data-act="week" data-v="${addDays(S.weekId, 7)}" aria-label="Next week">${ICON.right}</button></span>` : "";
+  const mast = masthead({ word: "Pax", dateline: `No. ${isoWeek(id)} · ${dayUp(id)}`, title: esc(S.weekId ? weekLabel(S.weekId) : "This week"), art: "tomato", side: arrows,
+    extra: `${note ? `<p class="note">${esc(note)}</p>` : ""}${deckLink}${deckBanner()}` });
+  if (!S.weekId) return [mast, noWeek() + whoami()];
+  return [mast, renderWeek() + whoami()];
 }
+const whoami = () => `<p class="whoami">${esc(S.myName || "")}'s phone · <button data-act="signout">Not you? Switch</button></p>`;
 
 function renderWeek() {
-  const w = week();
-  const dis = S.canWrite ? "" : "disabled";
-  // Unplanned weeks still open, so a link saved to next week shows up before Claude plans it.
-  const deckNote = deckFor(S.weekId) && !deckPast(S.weekId) ? Object.keys(deckFor(S.weekId).people || {}).filter(p => p !== myKey()).map(p => { const pk = picksFor(S.weekId, p); return pk.done ? `${COOK[p] || p} has picked.` : `${COOK[p] || p}: ${Math.min((pk.hearts || []).length, deckNights(S.weekId, p).length)} of ${deckNights(S.weekId, p).length} picked.`; }).join(" ") : "";
-  const note = w ? [w.note, deckNote].filter(Boolean).join(" ") : addDays(S.weekId, 6) < today() ? "Nothing was planned this week." : "Not planned yet. Claude plans each week the Sunday before; anything you put on a night here stays.";
-  const myDeck = deckNights(S.weekId, myKey()).length && deckCards(S.weekId, myKey()).length;
-  const myPk = picksFor(S.weekId, myKey());
-  const deckLink = myDeck ? `<button class="decklink" data-act="deck" data-v="${S.weekId}">Your Sunday picks ✶ ${myPk.done ? "done, tap to change" : (myPk.pos || 0) > 0 ? "keep going" : deckNights(S.weekId, myKey()).some(sl => (((week() || {}).nights || {})[sl] || {}).options?.length) ? "picking again" : "not started"} →</button>` : "";
-  let h = `<section aria-labelledby="week-h"><div class="weekhead"><div><h2 id="week-h">${esc(weekLabel(S.weekId))}</h2>${note ? `<p>${esc(note)}</p>` : ""}${deckLink}</div>
-    <div class="print" style="display:flex;gap:20px"><button class="ink" data-act="week" data-v="${addDays(S.weekId, -7)}">← last</button><button class="ink" data-act="week" data-v="${addDays(S.weekId, 7)}">next →</button></div></div><div class="cal">`;
-  const t = today();
+  const t = today(), me = myKey();
+  let h = `<div class="week">`, offs = "";
+  const flushOffs = () => { if (offs) { h += `<div class="offs">${offs}</div>`; offs = ""; } };
   for (const slot of SLOTS) {
     const n = nightView(slot);
-    const away = n.mode === "out" || n.mode === "order";
     const { title, sub } = noteText(n);
+    const isToday = n.date === t;
+    const dayLabel = isToday ? "TONIGHT" : `${DAY[slot].slice(0, 3).toUpperCase()} ${dayNum(n.date)}`;
     const label = `${DAY[slot]} ${shortDate(n.date)}: ${title}${sub ? ". " + sub : ""}`;
-    h += `<div class="day"><div class="note-wrap"><span class="tape" aria-hidden="true"></span>
-      <button class="note${away ? " away" : ""}${n.date === t ? " today" : ""}" data-act="focus" data-slot="${slot}" aria-pressed="${S.focus === slot}" aria-label="${esc(label)}">
-        <span class="dow">${DAY[slot].slice(0, 3)}<b>${dayNum(n.date)}</b></span>
-        <span class="num">${dayNum(n.date)}</span>
-        <span class="title">${esc(title)}</span>
-        ${sub ? `<span class="sub">${esc(sub)}</span>` : ""}
-        ${away ? `<span class="stamp" aria-hidden="true">${n.mode === "order" ? "order in" : "out"}</span>` : (n.cook && n.mode === "cook" ? `<span class="who-tag">${esc(COOK[n.cook])}</span>` : "")}
-      </button></div>
-      <div class="daybtns">${away
-        ? `<button class="label" data-act="flag" data-slot="${slot}" data-v="cook" ${dis}>We're cooking after all</button>`
-        : `<button class="label" data-act="flag" data-slot="${slot}" data-v="order" ${dis}>We're ordering in</button><button class="label" data-act="flag" data-slot="${slot}" data-v="out" ${dis}>We're eating out</button>`}</div></div>`;
+    if (n.mode === "cook") {
+      flushOffs();
+      const who = n.picking || n.cook;
+      const img = n.current ? photo(n.current) : "";
+      const tag = who ? `<span class="tag p-${esc(who)}">${who === me ? "YOU" : esc((COOK[who] || who).toUpperCase())}</span>` : "";
+      h += `<button class="tile${img ? "" : " flat"}${isToday ? " today" : ""}" data-act="focus" data-slot="${slot}" aria-label="${esc(label)}" style="${img ? "" : `background: var(--${who === "nihal" ? "pist" : "peach"})`}">
+        ${isToday ? `<span class="washi" aria-hidden="true"></span>` : ""}
+        ${img ? `<span class="ph">${img}<span class="shade"></span></span>` : `<span class="ph"><img class="art" src="${ART[artFor(title)]}" alt="" aria-hidden="true"></span>`}
+        <span class="in"><span class="day">${dayLabel}</span><span><span class="name">${esc(title)}</span>${sub ? `<span class="meta">${esc(sub)}</span>` : ""}</span></span>${tag}</button>`;
+    } else {
+      const stampTxt = n.mode === "order" ? "ORDER IN" : n.mode === "out" ? "OUT" : "FREE";
+      offs += `<button class="off${isToday ? " today" : ""}" data-act="focus" data-slot="${slot}" aria-label="${esc(label)}"><b>${dayLabel}</b><span>${esc(title)}${sub ? ` <small>· ${esc(sub)}</small>` : ""}</span><span class="stamp">${stampTxt}</span></button>`;
+    }
   }
-  return h + `</div></section>`;
+  flushOffs();
+  return h + `</div>`;
 }
 
 function renderOpen(n) {
@@ -629,73 +550,68 @@ function renderOpen(n) {
   const time = n.plan.time ? fmtTime(n.plan.time) : "";
   const c = n.mode === "cook" ? n.current : null;
   const editing = ui.mode === "edit" || ui.mode === "own";
-  let sheet = `<div class="sheethead"><span class="kick">${esc(DAY[n.slot])}, ${esc(shortDate(n.date))}${time && c ? " ✶ " + esc(time) : ""}</span><button class="pencil" data-act="ui" data-slot="${n.slot}" data-v="${ui.mode === "edit" ? "" : "edit"}" aria-label="${ui.mode === "edit" ? "Stop editing" : "Edit " + DAY[n.slot]}" aria-pressed="${ui.mode === "edit"}" ${dis}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg></button></div>`;
-  const awayNow = n.mode === "out" || n.mode === "order";
-  const inout = `<div class="openbtns">${awayNow ? `<button class="label" style="grid-column:1/-1" data-act="flag" data-slot="${n.slot}" data-v="cook" ${dis}>We're cooking after all</button>` : `<button class="label" data-act="flag" data-slot="${n.slot}" data-v="order" ${dis}>We're ordering in</button><button class="label" data-act="flag" data-slot="${n.slot}" data-v="out" ${dis}>We're eating out</button>`}</div>`;
-  let receipt = "";
+  const isToday = n.date === today();
+  const who = n.picking || n.cook;
+  const kicker = `${isToday ? "TONIGHT · " : ""}${DAY[n.slot].slice(0, 3).toUpperCase()} ${dayUp(n.date)}${time && c ? " · " + time.toUpperCase() : ""}`;
+  const img = c ? photo(c) : "";
+  const hero = `<div class="hero${who === "nihal" ? " p-nihal" : ""}">${img || `<img class="art" src="${ART[artFor(c ? c.dish : DAY[n.slot])]}" alt="" aria-hidden="true">`}
+    <button class="sq back" data-act="close" aria-label="Back to the week">${ICON.left}</button>
+    <button class="sq pencil" data-act="ui" data-slot="${n.slot}" data-v="${ui.mode === "edit" ? "" : "edit"}" aria-label="${ui.mode === "edit" ? "Stop editing" : "Edit " + DAY[n.slot]}" aria-pressed="${ui.mode === "edit"}" ${dis}>${ICON.pencil}</button>
+    <span class="kicker k${isToday ? "" : " plain"}">${esc(kicker)}</span></div>`;
+  const away = n.mode === "out" || n.mode === "order";
+  const seg = `<div class="seg" role="group" aria-label="${esc(DAY[n.slot])}"><button data-act="flag" data-slot="${n.slot}" data-v="cook" aria-pressed="${!away}" ${dis}>Cooking</button><button data-act="flag" data-slot="${n.slot}" data-v="order" aria-pressed="${n.mode === "order"}" ${dis}>Ordering in</button><button data-act="flag" data-slot="${n.slot}" data-v="out" aria-pressed="${n.mode === "out"}" ${dis}>Eating out</button></div>`;
+  const own = `<button class="ghost" data-act="ui" data-slot="${n.slot}" data-v="own" ${dis}>Make my own</button>`;
+  let body = "", receipt = "";
 
   if (editing) {
-    sheet += renderEditForm(n, dis, ui.mode === "own");
-    receipt = `<p style="margin:10px 0 0;font-size:17px">Whatever you list under "What goes in it" lands here and on the grocery list.</p>`;
+    body = `<h1 id="open-h">${ui.mode === "own" ? "Make your own" : "Edit " + esc(DAY[n.slot])}</h1>` + renderEditForm(n, dis, ui.mode === "own");
   } else if (n.mode !== "cook") {
     const { title, sub } = noteText(n);
-    sheet += `<h2 id="open-h">${esc(title)}</h2>`;
-    if (sub) sheet += `<p class="tweak">${esc(sub)}</p>`;
-    if (n.mode === "flex") sheet += renderBoxPicker(n, dis, true) + `<div class="actions"><button class="ink" data-act="ui" data-slot="${n.slot}" data-v="own" ${dis}>Make my own</button></div>`;
-    if (n.st.flag && n.st.by) sheet += `<p class="tweak" data-by="${esc(n.st.by)}">Marked by <span class="name">someone</span>.</p>`;
-    receipt = `<p style="margin:10px 0 0;font-size:17px">Nothing to shop for. This night is off the list.</p>`;
+    body = `<div><h1 id="open-h">${esc(title)}</h1>${sub ? `<div class="src">${esc(sub)}</div>` : ""}</div>${seg}`;
+    if (n.mode === "flex") body += `<div class="btns">${own}</div>` + renderBoxPicker(n, dis, true);
+    if (n.st.flag && n.st.by) body += `<p class="say small" data-by="${esc(n.st.by)}">Marked by <span class="name">someone</span>.</p>`;
   } else if (!c && n.picking) {
     const mine = n.picking === myKey();
-    sheet += `<h2 id="open-h">${mine ? "Your pick" : esc(COOK[n.picking]) + " is picking"}</h2><p class="tweak">${mine ? "Heart a dish in your Sunday picks and it lands here." : `This night comes from ${esc(COOK[n.picking])}'s Sunday deck. If nothing's picked by the deadline, Claude's top pick goes on.`}</p>`;
-    if (mine) sheet += `<button class="label" data-act="deck" data-v="${S.weekId}">Open your Sunday picks</button>`;
-    sheet += `<div class="actions"><button class="ink" data-act="ui" data-slot="${n.slot}" data-v="own" ${dis}>Make my own</button></div>`;
-    receipt = `<p style="margin:10px 0 0;font-size:17px">The dish's ingredients show up once it's picked.</p>`;
+    body = `<div><h1 id="open-h">${mine ? "Your pick" : esc(COOK[n.picking]) + " is picking"}</h1><div class="src">${mine ? "Heart a dish in your Sunday picks and it lands here." : `From ${esc(COOK[n.picking])}'s Sunday deck. If nothing's picked by the deadline, Claude's top pick goes on.`}</div></div>${seg}`;
+    if (mine) body += `<button class="primary" data-act="deck" data-v="${S.weekId}">Open your Sunday picks ${ICON.arrow}</button>`;
+    body += `<div class="btns">${own}</div>`;
   } else if (!c && n.blank) {
-    sheet += `<h2 id="open-h">Nothing planned</h2><p class="tweak">Tap Make my own to put something on ${esc(DAY[n.slot])}.</p>`;
-    sheet += `<div class="actions"><button class="ink" data-act="ui" data-slot="${n.slot}" data-v="own" ${dis}>Make my own</button><button class="ink" data-act="ownclear" data-slot="${n.slot}" ${dis}>Go back to the plan</button></div>`;
-    receipt = `<p style="margin:10px 0 0;font-size:17px">Nothing to shop for.</p>`;
+    body = `<div><h1 id="open-h">Nothing planned</h1><div class="src">Make your own to put something on ${esc(DAY[n.slot])}.</div></div>${seg}<div class="btns">${own}<button class="ghost" data-act="ownclear" data-slot="${n.slot}" ${dis}>Go back to the plan</button></div>`;
   } else if (!c) {
-    sheet += `<h2 id="open-h">Nothing left for ${esc(DAY[n.slot])}</h2><p class="tweak">${(n.plan.options || []).length ? "Both backups are gone." : "Nothing was planned for this night."} Pick something from your recipe box, or ask Claude for two new options.</p>`;
-    sheet += `<div class="actions" style="margin:0"><button class="ink" data-act="ui" data-slot="${n.slot}" data-v="own" ${dis}>Make my own</button></div>` + renderBoxPicker(n, dis, false) + renderRequest(n, dis);
-    receipt = `<p style="margin:10px 0 0;font-size:17px">Pick a dish and its ingredients show up here.</p>`;
+    body = `<div><h1 id="open-h">Nothing left for ${esc(DAY[n.slot])}</h1><div class="src">${(n.plan.options || []).length ? "Both backups are gone." : "Nothing was planned for this night."} Make your own, pick from the tin, or ask Claude for two new options.</div></div>${seg}<div class="btns">${own}</div>` + renderBoxPicker(n, dis, false) + renderRequest(n, dis);
   } else {
     const link = safeLink(c.link);
     const hearted = !!S.box[recipeKey(c)];
-    sheet += `<h2 id="open-h">${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">${esc(c.dish)}</a>` : esc(c.dish)}</h2>
-      <span class="src">${esc([c.source, c.minutes && c.minutes + " min", c.cuisine, c.own ? "your own" : c.fromBox && "from your recipe box"].filter(Boolean).join(", "))}</span>
-      <div class="cookline"><span class="who">${esc(COOK[n.cook] || "Whoever's home")} cooks</span>
-        ${n.cook ? `<button class="ink" data-act="cook" data-slot="${n.slot}" ${dis}>Hand to ${esc(COOK[OTHER[n.cook]])}</button>` : ""}
-        <button class="heart" data-act="heart" data-slot="${n.slot}" aria-pressed="${hearted}" aria-label="${hearted ? "Remove from" : "Save to"} recipe box" ${dis}>${hearted ? "♥" : "♡"}</button></div>
-      ${c.protein || c.carb || c.veg ? `<div class="tags"><span>Protein: ${esc(c.protein)}</span><span>Carb: ${esc(c.carb)}</span><span>Veg: ${esc(c.veg)}</span></div>` : ""}`;
-    if (c.pending) sheet += `<p class="tweak">Saved from ${esc(c.source || "a link")}${c.savedBy ? " by " + esc(c.savedBy) : ""}. Claude will read the caption and fill in the dish, protein, carb, veg and ingredients the next time it runs.</p>
+    const cookTxt = n.cook ? (n.cook === myKey() ? "You're cooking" : `${COOK[n.cook]} cooks`) : "Whoever's home cooks";
+    body = `<div><h1 id="open-h">${esc(c.dish)}</h1><div class="src">${esc([c.source, c.minutes && c.minutes + " min", c.cuisine, c.own ? "your own" : c.fromBox && "from the tin", cookTxt].filter(Boolean).join(" · "))}</div></div>${seg}`;
+    if (c.protein || c.carb || c.veg) body += `<div class="pcv"><div><small>PROTEIN</small><span>${esc(c.protein || "–")}</span></div><div><small>CARB</small><span>${esc(c.carb || "–")}</span></div><div><small>VEG</small><span>${esc(c.veg || "–")}</span></div></div>`;
+    if (link) body += `<a class="primary" href="${esc(link)}" target="_blank" rel="noopener">${c.source === "TikTok" || c.source === "Instagram" ? "Open on " + esc(c.source) : "Open recipe"} ${ICON.out}</a>`;
+    if (c.pending) body += `<p class="say small">Saved from ${esc(c.source || "a link")}${c.savedBy ? " by " + esc(c.savedBy) : ""}. Claude fills in the details from the caption on its next run.</p>
       <form class="addrow" id="rename-form" data-slot="${n.slot}"><input type="text" id="rename-input" aria-label="Dish name" placeholder="Name it, e.g. pumpkin pasta" ${dis}><button ${dis}>Save name</button></form>`;
-    if (c.tweak) sheet += `<p class="tweak">${esc(c.tweak)}</p>`;
-    if (!link && (c.steps || []).length) sheet += `<ol class="steps">${c.steps.map(s => `<li>${esc(s)}</li>`).join("")}</ol>`;
+    if (c.tweak) body += `<p class="say">${esc(c.tweak)}</p>`;
+    if (!link && (c.steps || []).length) body += `<ol class="say">${c.steps.map(s => `<li>${esc(s)}</li>`).join("")}</ol>`;
     if (ui.mode === "swap") {
-      sheet += `<div class="options">${n.backups.map(o => `<button class="option" data-act="pick" data-slot="${n.slot}" data-id="${esc(o.id)}" ${dis}><b>${esc(o.dish)}</b><span>${esc([o.source, o.minutes && o.minutes + " min", o.protein].filter(Boolean).join(", "))}</span></button>`).join("") || `<p class="tweak">No backups left for this night.</p>`}</div>`;
-      sheet += renderBoxPicker(n, dis, true);
-      sheet += `<div class="actions"><button class="ink" data-act="ui" data-slot="${n.slot}" data-v="">Keep ${esc(c.dish)}</button></div>`;
+      body += `<div class="k">Swap to</div><div class="options">${n.backups.map(o => `<button class="option" data-act="pick" data-slot="${n.slot}" data-id="${esc(o.id)}" ${dis}><b>${esc(o.dish)}</b><span>${esc([o.source, o.minutes && o.minutes + " min", o.protein].filter(Boolean).join(" · "))}</span></button>`).join("") || `<p class="say small">No backups left for this night.</p>`}</div>`;
+      body += renderBoxPicker(n, dis, true) + `<div class="btns"><button class="ghost" data-act="ui" data-slot="${n.slot}" data-v="">Keep ${esc(c.dish)}</button></div>`;
     } else if (ui.mode === "reject") {
-      sheet += `<div class="confirm actions"><span>Never suggest ${esc(c.dish)} again?</span><button class="ink" data-act="reject" data-slot="${n.slot}" ${dis}>Yes, reject it</button><button class="ink" data-act="ui" data-slot="${n.slot}" data-v="">Cancel</button></div>`;
+      body += `<div class="confirm"><span>Never suggest ${esc(c.dish)} again?</span><div class="btns"><button class="ghost danger" data-act="reject" data-slot="${n.slot}" ${dis}>Yes, reject it</button><button class="ghost" data-act="ui" data-slot="${n.slot}" data-v="">Cancel</button></div></div>`;
     } else {
-      sheet += `<div class="actions">${link ? `<a href="${esc(link)}" target="_blank" rel="noopener" style="font-size:20px">${c.source === "TikTok" || c.source === "Instagram" ? "Open on " + esc(c.source) : "Open the recipe"} →</a>` : ""}
-        <button class="ink" data-act="ui" data-slot="${n.slot}" data-v="swap" ${dis}>Swap${n.backups.length ? ` (${n.backups.length})` : ""}</button>
-        <button class="ink" data-act="ui" data-slot="${n.slot}" data-v="own" ${dis}>Make my own</button>
-        ${c.own ? "" : `<button class="ink" data-act="ui" data-slot="${n.slot}" data-v="reject" ${dis}>Reject</button>`}</div>`;
+      body += `<div class="btns"><button class="ghost" data-act="ui" data-slot="${n.slot}" data-v="swap" ${dis}>Swap${n.backups.length ? ` (${n.backups.length})` : ""}</button>${own}
+        ${n.cook ? `<button class="ghost" data-act="cook" data-slot="${n.slot}" ${dis}>Hand to ${esc(COOK[OTHER[n.cook]])}</button>` : ""}
+        <button class="ghost" data-act="heart" data-slot="${n.slot}" aria-pressed="${hearted}" ${dis}>${hearted ? ICON.heart + " In the tin" : ICON.heartLine + " Save to tin"}</button>
+        ${c.own ? "" : `<button class="ghost danger" data-act="ui" data-slot="${n.slot}" data-v="reject" ${dis}>Reject</button>`}</div>`;
     }
-    if (n.st.by && (n.st.current || n.st.boxPick || (n.st.rejected || []).length || n.st.cook)) sheet += `<p class="tweak" data-by="${esc(n.st.by)}">Last changed by <span class="name">someone</span>.</p>`;
-    receipt = (c.ingredients || []).length ? `<ul>${c.ingredients.map(i => `<li>${esc(i)}</li>`).join("")}</ul>${c.own ? "" : `<p style="margin:10px 0 0;font-size:14px">Quantities are on the recipe page.</p>`}` : `<p style="margin:10px 0 0;font-size:17px">No ingredient list for this one.</p>`;
+    if ((c.ingredients || []).length) receipt = `<div class="receipt" aria-label="What goes in it"><div class="rh k"><span>What goes in it</span><span>${c.ingredients.length}${c.own ? "" : " · amounts on the recipe"}</span></div><ul>${c.ingredients.map(i => `<li><span>${esc(i)}</span><small>${S.staples.map(norm).includes(norm(i)) ? "Have it" : esc({ frozen: "Freezer", dairy: "Fridge", pantry: "Pantry", produce: "Produce" }[shelfOf(i)])}</small></li>`).join("")}</ul></div>`;
+    if (n.st.by && (n.st.current || n.st.boxPick || (n.st.rejected || []).length || n.st.cook)) receipt += `<p class="say small" data-by="${esc(n.st.by)}">Last changed by <span class="name">someone</span>.</p>`;
   }
-  sheet = sheet.replace("</h2>", "</h2>" + inout);
-  return `<section class="open" id="open" aria-labelledby="open-h"><span class="bigstamp" aria-hidden="true">${esc(DAY[n.slot])}</span><button class="ink closer" data-act="close">Close ✕</button>
-    <div class="split"><div class="sheet">${sheet}</div><aside class="receipt" aria-label="What goes in it"><div class="rhead">What goes in it</div>${receipt}</aside></div></section>`;
+  return `<section aria-labelledby="open-h">${hero}<div class="night">${body}${receipt}</div></section>`;
 }
 
 function renderBoxPicker(n, dis, compact) {
-  const items = Object.values(S.box).filter(b => !S.rejects[recipeKey(b)]);
-  if (!items.length) return compact ? "" : `<p class="tweak">Your recipe box is empty. Tap ♡ on a dish you liked to save it.</p>`;
-  return `<details ${compact ? "" : "open"}><summary class="print" style="cursor:pointer;font-size:16px">${n.mode === "flex" ? "Cook something from your recipe box" : "From your recipe box"}</summary><div class="options" style="margin-top:8px">${items.map(b =>
-    `<button class="option" data-act="boxpick" data-slot="${n.slot}" data-key="${esc(recipeKey(b))}" ${dis}><b>${esc(b.dish)}</b><span>${esc([b.source, b.minutes && b.minutes + " min", b.protein].filter(Boolean).join(", "))}</span></button>`).join("")}</div></details>`;
+  const items = Object.values(S.box).filter(b => !S.rejects[recipeKey(b)] && !b.pending);
+  if (!items.length) return compact ? "" : `<p class="say small">The recipe tin is empty. Save a dinner you loved and it shows up here.</p>`;
+  return `<details ${compact ? "" : "open"}><summary>${n.mode === "flex" ? "Cook something from the tin" : "From the recipe tin"}</summary><div class="options">${items.map(b =>
+    `<button class="option" data-act="boxpick" data-slot="${n.slot}" data-key="${esc(recipeKey(b))}" ${dis}><b>${esc(b.dish)}</b><span>${esc([b.source, b.minutes && b.minutes + " min", b.protein].filter(Boolean).join(" · "))}</span></button>`).join("")}</div></details>`;
 }
 
 // The pencil: edit what's on a night in place. Clear the name to leave the night blank.
@@ -704,18 +620,19 @@ function renderEditForm(n, dis, fresh) {
   const hasOverride = !!(n.st.boxPick);
   return `<form class="ownform" id="own-form" data-slot="${n.slot}">
       <label>What you're making<input type="text" id="own-dish" value="${val(c && c.dish)}" placeholder="${fresh ? "e.g. Mom's rajma, or leftovers fried rice" : "Leave blank for nothing planned"}" ${fresh ? "autofocus" : ""} ${dis}></label>
-      <label>What goes in it <small>(one per line or commas; goes on the list)</small><textarea id="own-ing" rows="4" placeholder="kidney beans, onion, tomatoes, rice" ${dis}>${val(c && (c.ingredients || []).join(", "))}</textarea></label>
-      <label>Link <small>(optional)</small><input type="url" id="own-link" value="${val(c && c.link)}" placeholder="https://…" ${dis}></label>
-      <label>Notes <small>(optional)</small><input type="text" id="own-note" value="${val(c && c.tweak)}" placeholder="e.g. double the garlic" ${dis}></label>
-      <div class="actions" style="margin:0"><button class="label" style="width:auto" ${dis}>Save</button><button type="button" class="ink" data-act="ui" data-slot="${n.slot}" data-v="">Cancel</button>${hasOverride ? `<button type="button" class="ink" data-act="ownclear" data-slot="${n.slot}" ${dis}>Go back to the plan</button>` : ""}</div>
+      <label>What goes in it <small>One per line or commas. It goes on the list.</small><textarea id="own-ing" rows="4" placeholder="kidney beans, onion, tomatoes, rice" ${dis}>${val(c && (c.ingredients || []).join(", "))}</textarea></label>
+      <label>Link <small>Optional</small><input type="url" id="own-link" value="${val(c && c.link)}" placeholder="https://…" ${dis}></label>
+      <label>Notes <small>Optional</small><input type="text" id="own-note" value="${val(c && c.tweak)}" placeholder="e.g. double the garlic" ${dis}></label>
+      <button class="primary" ${dis}>Save ${ICON.arrow}</button>
+      <div class="btns"><button type="button" class="ghost" data-act="ui" data-slot="${n.slot}" data-v="">Cancel</button>${hasOverride ? `<button type="button" class="ghost" data-act="ownclear" data-slot="${n.slot}" ${dis}>Go back to the plan</button>` : ""}</div>
     </form>`;
 }
 
 function renderRequest(n, dis) {
-  if (n.request) return `<p class="tweak">You asked Claude for new options${n.request.note ? `: “${esc(n.request.note)}”` : ""}. They'll show up here after Claude's next run.</p>`;
-  return `<div style="display:grid;gap:8px"><label for="req-${n.slot}" class="print" style="font-size:15px;text-transform:uppercase">Anything Claude should know?</label>
-    <textarea id="req-${n.slot}" rows="2" placeholder="e.g. something with eggs, nothing too heavy"></textarea>
-    <div><button class="label" style="width:auto" data-act="request" data-slot="${n.slot}" ${dis}>Ask Claude for new options</button></div></div>`;
+  if (n.request) return `<p class="say small">You asked Claude for new options${n.request.note ? `: “${esc(n.request.note)}”` : ""}. They'll show up after Claude's next run.</p>`;
+  return `<div class="ownform"><label for="req-${n.slot}">Anything Claude should know?</label>
+    <textarea id="req-${n.slot}" rows="2" placeholder="e.g. something quick, nothing too heavy"></textarea>
+    <button class="ghost" data-act="request" data-slot="${n.slot}" ${dis}>Ask Claude for new options</button></div>`;
 }
 
 function buildList() {
@@ -737,24 +654,24 @@ function buildList() {
 }
 
 const SHELVES = [
-  { id: "frozen", label: "Freezer", cls: "freezer", shape: "box" },
-  { id: "dairy", label: "Top shelf ✶ dairy and eggs", cls: "", shape: "carton" },
-  { id: "pantry", label: "Middle shelf ✶ jars, cans, bread", cls: "", shape: "jar" },
-  { id: "produce", label: "Crisper drawer ✶ produce", cls: "drawer", shape: "bag" },
+  { id: "frozen", label: "Freezer" },
+  { id: "dairy", label: "Top shelf · dairy & tofu" },
+  { id: "pantry", label: "Middle shelf · pantry" },
+  { id: "produce", label: "Crisper drawer · produce", cls: "drawer" },
 ];
 // The planner tags each ingredient with a shelf (week.shelves); this guesses for anything it missed.
 const GUESS = {
   frozen: ["frozen"],
-  dairy: ["paneer", "feta", "parmesan", "cheese", "cheddar", "monterey", "mozzarella", "ricotta", "cream", "milk", "yogurt", "curd", "butter", "ghee", "egg"],
-  produce: ["avocado", "cilantro", "rosemary", "chili", "lemon", "lime", "cabbage", "spinach", "tomato", "kale", "broccoli", "scallion", "onion", "garlic", "ginger", "mint", "arugula", "basil", "carrot", "potato", "cucumber", "zucchini", "mushroom", "pepper", "herb", "parsley", "dill", "greens", "lettuce", "curry leaves", "cauliflower", "eggplant", "squash", "peas"],
+  dairy: ["paneer", "feta", "parmesan", "cheese", "cheddar", "monterey", "mozzarella", "ricotta", "cream", "milk", "yogurt", "curd", "butter", "ghee", "egg", "tofu", "tempeh", "seitan"],
+  produce: ["avocado", "cilantro", "rosemary", "chili", "lemon", "lime", "cabbage", "spinach", "tomato", "kale", "broccoli", "scallion", "onion", "garlic", "ginger", "mint", "arugula", "basil", "carrot", "potato", "cucumber", "zucchini", "mushroom", "pepper", "herb", "parsley", "dill", "greens", "lettuce", "curry leaves", "cauliflower", "eggplant", "squash", "peas", "bok choy", "fennel", "shallot", "beans"],
 };
-const PANTRY = ["chickpea", "bean", "lentil", "dal", "tortilla", "pasta", "ditalini", "orzo", "noodle", "rice", "roti", "naan", "bread", "salsa", "broth", "paste", "sauce", "vinegar", "oil", "sugar", "flour", "coconut milk", "cashew", "nut", "chili crisp", "sesame seed", "spice", "masala", "powder", "seeds"];
+const PANTRY = ["chickpea", "bean", "lentil", "dal", "tortilla", "pasta", "ditalini", "orzo", "noodle", "rice", "roti", "naan", "bread", "salsa", "broth", "paste", "sauce", "vinegar", "oil", "sugar", "flour", "coconut milk", "cashew", "nut", "chili crisp", "sesame seed", "spice", "masala", "powder", "seeds", "soya"];
 function shelfOf(name) {
   const n = norm(name), w = week() || {};
   const tagged = (w.shelves || {})[n];
   if (tagged && SHELVES.some(x => x.id === tagged)) return tagged;
   if (GUESS.frozen.some(g => n.includes(g))) return "frozen";
-  if (PANTRY.some(g => n.includes(g))) return "pantry";
+  if (PANTRY.some(g => n.includes(g)) && !GUESS.dairy.some(g => n.includes(g))) return "pantry";
   for (const id of ["dairy", "produce"]) if (GUESS[id].some(g => n.includes(g))) return id;
   return "pantry";
 }
@@ -778,41 +695,36 @@ function recentHaul() {
 function isGot(key) { const items = S.checks.items || {}; return key in items ? !!items[key] : recentHaul().has(key); }
 
 function renderList() {
-  if (!S.weekId) return noWeek();
+  const id = S.weekId || thisMonday();
+  if (!S.weekId) return [masthead({ word: "The fridge", dateline: dayUp(id), title: "Nothing yet", art: "peas" }), noWeek()];
   const { buy, have } = buildList();
   const dis = S.canWrite ? "" : "disabled";
   const haul = recentHaul();
   const checks = Object.fromEntries(buy.map(i => [i.key, isGot(i.key)]));
-  const left = buy.filter(i => !checks[i.key]).length;
+  const got = buy.filter(i => checks[i.key]).length, left = buy.length - got;
   const listed = new Set([...buy, ...have].map(i => i.key));
   const extras = [...haul.values()].filter(h => !listed.has(h.key));
-  const thing = (it, shape) => `<button class="thing ${shape}${checks[it.key] ? " got" : ""}" data-act="tick" data-key="${esc(it.key)}" aria-pressed="${!!checks[it.key]}" title="${esc(it.dishes.join(" · "))}" ${dis}><span>${esc(it.name)}</span></button>`;
-  const stocked = (h, shape) => `<span class="thing ${shape} stocked" title="${esc(`From ${h.store || "your order"}, ${shortDate(h.date)}`)}"><span>${esc(h.name)}</span></span>`;
-  const shelf = sh => {
+  const filled = buy.length ? Math.round(10 * got / buy.length) : 0;
+  const prog = buy.length ? `<span class="progress" role="img" aria-label="${got} of ${buy.length} got">${Array.from({ length: 10 }, (_, i) => `<span class="${i < filled ? "on" : ""}"></span>`).join("")}</span>` : "";
+  const mast = masthead({ word: "The fridge", dateline: `Week of ${dayUp(id)}`, title: buy.length ? (left ? `${left} to buy` : "Got everything") : "Nothing to buy", art: "peas", side: prog,
+    extra: `<div class="sub">${[got && `${got} already in`, have.length && `${have.length} staple${have.length === 1 ? "" : "s"} at home`, extras.length && `${extras.length} more from your last order`].filter(Boolean).join(" · ") || "Built from the dinners you're cooking."}</div>` });
+  const item = it => `<button class="item${checks[it.key] ? " got" : ""}" data-act="tick" data-key="${esc(it.key)}" aria-pressed="${!!checks[it.key]}" ${dis}><span class="box">${checks[it.key] ? ICON.tick : ""}</span><span class="nm">${esc(it.name)}</span><small>${esc([...new Set(it.dishes.map(d => d.slice(0, 3)))].join(", "))}</small></button>`;
+  const inItem = h => `<div class="item in"><span class="box"></span><span class="nm">${esc(h.name)}</span><small>From ${esc(h.store || "your order")}, ${esc(shortDate(h.date))}</small></div>`;
+  let shelves = "";
+  for (const sh of SHELVES) {
     const items = buy.filter(i => shelfOf(i.name) === sh.id);
     const inside = extras.filter(h => (SHELVES.some(x => x.id === h.shelf) ? h.shelf : shelfOf(h.name)) === sh.id);
-    return `<section class="compart ${sh.cls}" aria-label="${esc(sh.label)}">${sh.id === "frozen" ? `<span class="bottle" aria-hidden="true"></span>` : ""}<span>${esc(sh.label)}</span>${items.length ? `<div class="shelfrow">${items.map(i => thing(i, sh.shape)).join("")}</div>` : `<p class="none" style="margin:0">Nothing to buy here.</p>`}${inside.length ? `<span class="stockedlabel">Already in here</span><div class="shelfrow">${inside.map(h => stocked(h, sh.shape)).join("")}</div>` : ""}</section>`;
-  };
-  let inside = SHELVES.filter(x => x.id !== "produce").map(shelf).join("");
-  inside += `<section class="compart have" aria-label="Already have"><span>Bottom shelf ✶ already have</span>${have.length ? `<div class="shelfrow">${have.map(i => thing(i, "staple")).join("")}</div>` : `<p class="none" style="margin:0">None of this week's ingredients are staples.</p>`}</section>`;
-  inside += shelf(SHELVES.find(x => x.id === "produce"));
-  const open = S.fridgeOpen;
-  const door = `<div class="door${open ? " open" : ""}" ${open ? "inert" : ""}><div class="door-face">
-      <div class="panel fz"><button class="handle" data-act="fridge" data-v="open" aria-label="Open the fridge" style="top:30px;height:66px"></button></div>
-      <div class="panel main"><button class="handle" data-act="fridge" data-v="open" aria-label="Open the fridge" style="top:22px;height:110px"></button>${!open && !S.tipSeen ? `<span class="tip" aria-hidden="true" style="top:144px">pull to open</span>` : ""}
-      <div class="doornote"><span class="magnet" aria-hidden="true"></span><b>Groceries inside!</b>${left ? `${left} thing${left > 1 ? "s" : ""} to buy` : "Got everything"}<br>${have.length} staple${have.length === 1 ? "" : "s"} on the bottom shelf${extras.length ? `<br>${extras.length} more from your last order` : ""}</div></div>
-    </div></div>`;
-  const tip = "";
-  return `<div style="display:grid;gap:22px">
-    <div class="shelf"><h2>The list</h2><p class="empty" style="margin:0">Everything for the week of ${esc(shortDate(S.weekId))}, built from the dishes you're cooking. Swap a dish or mark a night as out and the fridge restocks itself. Quantities are on the recipe pages.</p></div>
-    <div class="fridge${open ? "" : " shut"}"><div class="inside" ${open ? "" : "inert"}>${inside}</div>${tip}${door}</div>
-    ${open ? `<div class="fridgebar"><span>${left ? `${left} left to buy. Tap anything you've got.` : "Got everything."}</span><button class="ink" data-act="fridge" data-v="close">Close the fridge</button></div>` : ""}
-    <details id="staples-box" style="max-width:350px" ${S.staplesOpen ? "open" : ""}><summary class="print" style="cursor:pointer;font-size:16px">Change what's on the bottom shelf</summary>
-      <p class="empty" style="margin:8px 0">Staples always land on the bottom shelf. Tap one to take it off.</p>
-      <div class="chips">${S.staples.map(x => `<button class="chip" data-act="unstaple" data-name="${esc(x)}" aria-label="Remove ${esc(x)}" ${dis}>${esc(x)} ×</button>`).join("") || `<span class="empty">No staples yet.</span>`}</div>
-      <form class="addrow" id="staple-form"><input type="text" id="staple-input" placeholder="Add a staple, e.g. basmati rice" ${dis}><button ${dis}>Add</button></form>
-      ${buy.length ? `<p class="empty" style="margin:12px 0 6px">Or move something from this week into staples:</p><div class="chips">${buy.map(i => `<button class="chip" data-act="staple" data-name="${esc(i.name)}" ${dis}>+ ${esc(i.name)}</button>`).join("")}</div>` : ""}
-    </details></div>`;
+    if (sh.id === "frozen" && !items.length && !inside.length) continue;
+    shelves += `<section class="shelf ${sh.cls || ""}" aria-label="${esc(sh.label)}"><div class="sh k"><span>${esc(sh.label)}</span><span>${items.length}</span></div>${items.map(item).join("") || `<p class="none">Nothing to buy here.</p>`}${inside.map(inItem).join("")}</section>`;
+  }
+  const door = `<details class="door" id="staples-box" ${S.staplesOpen ? "open" : ""}><summary>Door · already have <span style="font-weight:400;opacity:.8">${have.length} this week · ${S.staples.length} staples</span></summary><div class="inner">
+      ${have.length ? `<div class="k">Used this week</div><div class="chips">${have.map(i => `<span class="chip plain">${esc(i.name)}</span>`).join("")}</div>` : ""}
+      <div class="k">Your staples · tap to remove</div>
+      <div class="chips">${S.staples.map(x => `<button class="chip" data-act="unstaple" data-name="${esc(x)}" aria-label="Remove ${esc(x)}" ${dis}>${esc(x)} ×</button>`).join("") || `<span class="say small">No staples yet.</span>`}</div>
+      <form class="addrow" id="staple-form"><input type="text" id="staple-input" placeholder="Add a staple, e.g. basmati rice" aria-label="Add a staple" ${dis}><button ${dis}>Add</button></form>
+      ${buy.length ? `<div class="k">Move to staples</div><div class="chips">${buy.map(i => `<button class="chip" data-act="staple" data-name="${esc(i.name)}" ${dis}>+ ${esc(i.name)}</button>`).join("")}</div>` : ""}
+    </div></details>`;
+  return [mast, `<div class="fridge">${shelves}${door}</div><p class="say small" style="margin-top:16px">Tap anything you've got. Swap a dish or mark a night out and the list changes with it.</p>`];
 }
 
 function allPlanned() {
@@ -832,97 +744,84 @@ function tinTabs() {
   const counts = {};
   box.forEach(r => { const c = r.cuisine || "Other"; counts[c] = (counts[c] || 0) + 1; });
   const top = Object.keys(counts).sort((a, b) => counts[b] - counts[a] || a.localeCompare(b));
-  const named = top.slice(0, 3), rest = top.slice(3);
-  const tabs = named.map(c => ({ id: "c:" + c, label: c.length > 8 ? c.slice(0, 7) + "." : c, cards: box.filter(r => (r.cuisine || "Other") === c) }));
-  if (rest.length) tabs.push({ id: "other", label: "Other", cards: box.filter(r => rest.includes(r.cuisine || "Other")) });
+  const tabs = [{ id: "all", label: "All", cards: box }];
+  top.slice(0, 4).forEach(c => tabs.push({ id: "c:" + c, label: c, cards: box.filter(r => (r.cuisine || "Other") === c) }));
   const quick = box.filter(r => Number(r.minutes) && Number(r.minutes) <= 25);
   if (quick.length) tabs.push({ id: "quick", label: "Quick", cards: quick });
   const never = Object.entries(S.rejects).map(([k, r]) => ({ ...r, key: k, torn: true }));
   if (never.length) tabs.push({ id: "never", label: "Never", cards: never, never: true });
-  tabs.forEach(t => t.cards.sort((a, b) => a.dish.localeCompare(b.dish)));
+  tabs.forEach(t => t.cards.sort((a, b) => (b.pending ? 1 : 0) - (a.pending ? 1 : 0) || String(a.dish).localeCompare(String(b.dish))));
   return tabs;
 }
 
 function renderRecipes() {
   const dis = S.canWrite ? "" : "disabled";
   const tabs = tinTabs();
-  if (!S.tin.tab && tabs.length) S.tin = { ...S.tin, tab: tabs[0].id };
   const T = S.tin;
-  const tab = tabs.find(t => t.id === T.tab) || null;
-  const all = tabs.flatMap(t => t.cards);
-  const card = T.card ? all.find(c => c.key === T.card && (c.torn ? T.tab === "never" : true)) : null;
-  let stage = `<div class="lid" aria-hidden="true"></div>`;
-  if (!tabs.length) stage += `<div class="tinprompt"><b>The tin is empty</b><span>Tap ♡ on a dinner you loved and it gets a card in here.</span></div>`;
-  else if (!T.up && !tab) stage += `<div class="tinprompt"><b>What are we making?</b><span>Tap a divider to flip through the cards behind it.</span></div>`;
-  if (tab && !T.up) {
-    const n = tab.cards.length, gap = Math.min(52, Math.floor(420 / Math.max(n, 1)));
-    tab.cards.forEach((c, i) => {
-      stage += `<button class="strip${c.torn ? " torn" : ""}" data-act="tincard" data-key="${esc(c.key)}" style="bottom:${166 + (n - 1 - i) * gap}px">${esc(c.dish)}<small>${c.torn ? "never again" : esc(c.minutes ? c.minutes + " min" : (c.source || ""))}</small></button>`;
-    });
-  }
-  let faces = "";
-  if (card && card.torn) {
-    faces = `<div class="face torn"><span class="kick">Torn out</span><span class="dish">${esc(card.dish)}</span><span class="meta">${esc(card.source || "")}</span>
-      <span class="meta" style="margin-top:8px">Claude won't suggest this one again. Changed your mind?</span>
-      <div class="foot"><button class="ink" data-act="unreject" data-key="${esc(card.key)}" ${dis}>Tape it back in</button><button class="ink" data-act="tin" data-v="putback">Put it back</button></div></div>`;
-  } else if (card) {
-    const link = safeLink(card.link);
-    const front = T.picking
-      ? `<span class="kick">Cook it the week of ${esc(shortDate(S.weekId || today()))}</span><span class="dish" style="font-size:44px">${esc(card.dish)}</span><span class="meta">Which night? It replaces whatever's planned and goes on the list.</span>
-         <div class="nights">${S.weekId ? SLOTS.map(sl => `<button data-act="tincook" data-slot="${sl}" ${dis}>${DAY[sl].slice(0, 3)}<br>${esc(shortDate(slotDate(sl)))}</button>`).join("") : ""}</div>
-         <div class="foot"><button class="ink" data-act="tin" data-v="unpick">Never mind</button></div>`
-      : `<span class="kick">${esc(card.cuisine || "Saved")} ✶ in the tin</span><span class="dish">${esc(card.dish)}</span><span class="meta">${esc([card.minutes && card.minutes + " min", card.source].filter(Boolean).join(" ✶ "))}</span>
-         ${card.protein || card.carb || card.veg ? `<span class="pcv">Protein: ${esc(card.protein || "")}<br>Carb: ${esc(card.carb || "")}<br>Veg: ${esc(card.veg || "")}</span>` : `<span class="meta">Claude will fill in the details from the caption next time it runs.</span>`}
-         ${card.pending ? `<form class="addrow" id="tinname-form" data-key="${esc(card.key)}"><input type="text" id="tinname-input" aria-label="Dish name" placeholder="Name it, e.g. pumpkin pasta" ${dis}><button ${dis}>Save</button></form>` : ""}
-         ${link && card.tweak ? `<span class="meta clamp3" style="font-size:14px">${esc(card.tweak)}</span>` : ""}
-         <div class="foot">${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">${card.source === "TikTok" || card.source === "Instagram" ? "Open on " + esc(card.source) : "Open the recipe"} →</a>` : `<button class="ink" data-act="tin" data-v="flip">Flip for the steps ↻</button>`}<button class="ink" data-act="tin" data-v="pick" ${S.weekId ? "" : "disabled"} ${dis}>Cook it this week</button></div>
-         ${link ? `<button class="ink" style="font-size:14px;align-self:flex-start" data-act="heartrec" data-key="${esc(card.key)}" ${dis}>Take it out of the tin</button>` : ""}`;
-    faces = `<div class="face" ${T.flipped ? 'aria-hidden="true"' : ""}>${front}</div>
-      <div class="face back" ${T.flipped ? "" : 'aria-hidden="true" inert'}><span class="kick">How to make it</span>
-        ${(card.steps || []).length ? `<ol>${card.steps.map(x => `<li>${esc(x)}</li>`).join("")}</ol>` : `<span class="meta">The steps are on the recipe page.</span>`}
-        ${(card.ingredients || []).length ? `<span class="kick" style="margin-top:6px">What goes in it</span><span class="meta">${esc(card.ingredients.join(", "))}</span>` : ""}
-        ${card.tweak ? `<span class="kick" style="margin-top:6px">Notes</span><span class="meta">${esc(card.tweak)}</span>` : ""}
-        <div class="foot"><button class="ink" data-act="tin" data-v="flip">Flip back ↻</button></div>
-        <button class="ink" style="font-size:14px;align-self:flex-start" data-act="heartrec" data-key="${esc(card.key)}" ${dis}>Take it out of the tin</button></div>`;
-  }
-  stage += `<div class="slot${T.up && card ? "" : " down"}"><div class="card3d${T.flipped ? " flipped" : ""}">${faces}</div></div>`;
-  if (tabs.length) stage += `<div class="dividers" role="group" aria-label="Dividers" style="grid-template-columns:repeat(${tabs.length},minmax(0,1fr))">${tabs.map(t => `<button class="divider${t.never ? " never" : ""}" data-act="tintab" data-v="${esc(t.id)}" aria-pressed="${T.tab === t.id}" aria-label="${esc(t.label)}, ${t.cards.length} card${t.cards.length === 1 ? "" : "s"}"><span class="tab">${esc(t.label)} <b>${t.cards.length}</b></span></button>`).join("")}</div>`;
-  stage += `<div class="tin"><span class="clasp" aria-hidden="true"></span><span class="plate">our recipes</span></div>`;
-  const nStrips = tab && !T.up ? tab.cards.length : 0;
-  const stageH = T.up && card ? 606 : (tabs.length ? 250 + Math.max(0, nStrips - 1) * 52 : 300);
-
+  const tab = tabs.find(t => t.id === T.tab) || tabs[0];
+  const card = T.card ? tabs.flatMap(t => t.cards).find(c => c.key === T.card) : null;
+  const n = Object.keys(S.box).length;
+  const mast = masthead({ word: "Recipe tin", dateline: `${n} card${n === 1 ? "" : "s"}`, title: card ? "Our recipes" : "Our recipes", art: "carrots",
+    side: `<button class="bar" style="width:auto;margin:0;padding:9px 12px" data-act="tin" data-v="add" aria-expanded="${!!S.addOpen}">${ICON.plus} Add</button>`,
+    extra: card ? "" : `<div class="filters" role="group" aria-label="Filter">${tabs.map(t => `<button data-act="tintab" data-v="${esc(t.id)}" aria-pressed="${t.id === tab.id}">${esc(t.label)}</button>`).join("")}</div>` });
+  if (card) return [mast, renderTinCard(card, dis)];
+  const tile = (c, i) => `<button class="rtile${c.torn ? " torn" : ""}" data-act="tincard" data-key="${esc(c.key)}"><span class="ph" style="background: var(--${["peach", "pist", "butter"][i % 3]})">${c.pending ? `<span class="new k">New</span>` : ""}${photo(c) || `<img class="art" src="${ART[artFor(c.dish)]}" alt="" aria-hidden="true">`}</span><span class="nm">${esc(c.dish)}</span><span class="mt">${esc(c.torn ? "Never again" : [c.cuisine, c.minutes && c.minutes + " min", !c.minutes && c.source].filter(Boolean).join(" · "))}</span></button>`;
   const rec = r => {
     const link = safeLink(r.link); const k = recipeKey(r); const hearted = !!S.box[k];
-    return `<div class="rec"><div class="t">${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">${esc(r.dish)}</a>` : `<b>${esc(r.dish)}</b>`}<small>${esc([r.source, r.cuisine, r.minutes && r.minutes + " min"].filter(Boolean).join(", "))}</small></div>
-      <button class="heart" data-act="heartrec" data-key="${esc(k)}" aria-pressed="${hearted}" aria-label="${hearted ? "Take out of" : "Put in"} the tin" ${dis}>${hearted ? "♥" : "♡"}</button></div>`;
+    return `<div class="rec"><div class="t">${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">${esc(r.dish)}</a>` : `<b>${esc(r.dish)}</b>`}<small>${esc([r.source, r.cuisine, r.minutes && r.minutes + " min"].filter(Boolean).join(" · "))}</small></div>
+      <button class="heart" data-act="heartrec" data-key="${esc(k)}" aria-pressed="${hearted}" aria-label="${hearted ? "Take out of" : "Put in"} the tin" ${dis}>${hearted ? ICON.heart : ICON.heartLine}</button></div>`;
   };
   const planned = allPlanned().filter(r => !S.rejects[recipeKey(r)]);
-  return `<div style="display:grid;gap:44px">
-    <section class="shelf" aria-label="Recipe tin"><h2>Our recipes</h2><div class="stage" style="height:${stageH}px">${stage}</div>
-      <details id="add-box" style="max-width:350px;margin-top:18px" ${S.addOpen ? "open" : ""}><summary class="print" style="cursor:pointer;font-size:16px">Add a recipe</summary>
-        <p class="empty" style="margin:8px 0">Paste a link from TikTok, Instagram or a recipe site. Claude fills in the details on its next run.</p>
-        <form id="add-form" style="display:grid;gap:8px">
-          <input class="field" type="url" id="add-link" placeholder="https://…" aria-label="Link" ${dis}>
-          <input class="field" type="text" id="add-name" placeholder="Name it, e.g. pumpkin pasta" aria-label="Dish name" ${dis}>
-          <select class="field" id="add-where" aria-label="Where it goes" ${dis}><option value="tin">Just the recipe tin</option>${upcomingNights().map(x => `<option value="${x.date}">${esc(x.label)}</option>`).join("")}</select>
-          <button class="field" style="justify-self:start;padding:4px 14px;font-size:18px" ${dis}>Add it</button>
-        </form></details>
-      ${renderShared()}</section>
-    <section class="shelf"><h2>Everything Claude has suggested</h2><p class="empty" style="margin:0 0 6px">Tap ♡ to give one a card in the tin.</p>${planned.map(rec).join("") || `<p class="empty">None yet.</p>`}</section></div>`;
+  const add = S.addOpen ? `<form class="stack" id="add-form" style="margin-bottom:18px;padding:14px;border:1.5px solid var(--ink);background:var(--cream)">
+      <div class="k">Add a recipe</div>
+      <p class="say small" style="margin:0">Paste a link from TikTok, Instagram or a recipe site. Claude fills in the details on its next run.</p>
+      <input class="field" type="url" id="add-link" placeholder="https://…" aria-label="Link" ${dis}>
+      <input class="field" type="text" id="add-name" placeholder="Name it, e.g. pumpkin pasta" aria-label="Dish name" ${dis}>
+      <select class="field" id="add-where" aria-label="Where it goes" ${dis}><option value="tin">Just the recipe tin</option>${upcomingNights().map(x => `<option value="${x.date}">${esc(x.label)}</option>`).join("")}</select>
+      <button class="primary" ${dis}>Add it ${ICON.arrow}</button></form>` : "";
+  const body = `${add}${renderShared()}
+    ${tab.cards.length ? `<div class="grid">${tab.cards.map(tile).join("")}</div>` : `<p class="say">${tab.id === "all" ? "The tin is empty. Save a dinner you loved, or add a recipe." : "Nothing here yet."}</p>`}
+    <div class="section-h"><h2>Everything Claude has suggested</h2><span class="k">${planned.length}</span></div>
+    <div class="list">${planned.map(rec).join("") || `<p class="say small">None yet.</p>`}</div>`;
+  return [mast, body];
+}
+
+function renderTinCard(card, dis) {
+  const link = safeLink(card.link), img = photo(card);
+  let h = `<button class="ghost" data-act="tin" data-v="back" style="margin-bottom:14px">${ICON.left} All recipes</button>`;
+  h += `<div class="hero" style="height:240px;border:2px solid var(--ink);background:var(--peach)">${img || `<img class="art" src="${ART[artFor(card.dish)]}" alt="" aria-hidden="true">`}</div>`;
+  h += `<div class="night" style="padding:16px 0 0"><div><h1>${esc(card.dish)}</h1><div class="src">${esc([card.cuisine, card.minutes && card.minutes + " min", card.source].filter(Boolean).join(" · "))}</div></div>`;
+  if (card.torn) {
+    h += `<p class="say">Claude won't suggest this one again. Changed your mind?</p><div class="btns"><button class="ghost" data-act="unreject" data-key="${esc(card.key)}" ${dis}>Bring it back</button></div></div>`;
+    return h;
+  }
+  if (card.protein || card.carb || card.veg) h += `<div class="pcv"><div><small>PROTEIN</small><span>${esc(card.protein || "–")}</span></div><div><small>CARB</small><span>${esc(card.carb || "–")}</span></div><div><small>VEG</small><span>${esc(card.veg || "–")}</span></div></div>`;
+  else h += `<p class="say small">Claude fills in the details from the caption on its next run.</p>`;
+  if (card.pending) h += `<form class="addrow" id="tinname-form" data-key="${esc(card.key)}"><input type="text" id="tinname-input" aria-label="Dish name" placeholder="Name it, e.g. pumpkin pasta" ${dis}><button ${dis}>Save</button></form>`;
+  if (link) h += `<a class="primary" href="${esc(link)}" target="_blank" rel="noopener">${card.source === "TikTok" || card.source === "Instagram" ? "Open on " + esc(card.source) : "Open recipe"} ${ICON.out}</a>`;
+  if (S.tin.picking) {
+    h += `<div class="k">Cook it the week of ${esc(shortDate(S.weekId || thisMonday()))}. It replaces what's planned.</div><div class="nights7">${S.weekId ? SLOTS.map(sl => `<button data-act="tincook" data-slot="${sl}" ${dis}>${DAY[sl].slice(0, 3)}<br>${dayNum(slotDate(sl))}</button>`).join("") : ""}</div><div class="btns"><button class="ghost" data-act="tin" data-v="unpick">Never mind</button></div>`;
+  } else {
+    h += `<div class="btns"><button class="ghost" data-act="tin" data-v="pick" ${S.weekId ? "" : "disabled"} ${dis}>Cook it this week</button><button class="ghost danger" data-act="heartrec" data-key="${esc(card.key)}" ${dis}>Take out of the tin</button></div>`;
+  }
+  if (card.tweak) h += `<p class="say">${esc(card.tweak)}</p>`;
+  if (!link && (card.steps || []).length) h += `<div class="k">How to make it</div><ol class="say">${card.steps.map(x => `<li>${esc(x)}</li>`).join("")}</ol>`;
+  if ((card.ingredients || []).length) h += `<div class="receipt"><div class="rh k"><span>What goes in it</span><span>${card.ingredients.length}</span></div><ul>${card.ingredients.map(i => `<li><span>${esc(i)}</span></li>`).join("")}</ul></div>`;
+  return h + `</div>`;
 }
 
 // What the "Add to Pax" Shortcut delivered, and where the database filed each one.
 function renderShared() {
   const items = Object.entries(S.inbox).map(([id, d]) => ({ id, ...d }));
+  if (!items.length) return "";
   const where = d => {
     const m = /^weeks\/(\d{4}-\d{2}-\d{2})\/nights\/(\w+)$/.exec(d.filedTo || "");
     if (m) return { text: `${DAY[m[2]] || m[2]} ${shortDate(addDays(m[1], SLOTS.indexOf(m[2])))}`, week: m[1], slot: m[2] };
     if (/^box\//.test(d.filedTo || "")) return { text: "the recipe tin" };
     return { text: d.status ? `nowhere (${d.status})` : "nowhere yet" };
   };
-  const row = d => { const w = where(d); return `<div class="rec"><div class="t"><b>${esc(siteOf(d.url) === "the web" ? (d.url || "").replace(/^https?:\/\//, "").slice(0, 40) : siteOf(d.url) || "No link")}</b><small>${esc(d.by || "Someone")} picked ${esc(d.night || "?")} ✶ went to ${esc(w.text)}</small></div>${w.week ? `<button class="ink" style="font-size:15px" data-act="gonight" data-week="${w.week}" data-slot="${w.slot}">Open</button>` : ""}</div>`; };
-  return `<details id="shared-box" style="max-width:420px;margin-top:10px" ${S.sharedOpen ? "open" : ""}><summary class="print" style="cursor:pointer;font-size:16px">Shared from your phones (${items.length})</summary>
-    ${items.length ? items.map(row).join("") : `<p class="empty" style="margin:8px 0">Nothing has come through from the Add to Pax Shortcut yet. If you've shared something and it isn't here, the Shortcut's request isn't reaching Pax.</p>`}</details>`;
+  const row = d => { const w = where(d); return `<div class="rec"><div class="t"><b>${esc(d.title || (siteOf(d.url) === "the web" ? (d.url || "").replace(/^https?:\/\//, "").slice(0, 40) : siteOf(d.url) || "No link"))}</b><small>${esc(d.by || "Someone")} picked ${esc(d.night || "?")} · went to ${esc(w.text)}</small></div>${w.week ? `<button class="ghost" data-act="gonight" data-week="${w.week}" data-slot="${w.slot}">Open</button>` : ""}</div>`; };
+  return `<details id="shared-box" style="margin-bottom:16px" ${S.sharedOpen ? "open" : ""}><summary>Shared from your phones · ${items.length}</summary><div class="list">${items.map(row).join("")}</div></details>`;
 }
 
 // The Sunday deck: heart as many dishes as you have cook nights, then put them on your nights.
@@ -934,45 +833,46 @@ function renderDeck() {
   const hearts = (pk.hearts || []).map(byId).filter(Boolean);
   const days = nights.map(sl => DAY[sl]).join(" and ");
   const other = Object.keys((deckFor(w) || {}).people || {}).find(p => p !== me);
-  const undo = D.history.length ? `<button class="pill dashed" data-act="deckundo">↶ Undo: ${esc(D.history[D.history.length - 1].label)}</button>` : "";
-  const row = (sl, c, note) => `<div class="deckrow"><span class="d">${esc(DAY[sl].slice(0, 3))}<b>${dayNum(addDays(w, SLOTS.indexOf(sl)))}</b></span><span><b>${esc(c ? c.dish : "Nothing yet")}</b><small>${esc(note || "")}</small></span></div>`;
-  const head = `<p class="kick" style="margin:0">Your Sunday picks ✶ week of ${esc(shortDate(w))}</p>`;
+  const undo = D.history.length ? `<button data-act="deckundo">Undo ${esc(D.history[D.history.length - 1].label.split(" on ")[0])}</button>` : "<span></span>";
+  const row = (sl, c, note) => `<div class="deckrow"><span class="d k">${esc(DAY[sl].slice(0, 3))}<b>${dayNum(addDays(w, SLOTS.indexOf(sl)))}</b></span><span><strong>${esc(c ? c.dish : "Nothing yet")}</strong><small>${esc(note || "")}</small></span></div>`;
+  const title = need === 1 ? `${DAY[nights[0]]}'s dinner` : `${need} dinners`;
+  const top = (count) => `<img class="art" src="${ART.tomato}" alt="" aria-hidden="true"><div class="line"><span class="k">Sunday picks${count ? " · " + count : ""}</span><button class="sq" data-act="deckclose" aria-label="Close">${ICON.x}</button></div>`;
   let body;
   if (!need || !cards.length) {
-    body = `<h2>Nothing to pick</h2><p>There's no deck for you this week.</p>`;
+    body = top("") + `<h1>Nothing to pick</h1><p class="lede">There's no deck for you this week.</p><div class="actions2"><button class="primary" data-act="deckclose">Back to the week ${ICON.arrow}</button></div>`;
   } else if (pk.done) {
     const slots = pk.slots || {};
-    body = `<h2>You're set.</h2><p>Your nights are on the week and the grocery list.${other && !picksFor(w, other).done ? ` ${esc(COOK[other])} hasn't picked yet. Anything still open at the deadline gets Claude's top picks.` : ""}</p>
-      <div class="deckrows">${nights.map(sl => { const c = byId(slots[sl]); return row(sl, c, c ? [c.cuisine, c.minutes && c.minutes + " min", (pk.auto || []).includes(c.id) ? "Claude's pick" : "You picked it"].filter(Boolean).join(" ✶ ") : ""); }).join("")}</div>
-      <button class="pill go" data-act="deckclose">Back to the week</button>
-      <button class="pill" data-act="deckredo" ${dis}>Change my picks</button>
-      <p class="small">Changing starts your deck over. Your nights keep the current picks until you put new ones on the week.</p>`;
+    body = top("Done") + `<h1>You're set.</h1><p class="lede">Your nights are on the week and the list.${other && !picksFor(w, other).done ? ` ${esc(COOK[other])} hasn't picked yet. Anything still open at the deadline gets Claude's top picks.` : ""}</p>
+      <div class="deckrows">${nights.map(sl => { const c = byId(slots[sl]); return row(sl, c, c ? [c.cuisine, c.minutes && c.minutes + " min", (pk.auto || []).includes(c.id) ? "Claude's pick" : "You picked it"].filter(Boolean).join(" · ") : ""); }).join("")}</div>
+      <div class="actions2"><button class="primary" data-act="deckclose">Back to the week ${ICON.arrow}</button><button class="ghost" data-act="deckredo" ${dis}>Change my picks</button><p class="say small">Changing starts your deck over. Your nights keep their picks until you put new ones on the week.</p></div>`;
   } else if (hearts.length >= need) {
     const order = (D.order || bestOrder(hearts, nights, (deckFor(w) || {}).lean).map(c => c.id)).map(byId);
     D.order = order.map(c => c.id);
     const lean = (deckFor(w) || {}).lean || {};
-    const hint = need < 2 ? "" : order.every(isAsian) ? "Both are Asian, so one lands next to another Asian night. Fine if you're craving it." : Object.keys(lean).length ? "The Asian one goes on the week's Asian night, so you don't get two stir-fries in a row. Swap if you'd rather." : "";
-    body = `<h2>${need > 1 ? "Which night for which?" : "Put it on the week"}</h2>${hint ? `<p>${esc(hint)}</p>` : ""}
-      <div class="deckrows">${nights.map((sl, i) => row(sl, order[i], order[i] ? [order[i].cuisine, order[i].minutes && order[i].minutes + " min", (pk.auto || []).includes(order[i].id) ? "Claude's pick: the deck ran out" : ""].filter(Boolean).join(" ✶ ") : "") + (i < nights.length - 1 ? `<button class="pill small" data-act="deckswap" data-i="${i}" aria-label="Swap ${DAY[sl]} and ${DAY[nights[i + 1]]}">⇅ Swap ${esc(DAY[sl].slice(0, 3))} and ${esc(DAY[nights[i + 1]].slice(0, 3))}</button>` : "")).join("")}</div>
-      ${undo}<button class="pill go" data-act="deckok" ${dis}>Put ${need > 1 ? "them" : "it"} on the week</button>`;
+    const hint = need < 2 ? "" : order.every(isAsian) ? "Both are Asian, so one lands next to another Asian night. Fine if you're craving it." : Object.keys(lean).length ? "The Asian one goes on the week's Asian night, so there are no two stir-fries in a row. Swap if you'd rather." : "";
+    body = top("Almost") + `<h1>${need > 1 ? "Which night for which?" : "Put it on the week"}</h1>${hint ? `<p class="lede">${esc(hint)}</p>` : ""}
+      <div class="deckrows">${nights.map((sl, i) => row(sl, order[i], order[i] ? [order[i].cuisine, order[i].minutes && order[i].minutes + " min", (pk.auto || []).includes(order[i].id) ? "Claude's pick: the deck ran out" : ""].filter(Boolean).join(" · ") : "") + (i < nights.length - 1 ? `<button class="ghost" data-act="deckswap" data-i="${i}" aria-label="Swap ${DAY[sl]} and ${DAY[nights[i + 1]]}">Swap ${esc(DAY[sl].slice(0, 3))} and ${esc(DAY[nights[i + 1]].slice(0, 3))}</button>` : "")).join("")}</div>
+      <div class="actions2"><button class="primary red" data-act="deckok" ${dis}>Put ${need > 1 ? "them" : "it"} on the week ${ICON.arrow}</button><div class="deckfoot">${undo}</div></div>`;
   } else if (!D.started && !pos) {
-    body = `<h2>${cards.length} dishes. Heart ${need}.</h2>
-      <p>You cook ${esc(days)}, so you need ${need}. Heart the ones you'd actually be excited to eat. Once you have ${need}, you'll put them on your nights.</p>
-      <p class="small">Not this week skips it; it can come back another week. Never puts it in the tin's Never divider for good.${other ? ` ${esc(COOK[other])} picks for their own nights on their phone.` : ""}</p>
-      <button class="pill go" data-act="deckstart">Start</button><button class="pill" data-act="deckclose">Later</button>`;
+    body = top("") + `<h1>${cards.length} dishes. Heart ${need}.</h1>
+      <p class="lede">You cook ${esc(days)}. Heart the ones you'd actually be excited to eat, then put them on your nights.</p>
+      <p class="say small" style="margin-top:12px">Swipe right to heart, left for not this week. Never takes it off the list for good.${other ? ` ${esc(COOK[other])} picks their own nights on their phone.` : ""}</p>
+      <div class="actions2"><button class="primary" data-act="deckstart">Start ${ICON.arrow}</button><button class="ghost" data-act="deckclose">Later</button></div>`;
   } else {
     const c = cards[Math.min(pos, cards.length - 1)];
-    const link = safeLink(c.link);
-    body = `<div class="deckchips">${nights.map((_, i) => `<span class="chip${hearts[i] ? " on" : i === hearts.length ? " now" : ""}"><b>Heart ${i + 1}</b>${esc(hearts[i] ? hearts[i].dish : i === hearts.length ? "Looking…" : "Empty")}</span>`).join("")}</div>
-      <div class="deckmeta"><span>${hearts.length} of ${need} hearted</span><span>Card ${Math.min(pos + 1, cards.length)} of ${cards.length}</span></div>
-      <article class="deckcard" aria-live="polite"><span class="k">${esc([c.cuisine, c.minutes && c.minutes + " min"].filter(Boolean).join(" ✶ "))}</span>
-        <h3>${esc(c.dish)}</h3><span class="src">${esc(c.source || "")}</span>${c.why ? `<p>${esc(c.why)}</p>` : ""}
-        <div class="pcv"><span>Protein</span><span>${esc(c.protein || "")}</span><span>Carb</span><span>${esc(c.carb || "")}</span><span>Veg</span><span>${esc(c.veg || "")}</span></div>
-        ${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">Open the recipe →</a>` : ""}</article>
-      <div class="swipebtns"><button class="round" data-act="deckpick" data-v="skip" aria-label="Not this week" ${dis}>✕</button><span class="hint">Swipe right to heart it,<br>left for not this week</span><button class="round go" data-act="deckpick" data-v="heart" aria-label="Heart it" ${dis}>♥</button></div>
-      <div class="deckfoot">${undo || "<span></span>"}<button class="ink" data-act="deckpick" data-v="never" ${dis}>Never suggest this</button></div>`;
+    const link = safeLink(c.link), img = photo(c);
+    const count = `${String(Math.min(pos + 1, cards.length)).padStart(2, "0")} / ${String(cards.length).padStart(2, "0")}`;
+    body = top(count) + `<h1>${esc(title)}</h1><div class="hearts">${nights.map((_, i) => `<span class="${hearts[i] ? "on" : i === hearts.length ? "now" : ""}"><b class="k">Heart ${i + 1}</b>${esc(hearts[i] ? hearts[i].dish : i === hearts.length ? "Looking…" : "–")}</span>`).join("")}</div>
+      <div class="stage"><span class="tape" aria-hidden="true"></span><article class="deckcard" aria-live="polite">
+        <div class="ph${(deckPerson(w, me) && me === "nihal") ? " p-nihal" : ""}">${img || `<img class="art" src="${ART[artFor(c.dish)]}" alt="" aria-hidden="true">`}</div>
+        <div class="body"><div class="top k"><span style="color:var(--red-ink)">${esc([c.cuisine, c.minutes && c.minutes + " min"].filter(Boolean).join(" · "))}</span><span>${esc(c.source || "")}</span></div>
+        <h2>${esc(c.dish)}</h2>${c.why ? `<p>${esc(c.why)}</p>` : ""}
+        <div class="chips">${[c.protein, c.carb, c.veg].filter(Boolean).map(x => `<span class="chip plain">${esc(x)}</span>`).join("")}</div>
+        ${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">Open the recipe ↗</a>` : ""}</div></article></div>
+      <div class="choose"><button data-act="deckpick" data-v="skip" ${dis}>${ICON.x} Not this week</button><button class="go" data-act="deckpick" data-v="heart" ${dis}><span style="color:var(--red)">${ICON.heart}</span> Heart it</button></div>
+      <div class="deckfoot">${undo}<span>or swipe the card</span><button data-act="deckpick" data-v="never" ${dis}>Never suggest this</button></div>`;
   }
-  return `<section class="deck" aria-label="Your Sunday picks">${head}${body}</section>`;
+  return `<section class="deck" aria-label="Your Sunday picks">${body}</section>`;
 }
 
 // Swipe the deck card like Hinge: right hearts it, left is "not this week". Never stays a button, since it's permanent.
@@ -1061,12 +961,10 @@ async function saveNight(slot, patch) {
 
 const handlers = {
   focus: d => {
-    S.focus = S.focus === d.slot ? null : d.slot; S.ui = {}; render();
-    const el = document.getElementById("open");
-    if (el) el.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    S.focus = d.slot; S.ui = {}; render(); scrollTo(0, 0);
   },
   ui: d => { S.ui[d.slot] = { mode: d.v }; render(); },
-  close: () => { S.focus = null; S.ui = {}; render(); },
+  close: () => { S.focus = null; S.ui = {}; render(); scrollTo(0, 0); },
   week: d => { if (d.v) selectWeek(d.v); },
   pick: d => write(() => { S.ui = {}; return saveNight(d.slot, { current: d.id, boxPick: null }); }, "Swapped."),
   boxpick: d => { const b = S.box[d.key]; if (!b) return; write(() => { S.ui = {}; return saveNight(d.slot, { boxPick: b, flag: "cook" }); }, `${b.dish} it is.`); },
@@ -1088,8 +986,8 @@ const handlers = {
     write(() => saveNight(d.slot, { flag: v }), msg);
   },
   heart: d => toggleBox(nightView(d.slot).current),
-  heartrec: d => { if (S.tin.card === d.key && S.box[d.key]) S.tin = { ...S.tin, up: false, flipped: false }; toggleBox(S.box[d.key] || allPlanned().find(r => recipeKey(r) === d.key)); },
-  unreject: d => { S.tin = { ...S.tin, up: false }; write(() => S.db.collection("rejects").doc(d.key).delete(), "Taped back in. Claude can suggest it again."); },
+  heartrec: d => { if (S.tin.card === d.key && S.box[d.key]) S.tin = { ...S.tin, card: null, picking: false }; toggleBox(S.box[d.key] || allPlanned().find(r => recipeKey(r) === d.key)); },
+  unreject: d => { S.tin = { ...S.tin, card: null }; write(() => S.db.collection("rejects").doc(d.key).delete(), "Taped back in. Claude can suggest it again."); },
   request: d => {
     const note = (document.getElementById("req-" + d.slot) || {}).value || "";
     write(() => S.db.collection("requests").add({ week: S.weekId, slot: d.slot, note: note.trim().slice(0, 500), status: "open", ...stamp() }), "Asked. Claude will add options on its next run.");
@@ -1104,24 +1002,19 @@ const handlers = {
   },
   staple: d => saveStaples([...S.staples, d.name]),
   tick: d => handlers.check(d),
-  fridge: d => {
-    S.fridgeOpen = d.v === "open"; store("session", "pax-fridge-open", S.fridgeOpen ? "1" : "0");
-    if (S.fridgeOpen && !S.tipSeen) { S.tipSeen = true; store("local", "pax-fridge-tip", "1"); }
-    render();
-  },
-  tintab: d => { const T = S.tin; S.tin = { ...T, tab: T.tab === d.v && !T.up ? null : d.v, up: false, flipped: false, picking: false }; render(); },
-  tincard: d => { S.tin = { ...S.tin, card: d.key, up: true, flipped: false, picking: false }; render(); },
+  tintab: d => { S.tin = { tab: d.v, card: null, picking: false }; render(); },
+  tincard: d => { S.tin = { ...S.tin, card: d.key, picking: false }; render(); scrollTo(0, 0); },
   tin: d => {
     const T = S.tin;
-    if (d.v === "flip") S.tin = { ...T, flipped: !T.flipped, picking: false };
-    else if (d.v === "putback") S.tin = { ...T, up: false, flipped: false, picking: false };
-    else if (d.v === "pick") S.tin = { ...T, picking: true, flipped: false };
+    if (d.v === "add") { S.addOpen = !S.addOpen || !!T.card; S.tin = { ...T, card: null, picking: false }; render(); return; }
+    else if (d.v === "back") S.tin = { ...T, card: null, picking: false };
+    else if (d.v === "pick") S.tin = { ...T, picking: true };
     else if (d.v === "unpick") S.tin = { ...T, picking: false };
     render();
   },
   tincook: d => {
     const b = S.box[S.tin.card]; if (!b || !S.weekId) return;
-    S.tin = { ...S.tin, up: false, picking: false };
+    S.tin = { ...S.tin, card: null, picking: false };
     write(() => saveNight(d.slot, { boxPick: b, flag: "cook" }), `${b.dish} is on for ${DAY[d.slot]}.`);
   },
   gonight: d => { S.tab = "tonight"; selectWeek(d.week); S.focus = d.slot; render(); scrollTo(0, 0); },
@@ -1152,7 +1045,7 @@ function toggleBox(r) {
   if (!r) return;
   const k = recipeKey(r);
   if (S.box[k]) return write(() => S.db.collection("box").doc(k).delete(), "Removed from your recipe box.");
-  const keep = ["dish", "source", "link", "cuisine", "minutes", "protein", "carb", "veg", "ingredients", "steps", "tweak"];
+  const keep = ["dish", "source", "link", "image", "cuisine", "minutes", "protein", "carb", "veg", "ingredients", "steps", "tweak"];
   const doc = { id: "box-" + k.slice(0, 40) }; keep.forEach(f => { if (r[f] !== undefined) doc[f] = r[f]; });
   write(() => S.db.collection("box").doc(k).set({ ...doc, ...stamp() }), "Saved to your recipe box.");
 }
@@ -1165,8 +1058,8 @@ function saveStaples(list) {
 }
 
 document.addEventListener("click", e => {
-  const tab = e.target.closest("nav.tabs button");
-  if (tab) { S.tab = tab.dataset.tab; S.ui = {}; S.deck = null; render(); try { history.replaceState(null, "", "#" + (S.tab === "tonight" ? "week" : S.tab)); } catch (_) {} return; }
+  const tab = e.target.closest(".tabbar button");
+  if (tab) { S.tab = tab.dataset.tab; S.ui = {}; S.deck = null; S.focus = null; S.tin = { ...S.tin, card: null, picking: false }; render(); scrollTo(0, 0); try { history.replaceState(null, "", "#" + (S.tab === "tonight" ? "week" : S.tab)); } catch (_) {} return; }
   const el = e.target.closest("[data-act]");
   if (!el || el.disabled || el.dataset.act === "check") return;
   const h = handlers[el.dataset.act]; if (h) h(el.dataset);
@@ -1207,7 +1100,7 @@ document.addEventListener("submit", e => {
   if (where === "tin") {
     write(async () => {
       await S.db.collection("box").doc(key).set({ ...card, cuisine: "New" });
-      S.addOpen = false; S.tin = { tab: "c:New", card: key, up: true }; render();
+      S.addOpen = false; S.tin = { tab: "all", card: key, picking: false }; render(); scrollTo(0, 0);
     }, "In the tin, under New.");
     return;
   }
@@ -1261,8 +1154,11 @@ const PEOPLE = ["Prithvi", "Nihal"];
 
 function renderWho() {
   document.body.classList.add("out");
-  document.getElementById("view").innerHTML = `<div class="signin"><h2>Who's cooking?</h2><p>Pick yourself. This phone will remember.</p>
-    ${PEOPLE.map(n => `<button class="label" data-act="iam" data-v="${n}">I'm ${n}</button>`).join("")}</div>`;
+  const mast = document.getElementById("mast"), v = document.getElementById("view");
+  mast.hidden = false; mast.innerHTML = masthead({ word: "Pax", dateline: "Dinners at home", title: "Who's cooking?", art: "tomato" });
+  v.className = "view";
+  v.innerHTML = `<div class="signin"><p class="say">Pick yourself. This phone will remember.</p>
+    ${PEOPLE.map(n => `<button class="primary" data-act="iam" data-v="${n}">I'm ${n} ${ICON.arrow}</button>`).join("")}</div>`;
 }
 handlers.iam = d => { store("local", "pax-me", d.v); start(); };
 handlers.signout = () => { store("local", "pax-me", ""); location.reload(); };
@@ -1270,12 +1166,11 @@ handlers.signout = () => { store("local", "pax-me", ""); location.reload(); };
 async function start() {
   const tok = (location.hash || "").slice(1);
   if (tok === "list" || tok === "recipes") S.tab = tok;
-  if (!sb) { document.getElementById("view").innerHTML = `<div class="signin"><h2>Almost ready</h2><p>Pax isn't connected to its database yet. Add the Supabase URL and key to config.js.</p></div>`; return; }
+  if (!sb) { document.getElementById("view").innerHTML = `<div class="signin" style="padding:40px 20px"><h1>Almost ready</h1><p class="say">Pax isn't connected to its database yet. Add the Supabase URL and key to config.js.</p></div>`; return; }
   const me = store("local", "pax-me");
   if (!PEOPLE.includes(me)) return renderWho();
   document.body.classList.remove("out");
   S.myName = me;
-  document.getElementById("whoami").textContent = me + "'s phone.";
   const db = window.createPaxDb(sb);
   try { await db.start(); }
   catch (e) { console.error(e); S.offline = !navigator.onLine; toast("Couldn't load the plan. Pull down to retry."); }
