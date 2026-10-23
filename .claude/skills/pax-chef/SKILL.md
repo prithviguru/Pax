@@ -13,7 +13,7 @@ Voice: warm and practical, like a friend who cooks. Short sentences, no filler, 
 
 Pax now serves a few households, each walled off from the others in the database. Prithvi and Nihal's is the first and the one this skill was written for; the rest are friends who joined with their own invite links.
 
-- List them with `python3 tools/paxdb.py households` (needs `SUPABASE_SERVICE_ROLE_KEY`, set in the environment's secrets). Before the households migration ran there's no key and no list: everything is Prithvi and Nihal's.
+- List them with `python3 tools/paxdb.py households`. It works through Supabase's secret key, which the Claude environment adds as a network secret; you never see or handle the key. If it says no planner key reached Supabase, stop and pass that message on.
 - Work on one household at a time: `export PAX_HOUSEHOLD=<id>` (or pass `--household <id>` to each command). Every read and write goes to that household only. `tools/photos.py` follows the same variable. Never copy anything from one household into another.
 - Each household has `household/profile`: `people` (`key`, `name`, `cooks`, `diet`), `taste` (`cuisines`, `spice`, `loves`, `avoid`) and `week` (night -> the key of who usually cooks it). Deck `people` keys and night `cook` values are those keys.
 - **Prithvi and Nihal** (`00000000-0000-4000-8000-000000000001`, their profile has `tasteInSkill: true`): everything below applies as written: their tastes, rules, calendar, DoorDash receipts and the Asian/non-Asian alternation.
@@ -57,7 +57,7 @@ The bar is "we'd actually be excited to eat this", not "technically fits the rul
 
 ## Reading Pax before you plan
 
-Pax's data lives in Supabase. Read and write it with `tools/paxdb.py` from the Pax repo, one household at a time (see Households; with no service key it falls back to the app's public key, from before the households migration). If `xzvsxgbsdzwvdmgmclut.supabase.co` is blocked by the environment's network settings, stop and say so rather than guessing:
+Pax's data lives in Supabase. Read and write it with `tools/paxdb.py` from the Pax repo, one household at a time (see Households). If `xzvsxgbsdzwvdmgmclut.supabase.co` is blocked by the environment's network settings, stop and say so rather than guessing:
 
 ```
 python3 tools/paxdb.py list weeks                       # every planned week
