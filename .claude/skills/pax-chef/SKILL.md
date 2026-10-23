@@ -41,7 +41,7 @@ The bar is "we'd actually be excited to eat this", not "technically fits the rul
 - **Free recipes only.** Nothing behind a paywall or a sign-in: no NYT Cooking, Bon Appetit, America's Test Kitchen, Cook's Illustrated, Milk Street, or paid Substack posts.
 - Sources only: Rainbow Plant Life, The Woks of Life, School Night Vegan (schoolnightvegan.com), Ministry of Curry, Swasthi's Recipes (indianhealthyrecipes.com), Hebbars Kitchen, Smitten Kitchen, Serious Eats, Love and Lemons, Cookie and Kate. Lean on the first five; they cook the way Prithvi and Nihal like to eat.
 - Every recipe links to the actual recipe page. Verify each URL with a web search and use the exact URL the search returns. Slugs are often not what you'd guess (Smitten Kitchen's pasta and chickpeas is /2017/10/quick-pasta-and-chickpeas-pasta-e-ceci/). Never invent a link.
-- Ingredients come from the recipe page. If you can't read the page (some environments can't reach recipe sites), write the ingredients from your knowledge and say so in the week's `note`, so they check quantities before shopping.
+- Ingredients and times come from the recipe page: its JSON-LD `Recipe` block has `recipeIngredient` and `totalTime`. Fetch with a plain user agent (curl's); some sites, like Rainbow Plant Life, refuse browser-like ones, and The Woks of Life refuses all automated reads. If you can't read the page (some environments can't reach recipe sites), write the ingredients from your knowledge and say so in the week's `note`, so they check quantities before shopping.
 
 ## Reading Pax before you plan
 
@@ -66,21 +66,9 @@ Everything either of them changes in the app is there the moment they change it:
 
 Pull Prithvi's Google Calendar for the week: dinners with other people, travel, late evenings, workouts. Only her calendar is read. Nihal flags his own nights in the app.
 
-## Waiting to be written
-
-`plans/2026-10-26.json` is Prithvi's approved Mon to Wed for the week of Oct 26 (Soya Chilli or Chilli Tofu; Vodka Rigatoni, Sausage & Fennel Pasta or Burrito Bowl; Pad Krapow or Gochujang Noodles). It replaces the bland options planned earlier. As soon as you can reach Supabase, and before Oct 26:
-
-1. `python3 tools/paxdb.py merge weeks/2026-10-26 plans/2026-10-26.json` (arrays replace, so this swaps the Mon to Wed `options`, the `note` and the `shelves` map; Thu to Sun stay as they are).
-2. Leave `weeks/2026-10-26/nights/*` alone: if Monday was handed over or a night flagged, that still holds.
-3. If you can read the recipe pages, correct the ingredient lists, then delete the file and this section in a PR.
-
 ## Queued for a future week
 
-Dishes Prithvi has already OK'd but that didn't fit a week yet. Use these before searching for new ones, and remove each from this list once it's planned:
-
-- Rainbow Plant Life, Spicy Chili Garlic Noodles: https://rainbowplantlife.com/vegan-chili-garlic-noodles/ (add crispy tofu and bok choy or broccoli)
-- Rainbow Plant Life, Tempeh Tacos: https://rainbowplantlife.com/tempeh-tacos/ (about 40 min; give it a lighter night)
-- School Night Vegan, Creamy Gochujang Pasta: https://schoolnightvegan.com/home/vegan-gochujang-pasta/
+Dishes Prithvi has already OK'd but that didn't fit a week yet. Use these before searching for new ones, and remove each from this list once it's dealt. (Empty right now: the first queue went into the deck for the week of Oct 26.)
 
 ## Planning a week
 
