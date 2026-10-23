@@ -43,7 +43,7 @@ The bar is "we'd actually be excited to eat this", not "technically fits the rul
 - Every recipe links to the actual recipe page. Verify each URL with a web search and use the exact URL the search returns. Slugs are often not what you'd guess (Smitten Kitchen's pasta and chickpeas is /2017/10/quick-pasta-and-chickpeas-pasta-e-ceci/). Never invent a link.
 - Ingredients and times come from the recipe page: its JSON-LD `Recipe` block has `recipeIngredient` and `totalTime`. Fetch with a plain user agent (curl's); some sites, like Rainbow Plant Life, refuse browser-like ones, and The Woks of Life refuses all automated reads. If you can't read the page (some environments can't reach recipe sites), write the ingredients from your knowledge and say so in the week's `note`, so they check quantities before shopping.
 - Save the recipe's photo as `image` on every option and deck card: the page's `og:image` meta tag (or the JSON-LD `image`), as an absolute `https://` URL. The app shows it on the week, the night, the tin and the deck, and falls back to a coloured tile when there's none or it fails to load. Leave `image` out rather than guessing a URL. After writing the week and the decks, run `python3 tools/photos.py` to fill in any card still missing a photo.
-- Give every card an `art` too: the paper cutout that best matches what's in it, for when there's no photo. One of `tomato`, `peas`, `carrots`, `lemon`, `avocado`, `eggplant`, `broccoli`, `mushrooms`, `strawberry`, `garlic`, `egg`, `bread`, `fish`. Pick by the dish's star ingredient (Baingan Bharta is `eggplant`, a mushroom stroganoff is `mushrooms`, Pav Bhaji is `bread`), not a garnish. If nothing fits, leave it out: the app matches by keywords from the name, veg and ingredients. Set it on shared links when you fill them in, too.
+- Give every card an `art` too: the paper cutout that best matches what's in it, for when there's no photo. One of the file names in `docs/illustrations/` without `.png`: `tomato`, `peas`, `carrots`, `lemon`, `avocado`, `eggplant`, `broccoli`, `mushrooms`, `strawberry`, `garlic`, `egg`, `bread`, `fish`, `noodles`, `rice`, `chili`, `tofu`, `chickpeas`, `onion`, `pumpkin`, `corn`, `pepper` (bell pepper). Pick by the dish's star ingredient or form (Baingan Bharta is `eggplant`, Hakka Noodles is `noodles`, Chana Masala and dals are `chickpeas`, Paneer and tofu dishes are `tofu`, Pav Bhaji is `bread`), not a garnish. If nothing fits, leave it out: the app matches by keywords from the name, veg and ingredients. Set it on shared links when you fill them in, too.
 
 ## Reading Pax before you plan
 
@@ -72,22 +72,26 @@ Pull Prithvi's Google Calendar for the week: dinners with other people, travel, 
 
 Dishes Prithvi has already OK'd but that didn't fit a week yet. Use these before searching for new ones, and remove each from this list once it's dealt. (Empty right now: the first queue went into the deck for the week of Oct 26.)
 
-## Planning a week
+## Planning ahead: always four weeks of decks
 
-Write one document: collection `weeks`, doc id = that Monday's date (`YYYY-MM-DD`). **Never overwrite a week that already exists** (they may have swapped or rejected things in it). If it exists, stop and say so. The one exception is an old placeholder week with `stub: true`: plan it with `merge` and drop `stub`. A link they share to a week you haven't planned sits in that week's `nights/` docs with no week document; plan the week as usual. Leave any night that already has a `boxPick` or a `flag` as they set it.
+They can swipe their dinners up to four weeks out, so every Sunday run makes sure the **next four weeks** (the Mondays 1, 8, 15 and 22 days away) each have a week document and a deck. Usually that means dealing one new week, the fourth, and checking the other three.
+
+**A week that doesn't exist yet:** write one document: collection `weeks`, doc id = that Monday's date (`YYYY-MM-DD`), then its deck (below). The one exception is an old placeholder week with `stub: true`: plan it with `merge` and drop `stub`. A link they share to a week you haven't planned sits in that week's `nights/` docs with no week document; plan the week as usual. Leave any night that already has a `boxPick` or a `flag` as they set it. Calendars thin out further ahead, so a far week is mostly the usual cook nights; that's fine.
+
+**A week that already exists:** never rewrite it or its deck (they may have picked, swapped or rejected things in it). Only check Prithvi's calendar for anything new that clashes with a cook night (a dinner out, travel, a late evening). For each clash, `merge` that night in the week document to `kind` "out" or "order" with the reason in `note`, and `merge` the deck so that person's `nights` no longer lists it. If they had already picked a dish for that night (it's in the week's `nights.<day>.options`), don't lose it: add it to the top of their cards in the next week's deck that has room, and say so in the summary. Nights that open up (a plan cancelled) become cook nights only in weeks nobody has picked yet.
 
 - Cook nights are chosen by their cook from a **Sunday deck** (below), not planned by you. Write each cook night as `{ "kind": "cook", "cook": "nihal", "time": "19:30" }` with **no `options`**; the app fills `options` when the cook picks.
 - Across each deck: at least 1 Indian dish (Indo-Chinese counts), proteins varied (not all tofu), and no two cards the same dish.
 - Asian and non-Asian nights alternate so there are never two stir-fry nights in a row, and each cook gets a mix. For Mon/Tue/Wed/Thu that's `lean` mon "asian", tue "other", wed "other", thu "asian". For other cook-night sets, alternate in date order, then check each cook has at least one of each where they have 2+ nights.
 - Favor shared ingredients across the week (one bunch of cilantro doing two jobs).
-- No repeats from the last 4 weeks and never anything in `rejects`.
+- No repeats from the last 4 weeks, across the four open decks, and never anything in `rejects`. The exception is a hearted favourite: it can come back every other week at most.
 - Skip a cook night for a dinner out, travel or a late evening: `kind` "out" (eating somewhere) or "order" (ordering in at home), with the reason in `note` ("9:42pm flight from EWR. Leave by 7:15pm.").
 - Dinners with other people become `kind` "out", with the person in `label` ("Dinner with Saniha & Kunal") and the place in `note`.
 - Flex nights get an entry only when there's something worth saying ("Order in, you land at 5:40"). Otherwise leave them out. The app shows them as free nights.
 
-### The Sunday deck
+### The deck
 
-Next to the week document, write `decks/<Monday>`. Each cook hearts as many cards as they have cook nights, then puts them on their nights; the rest of their deck becomes those nights' backups. Never is a permanent reject (the app writes `rejects`); not this week is just a skip.
+Next to each week document, write `decks/<Monday>`. A deck is there for them to swipe any time from when you deal it until its deadline. Each cook hearts as many cards as they have cook nights, then puts them on their nights; the rest of their deck becomes those nights' backups. Never is a permanent reject (the app writes `rejects`); not this week is just a skip.
 
 ```json
 {
@@ -101,12 +105,12 @@ Next to the week document, write `decks/<Monday>`. Each cook hearts as many card
 }
 ```
 
-- `deadline`: 9pm New York time the Sunday before, with the correct UTC offset (EDT is -04:00, EST is -05:00). After it, any night still unpicked gets that cook's hearts, then their deck's top cards, shown automatically. You don't need to run again.
+- `deadline`: 9pm New York time the Sunday right before that week (not the Sunday you deal it), with the correct UTC offset (EDT is -04:00, EST is -05:00). After it, any night still unpicked gets that cook's hearts, then their deck's top cards, shown automatically. You don't need to run again.
 - `nights`: only nights they're actually cooking. A night out or ordering in gets no card. A cook with no cook nights gets no entry.
 - `cards`: about 10 per person (5 for one night), in the order you'd rank them, alternating Asian and non-Asian so the deck matches their nights' `lean`. The two decks never share a dish. Each card is a normal option (`id`, `dish`, `cuisine`, `minutes`, `source`, `link`, `image`, `protein`, `carb`, `veg`, `ingredients`, `tweak`) plus `why`: one line on why it's worth hearting ("Hot oil over chili and garlic, your favourite done properly"). Ids are unique across both decks.
 - Use the "Queued for a future week" dishes first, and dishes using fresh things from recent hauls.
 - Put every card's ingredients in the week's `shelves` map, since any card can end up on the list.
-- What they did with last week's deck is in `decks/<last Monday>/picks/<person>`: `hearts` (liked), `skipped` (not this week), `never` (also in `rejects`). Lean towards what they heart; let skipped dishes come back after a few weeks.
+- What they did with earlier decks is in `decks/<Monday>/picks/<person>` (including decks for weeks ahead they've already swiped): `hearts` (liked), `skipped` (not this week), `never` (also in `rejects`). Lean towards what they heart; let skipped dishes come back after a few weeks.
 
 ### Week document shape
 
