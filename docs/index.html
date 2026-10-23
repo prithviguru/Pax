@@ -261,6 +261,39 @@ form.stack, .ownform { display: grid; gap: 10px; }
 .steps b { font-weight: 700; }
 .linkbox { border: 1.5px dashed var(--ink); padding: 10px 12px; overflow-wrap: anywhere; font-size: 14px; }
 .linkbox code { font-family: inherit; }
+.steps-box { border: 1.5px solid var(--ink); }
+.steps-box summary { padding: 10px 12px; font-weight: 600; font-size: 14px; cursor: pointer; }
+.howto { margin: 0; padding: 0 14px 14px 32px; display: grid; gap: 10px; font-size: 14px; line-height: 1.45; }
+.howto .linkbox { margin: 6px 0; font-size: 12px; }
+.howto .ghost { margin-bottom: 6px; }
+/* How Pax works */
+.tour { min-height: 100svh; display: flex; flex-direction: column; gap: 12px; padding: calc(20px + env(safe-area-inset-top)) 20px calc(24px + env(safe-area-inset-bottom)); }
+.tour .line { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--ink); padding-bottom: 8px; }
+.tour .line .textlink { margin: 0; }
+.tour .stage { display: grid; place-items: center; min-height: 270px; padding: 18px 0 6px; }
+.tour h1 { margin: 6px 0 0; font-size: 34px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
+.tour .lede { margin: 0; font-size: 16px; line-height: 1.45; }
+.tour .dots { display: flex; gap: 6px; margin-top: auto; padding-top: 10px; }
+.tour .dots span { width: 18px; height: 4px; background: var(--hair); }
+.tour .dots span.on { background: var(--ink); }
+.tour .actions2 { display: grid; gap: 8px; }
+.demo { pointer-events: none; width: 100%; }
+.demo.trio { position: relative; height: 240px; }
+.demo.trio img { position: absolute; width: 46%; }
+.demo.trio img:nth-child(1) { left: 2%; top: 8%; transform: rotate(-8deg); }
+.demo.trio img:nth-child(2) { right: 0; top: 0; transform: rotate(6deg); }
+.demo.trio img:nth-child(3) { left: 30%; bottom: 0; width: 40%; transform: rotate(-24deg); }
+.tdeck { display: grid; gap: 12px; max-width: 300px; }
+.tcard { border: 2px solid var(--ink); background: var(--cream); box-shadow: 6px 6px 0 var(--ink); }
+.tcard .ph { display: grid; place-items: center; height: 140px; border-bottom: 2px solid var(--ink); }
+.tcard .ph img { width: 52%; height: 86%; object-fit: contain; }
+.tcard .body { display: grid; gap: 3px; padding: 10px 12px 12px; }
+.tcard small { color: var(--red-ink); }
+.tcard b { font-size: 20px; letter-spacing: -0.01em; }
+.tdeck .choose { padding: 0; margin-top: 0; }
+.demo.cal { margin: 0; }
+.demo.fridge { box-shadow: 6px 6px 0 var(--pist); }
+.demo.grid { max-width: 320px; }
 /* Household setup */
 form.setup { display: grid; gap: 18px; }
 form.setup section { display: grid; gap: 8px; }
@@ -383,7 +416,7 @@ function noteText(n) {
     if (n.current) return { title: n.current.dish, sub: [n.current.minutes ? n.current.minutes + " min" : "", n.current.cuisine].filter(Boolean).join(" · ") };
     if (n.blank) return { title: "Nothing planned", sub: "" };
     if (n.picking) return n.picking === myKey() ? { title: "Your pick", sub: "Heart it in your picks for this week" } : { title: `${COOK[n.picking]}'s picking`, sub: "From their deck" };
-    return { title: "Nothing yet", sub: "Pick from the recipe box or ask Claude" };
+    return { title: "Nothing yet", sub: "Pick from the recipe box or ask Pax" };
   }
   if (n.mode === "flex") return { title: n.plan.label || "Free night", sub: n.plan.note || "Out, in, or leftovers" };
   const planned = n.pk === n.mode;
@@ -544,7 +577,7 @@ function masthead({ word, dateline, title, art, side = "", extra = "" }) {
 }
 
 function noWeek() {
-  return `<p class="say">Nothing planned yet. Claude keeps the next four weeks dealt, so this week's deck shows up here soon.</p>`;
+  return `<p class="say">Nothing planned yet. Pax keeps the next four weeks dealt, so this week's deck shows up here soon.</p>`;
 }
 
 function deckBanner(w) {
@@ -561,7 +594,7 @@ function renderWeekView() {
   const w = week();
   const id = S.weekId || thisMonday();
   const deckNote = S.weekId && deckFor(S.weekId) && !deckPast(S.weekId) ? Object.keys(deckFor(S.weekId).people || {}).filter(p => p !== me).map(p => { const pk = picksFor(S.weekId, p); return pk.done ? `${COOK[p] || p} has picked.` : `${COOK[p] || p}: ${Math.min((pk.hearts || []).length, deckNights(S.weekId, p).length)} of ${deckNights(S.weekId, p).length} picked.`; }).join(" ") : "";
-  const note = !S.weekId ? "" : w ? [w.note, deckNote].filter(Boolean).join(" ") : addDays(S.weekId, 6) < today() ? "Nothing was planned this week." : "Not planned yet. Anything you put on a night stays when Claude plans it.";
+  const note = !S.weekId ? "" : w ? [w.note, deckNote].filter(Boolean).join(" ") : addDays(S.weekId, 6) < today() ? "Nothing was planned this week." : "Not planned yet. Anything you put on a night stays when Pax plans it.";
   const myDeck = S.weekId && deckNights(S.weekId, me).length && deckCards(S.weekId, me).length;
   const myPk = S.weekId ? picksFor(S.weekId, me) : {};
   // Each week shows its own deck while it's open; scroll to a week to pick it.
@@ -637,13 +670,13 @@ function renderOpen(n) {
     if (n.st.flag && n.st.by) body += `<p class="say small" data-by="${esc(n.st.by)}">Marked by <span class="name">someone</span>.</p>`;
   } else if (!c && n.picking) {
     const mine = n.picking === myKey();
-    body = `<div><h1 id="open-h">${mine ? "Your pick" : esc(COOK[n.picking]) + " is picking"}</h1><div class="src">${mine ? "Heart a dish in your picks for this week and it lands here." : `From ${esc(COOK[n.picking])}'s deck. If nothing's picked by the deadline, Claude's top pick goes on.`}</div></div>${seg}`;
+    body = `<div><h1 id="open-h">${mine ? "Your pick" : esc(COOK[n.picking]) + " is picking"}</h1><div class="src">${mine ? "Heart a dish in your picks for this week and it lands here." : `From ${esc(COOK[n.picking])}'s deck. If nothing's picked by the deadline, Pax's top pick goes on.`}</div></div>${seg}`;
     if (mine) body += `<button class="primary" data-act="deck" data-v="${S.weekId}">Open your picks ${ICON.arrow}</button>`;
     body += `<div class="btns">${own}</div>`;
   } else if (!c && n.blank) {
     body = `<div><h1 id="open-h">Nothing planned</h1><div class="src">Make your own to put something on ${esc(DAY[n.slot])}.</div></div>${seg}<div class="btns">${own}<button class="ghost" data-act="ownclear" data-slot="${n.slot}" ${dis}>Go back to the plan</button></div>`;
   } else if (!c) {
-    body = `<div><h1 id="open-h">Nothing left for ${esc(DAY[n.slot])}</h1><div class="src">${(n.plan.options || []).length ? "Both backups are gone." : "Nothing was planned for this night."} Make your own, pick from the tin, or ask Claude for two new options.</div></div>${seg}<div class="btns">${own}</div>` + renderBoxPicker(n, dis, false) + renderRequest(n, dis);
+    body = `<div><h1 id="open-h">Nothing left for ${esc(DAY[n.slot])}</h1><div class="src">${(n.plan.options || []).length ? "Both backups are gone." : "Nothing was planned for this night."} Make your own, pick from the tin, or ask Pax for two new options.</div></div>${seg}<div class="btns">${own}</div>` + renderBoxPicker(n, dis, false) + renderRequest(n, dis);
   } else {
     const link = safeLink(c.link);
     const hearted = !!S.box[recipeKey(c)];
@@ -651,7 +684,7 @@ function renderOpen(n) {
     body = `<div><h1 id="open-h">${esc(c.dish)}</h1><div class="src">${esc([c.source, c.minutes && c.minutes + " min", c.cuisine, c.own ? "your own" : c.fromBox && "from the tin", cookTxt].filter(Boolean).join(" · "))}</div></div>${seg}`;
     if (c.protein || c.carb || c.veg) body += `<div class="pcv"><div><small>PROTEIN</small><span>${esc(c.protein || "–")}</span></div><div><small>CARB</small><span>${esc(c.carb || "–")}</span></div><div><small>VEG</small><span>${esc(c.veg || "–")}</span></div></div>`;
     if (link) body += `<a class="primary" href="${esc(link)}" target="_blank" rel="noopener">${c.source === "TikTok" || c.source === "Instagram" ? "Open on " + esc(c.source) : "Open recipe"} ${ICON.out}</a>`;
-    if (c.pending) body += `<p class="say small">Saved from ${esc(c.source || "a link")}${c.savedBy ? " by " + esc(c.savedBy) : ""}. Claude fills in the details from the caption on its next run.</p>
+    if (c.pending) body += `<p class="say small">Saved from ${esc(c.source || "a link")}${c.savedBy ? " by " + esc(c.savedBy) : ""}. Pax fills in the details from the caption on its next run.</p>
       <form class="addrow" id="rename-form" data-slot="${n.slot}"><input type="text" id="rename-input" aria-label="Dish name" placeholder="Name it, e.g. pumpkin pasta" ${dis}><button ${dis}>Save name</button></form>`;
     if (c.tweak) body += `<p class="say">${esc(c.tweak)}</p>`;
     if (!link && (c.steps || []).length) body += `<ol class="say">${c.steps.map(s => `<li>${esc(s)}</li>`).join("")}</ol>`;
@@ -694,10 +727,10 @@ function renderEditForm(n, dis, fresh) {
 }
 
 function renderRequest(n, dis) {
-  if (n.request) return `<p class="say small">You asked Claude for new options${n.request.note ? `: “${esc(n.request.note)}”` : ""}. They'll show up after Claude's next run.</p>`;
-  return `<div class="ownform"><label for="req-${n.slot}">Anything Claude should know?</label>
+  if (n.request) return `<p class="say small">You asked Pax for new options${n.request.note ? `: “${esc(n.request.note)}”` : ""}. They'll show up after Pax's next run.</p>`;
+  return `<div class="ownform"><label for="req-${n.slot}">Anything Pax should know?</label>
     <textarea id="req-${n.slot}" rows="2" placeholder="e.g. something quick, nothing too heavy"></textarea>
-    <button class="ghost" data-act="request" data-slot="${n.slot}" ${dis}>Ask Claude for new options</button></div>`;
+    <button class="ghost" data-act="request" data-slot="${n.slot}" ${dis}>Ask Pax for new options</button></div>`;
 }
 
 function buildList() {
@@ -839,14 +872,14 @@ function renderRecipes() {
   const planned = allPlanned().filter(r => !S.rejects[recipeKey(r)]);
   const add = S.addOpen ? `<form class="stack" id="add-form" style="margin-bottom:18px;padding:14px;border:1.5px solid var(--ink);background:var(--cream)">
       <div class="k">Add a recipe</div>
-      <p class="say small" style="margin:0">Paste a link from TikTok, Instagram or a recipe site. Claude fills in the details on its next run.</p>
+      <p class="say small" style="margin:0">Paste a link from TikTok, Instagram or a recipe site. Pax fills in the details on its next run.</p>
       <input class="field" type="url" id="add-link" placeholder="https://…" aria-label="Link" ${dis}>
       <input class="field" type="text" id="add-name" placeholder="Name it, e.g. pumpkin pasta" aria-label="Dish name" ${dis}>
       <select class="field" id="add-where" aria-label="Where it goes" ${dis}><option value="tin">Just the recipe tin</option>${upcomingNights().map(x => `<option value="${x.date}">${esc(x.label)}</option>`).join("")}</select>
       <button class="primary" ${dis}>Add it ${ICON.arrow}</button></form>` : "";
   const body = `${add}${renderShared()}
     ${tab.cards.length ? `<div class="grid">${tab.cards.map(tile).join("")}</div>` : `<p class="say">${tab.id === "all" ? "The tin is empty. Save a dinner you loved, or add a recipe." : "Nothing here yet."}</p>`}
-    <div class="section-h"><h2>Everything Claude has suggested</h2><span class="k">${planned.length}</span></div>
+    <div class="section-h"><h2>Everything Pax has suggested</h2><span class="k">${planned.length}</span></div>
     <div class="list">${planned.map(rec).join("") || `<p class="say small">None yet.</p>`}</div>`;
   return [mast, body];
 }
@@ -857,11 +890,11 @@ function renderTinCard(card, dis) {
   h += `<div class="hero" style="height:240px;border:2px solid var(--ink)">${img || `<img class="art" src="${ART[artFor(card)]}" alt="" aria-hidden="true">`}</div>`;
   h += `<div class="night" style="padding:16px 0 0"><div><h1>${esc(card.dish)}</h1><div class="src">${esc([card.cuisine, card.minutes && card.minutes + " min", card.source].filter(Boolean).join(" · "))}</div></div>`;
   if (card.torn) {
-    h += `<p class="say">Claude won't suggest this one again. Changed your mind?</p><div class="btns"><button class="ghost" data-act="unreject" data-key="${esc(card.key)}" ${dis}>Bring it back</button></div></div>`;
+    h += `<p class="say">Pax won't suggest this one again. Changed your mind?</p><div class="btns"><button class="ghost" data-act="unreject" data-key="${esc(card.key)}" ${dis}>Bring it back</button></div></div>`;
     return h;
   }
   if (card.protein || card.carb || card.veg) h += `<div class="pcv"><div><small>PROTEIN</small><span>${esc(card.protein || "–")}</span></div><div><small>CARB</small><span>${esc(card.carb || "–")}</span></div><div><small>VEG</small><span>${esc(card.veg || "–")}</span></div></div>`;
-  else h += `<p class="say small">Claude fills in the details from the caption on its next run.</p>`;
+  else h += `<p class="say small">Pax fills in the details from the caption on its next run.</p>`;
   if (card.pending) h += `<form class="addrow" id="tinname-form" data-key="${esc(card.key)}"><input type="text" id="tinname-input" aria-label="Dish name" placeholder="Name it, e.g. pumpkin pasta" ${dis}><button ${dis}>Save</button></form>`;
   if (link) h += `<a class="primary" href="${esc(link)}" target="_blank" rel="noopener">${card.source === "TikTok" || card.source === "Instagram" ? "Open on " + esc(card.source) : "Open recipe"} ${ICON.out}</a>`;
   if (S.tin.picking) {
@@ -907,8 +940,8 @@ function renderDeck() {
     body = top("") + `<h1>Nothing to pick</h1><p class="lede">There's no deck for you this week.</p><div class="actions2"><button class="primary" data-act="deckclose">Back to the week ${ICON.arrow}</button></div>`;
   } else if (pk.done) {
     const slots = pk.slots || {};
-    body = top("Done") + `<h1>You're set.</h1><p class="lede">Your nights are on the week and the list.${other && !picksFor(w, other).done ? ` ${esc(COOK[other])} hasn't picked yet. Anything still open at the deadline gets Claude's top picks.` : ""}</p>
-      <div class="deckrows">${nights.map(sl => { const c = byId(slots[sl]); return row(sl, c, c ? [c.cuisine, c.minutes && c.minutes + " min", (pk.auto || []).includes(c.id) ? "Claude's pick" : "You picked it"].filter(Boolean).join(" · ") : ""); }).join("")}</div>
+    body = top("Done") + `<h1>You're set.</h1><p class="lede">Your nights are on the week and the list.${other && !picksFor(w, other).done ? ` ${esc(COOK[other])} hasn't picked yet. Anything still open at the deadline gets Pax's top picks.` : ""}</p>
+      <div class="deckrows">${nights.map(sl => { const c = byId(slots[sl]); return row(sl, c, c ? [c.cuisine, c.minutes && c.minutes + " min", (pk.auto || []).includes(c.id) ? "Pax's pick" : "You picked it"].filter(Boolean).join(" · ") : ""); }).join("")}</div>
       <div class="actions2">${openDeckWeek(w) ? `<button class="primary" data-act="deck" data-v="${openDeckWeek(w)}">Next: week of ${esc(shortDate(openDeckWeek(w)))} ${ICON.arrow}</button><button class="ghost" data-act="deckclose">Back to the week</button>` : `<button class="primary" data-act="deckclose">Back to the week ${ICON.arrow}</button>`}<button class="ghost" data-act="deckredo" ${dis}>Change my picks</button><p class="say small">Changing starts your deck over. Your nights keep their picks until you put new ones on the week.</p></div>`;
   } else if (hearts.length >= need) {
     const order = (D.order || bestOrder(hearts, nights, (deckFor(w) || {}).lean).map(c => c.id)).map(byId);
@@ -916,7 +949,7 @@ function renderDeck() {
     const lean = (deckFor(w) || {}).lean || {};
     const hint = need < 2 ? "" : order.every(isAsian) ? "Both are Asian, so one lands next to another Asian night. Fine if you're craving it." : Object.keys(lean).length ? "The Asian one goes on the week's Asian night, so there are no two stir-fries in a row. Swap if you'd rather." : "";
     body = top("Almost") + `<h1>${need > 1 ? "Which night for which?" : "Put it on the week"}</h1>${hint ? `<p class="lede">${esc(hint)}</p>` : ""}
-      <div class="deckrows">${nights.map((sl, i) => row(sl, order[i], order[i] ? [order[i].cuisine, order[i].minutes && order[i].minutes + " min", (pk.auto || []).includes(order[i].id) ? "Claude's pick: the deck ran out" : ""].filter(Boolean).join(" · ") : "") + (i < nights.length - 1 ? `<button class="ghost" data-act="deckswap" data-i="${i}" aria-label="Swap ${DAY[sl]} and ${DAY[nights[i + 1]]}">Swap ${esc(DAY[sl].slice(0, 3))} and ${esc(DAY[nights[i + 1]].slice(0, 3))}</button>` : "")).join("")}</div>
+      <div class="deckrows">${nights.map((sl, i) => row(sl, order[i], order[i] ? [order[i].cuisine, order[i].minutes && order[i].minutes + " min", (pk.auto || []).includes(order[i].id) ? "Pax's pick: the deck ran out" : ""].filter(Boolean).join(" · ") : "") + (i < nights.length - 1 ? `<button class="ghost" data-act="deckswap" data-i="${i}" aria-label="Swap ${DAY[sl]} and ${DAY[nights[i + 1]]}">Swap ${esc(DAY[sl].slice(0, 3))} and ${esc(DAY[nights[i + 1]].slice(0, 3))}</button>` : "")).join("")}</div>
       <div class="actions2"><button class="primary red" data-act="deckok" ${dis}>Put ${need > 1 ? "them" : "it"} on the week ${ICON.arrow}</button><div class="deckfoot">${undo}</div></div>`;
   } else if (!D.started && !pos) {
     body = top("") + `<h1>${cards.length} dishes. Heart ${need}.</h1>
@@ -1052,10 +1085,10 @@ const handlers = {
   },
   heart: d => toggleBox(nightView(d.slot).current),
   heartrec: d => { if (S.tin.card === d.key && S.box[d.key]) S.tin = { ...S.tin, card: null, picking: false }; toggleBox(S.box[d.key] || allPlanned().find(r => recipeKey(r) === d.key)); },
-  unreject: d => { S.tin = { ...S.tin, card: null }; write(() => S.db.collection("rejects").doc(d.key).delete(), "Taped back in. Claude can suggest it again."); },
+  unreject: d => { S.tin = { ...S.tin, card: null }; write(() => S.db.collection("rejects").doc(d.key).delete(), "Taped back in. Pax can suggest it again."); },
   request: d => {
     const note = (document.getElementById("req-" + d.slot) || {}).value || "";
-    write(() => S.db.collection("requests").add({ week: S.weekId, slot: d.slot, note: note.trim().slice(0, 500), status: "open", ...stamp() }), "Asked. Claude will add options on its next run.");
+    write(() => S.db.collection("requests").add({ week: S.weekId, slot: d.slot, note: note.trim().slice(0, 500), status: "open", ...stamp() }), "Asked. Pax will add options on its next run.");
   },
   check: d => {
     const items = { ...(S.checks.items || {}) }; const on = !isGot(d.key); items[d.key] = on; S.checks = { ...S.checks, items }; render();
@@ -1218,6 +1251,7 @@ const sb = window.supabase && window.PAX_CONFIG && !/YOUR_/.test(window.PAX_CONF
   : null;
 const APP_URL = location.origin + location.pathname;
 const inviteLink = code => `${APP_URL}#join=${code}`;
+const shortcutUrl = () => `${window.PAX_CONFIG.url}/rest/v1/rpc/add_to_pax?apikey=${window.PAX_CONFIG.anonKey}`;
 const CUISINES = ["Indian", "Indo-Chinese", "Chinese", "Thai", "Korean", "Japanese", "Vietnamese", "Italian", "Mexican", "Mediterranean", "Middle Eastern", "American"];
 const SPICE = ["Mild", "Medium", "Hot"];
 
@@ -1250,14 +1284,15 @@ function renderWho() {
 function renderWelcome(err) {
   outScreen("Dinner, sorted.", `<div class="signin">
     <ol class="steps">
-      <li><span><b>Claude deals each cook a deck</b> of dinners for the weeks ahead, matched to what your household eats and likes.</span></li>
+      <li><span><b>Pax deals each cook a deck</b> of dinners for the weeks ahead, matched to what your household eats and likes.</span></li>
       <li><span><b>Swipe to pick.</b> Your week fills in and the grocery list builds itself.</span></li>
       <li><span><b>Save recipes</b> from TikTok, Instagram or any site straight into your recipe tin.</span></li>
     </ol>
     ${err ? `<p class="banner">${esc(err)}</p>` : ""}
     <button class="primary" data-act="setup">Start a household ${ICON.arrow}</button>
     <form class="addrow" id="join-form"><input type="text" id="join-input" placeholder="Paste an invite link" aria-label="Invite link"><button>Join</button></form>
-    <p class="say small">Someone already using Pax? Ask them for the invite link in Pax, under Household.</p></div>`, "Welcome");
+    <p class="say small">Someone already using Pax? Ask them for the invite link in Pax, under Household.</p>
+    <button class="textlink" data-act="tour" data-v="welcome" style="justify-self:start">See how Pax works</button></div>`, "Welcome");
 }
 
 // The setup form, for a new household or editing this one.
@@ -1312,7 +1347,7 @@ function renderInvite() {
     <div class="linkbox"><code>${esc(link)}</code></div>
     <div class="btns"><button class="primary" data-act="share">Share the link ${ICON.out}</button><button class="ghost" data-act="copy" data-v="${esc(link)}">Copy</button></div>
     <button class="ghost" data-act="done">Go to the week ${ICON.arrow}</button>
-    <p class="say small">Claude deals your first decks within a day. Until then, add recipes to the tin or put something on a night yourself.</p></div>`, h.name || "Household");
+    <p class="say small">Pax deals your first decks within a day. Until then, add recipes to the tin or put something on a night yourself.</p></div>`, h.name || "Household");
 }
 
 // Pax > Household: who's in it, the invite link, the Shortcut token.
@@ -1320,19 +1355,84 @@ function renderHousehold() {
   const h = S.household || {};
   const link = inviteLink(h.invite_code || "");
   outScreen(h.name || "Household", `<div class="signin">
-    <button class="ghost" data-act="hhclose" style="justify-self:start">${ICON.left} Back</button>
+    <div class="btns"><button class="ghost" data-act="hhclose">${ICON.left} Back</button><button class="ghost" data-act="tour" data-v="household">How Pax works</button></div>
     <section><div class="k">Who's eating</div><div class="list">${(S.people || []).map(x => `<div class="rec"><div class="t"><b>${esc(x.name)}</b><small>${esc([x.cooks !== false ? "Cooks" : "Doesn't cook", x.diet || "Eats everything"].join(" · "))}</small></div></div>`).join("")}</div>
       <button class="ghost" data-act="setupedit">Edit the household</button></section>
     <section><div class="k">Invite link · ${h.phones || 1} phone${h.phones === 1 ? "" : "s"} in</div><div class="linkbox"><code>${esc(link)}</code></div>
       <div class="btns"><button class="primary" data-act="share">Share ${ICON.out}</button><button class="ghost" data-act="copy" data-v="${esc(link)}">Copy</button><button class="ghost" data-act="newlink">Make a new link</button></div>
       <p class="say small">A new link stops the old one working. Phones already in stay in.</p></section>
-    <section><div class="k">"Add to Pax" Shortcut</div><p class="say small">In the Shortcut's Get Contents of URL step, add one more Text field to the request body: <b>token</b>, set to the code below. It files what you share into this household.</p>
-      <div class="linkbox"><code>${esc(h.share_token || "")}</code></div><div class="btns"><button class="ghost" data-act="copy" data-v="${esc(h.share_token || "")}">Copy the token</button></div></section>
+    <section><div class="k">"Add to Pax" Shortcut</div><p class="say small">Save a recipe from TikTok, Instagram or any site straight onto a night, or into the tin, from the share sheet. Build it once on each iPhone:</p>
+      <details class="steps-box"><summary>How to set it up</summary><ol class="howto">
+        <li>Open <b>Shortcuts</b>, tap <b>+</b>, name it <b>Add to Pax</b>. Tap (i), turn on <b>Show in Share Sheet</b>, and keep only <b>URLs</b>.</li>
+        <li>Add <b>List</b>: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday, Recipe tin.</li>
+        <li>Add <b>Choose from List</b>, prompt "Which night?"</li>
+        <li>Add <b>Ask for Input</b>, type Text, prompt "What's it called?" (leave it blank when sharing and Pax names it).</li>
+        <li>Add <b>Get Contents of URL</b> with this URL, method <b>POST</b>, request body <b>JSON</b>:
+          <div class="linkbox"><code>${esc(shortcutUrl())}</code></div><button class="ghost" data-act="copy" data-v="${esc(shortcutUrl())}">Copy the URL</button>
+          Add five Text fields: <b>url</b> = Shortcut Input, <b>night</b> = Selected Item, <b>by</b> = your name, <b>title</b> = Provided Input, <b>token</b> = this household's token:
+          <div class="linkbox"><code>${esc(h.share_token || "")}</code></div><button class="ghost" data-act="copy" data-v="${esc(h.share_token || "")}">Copy the token</button></li>
+        <li>Add <b>Show Notification</b>: "Saved to Pax: Selected Item".</li>
+      </ol></details>
+      <p class="say small">To use it: Share → (More, or Share to…) → Add to Pax → pick a night. It lands on the next one of that night and replaces what was planned; the plan stays under Swap.</p></section>
     <section><div class="k">This phone</div><p class="say small">${esc(S.myName || "Someone")}'s phone, in ${esc(h.name || "this household")}.</p>
       <div class="btns"><button class="ghost" data-act="signout">I'm someone else</button><button class="ghost danger" data-act="leave">Leave this household</button></div></section></div>`, "Household");
 }
 
-handlers.iam = d => { store("local", "pax-me", d.v); start(); };
+// How Pax works: five screens, each with a small live-looking piece of the app. Shown once per phone
+// after you pick yourself; Household and the welcome screen can open it again.
+function tourDemo(kind) {
+  const day = (d, n, thumb, name, meta, chip, cls = "") => `<div class="day ${cls}"><span class="date"><b>${d}</b><strong>${n}</strong></span><span class="thumb${thumb.startsWith("<svg") ? " ink" : ""}">${thumb}</span><span class="what"><span class="name">${name}</span><span class="meta">${meta}</span>${chip}</span></div>`;
+  const art = n => `<img class="art" src="${ART[n]}" alt="" aria-hidden="true">`;
+  if (kind === "deck") return `<div class="demo tdeck"><div class="tcard"><span class="ph">${art("noodles")}</span><span class="body"><small class="k">Chinese · 20 min</small><b>Chili Garlic Noodles</b></span></div>
+    <div class="choose"><button tabindex="-1">${ICON.x} Not this week</button><button class="go" tabindex="-1"><span style="color:var(--red)">${ICON.heart}</span> Heart it</button></div></div>`;
+  if (kind === "week") return `<div class="demo cal">${day("MON", 3, art("tofu"), "Chilli Tofu", "30 min · Indo-Chinese", `<span class="chip p-1">SAM COOKS</span>`)}${day("TODAY", 4, art("chickpeas"), "Chana Masala", "35 min · Indian", `<span class="chip p-0">YOU COOK</span>`, "today")}${day("WED", 5, OFF_ICON.order, "Order in", "Late meeting", `<span class="chip">ORDERING IN</span>`)}</div>`;
+  if (kind === "fridge") return `<div class="demo fridge"><section class="shelf drawer"><div class="sh k"><span>Crisper drawer · produce</span><span>3</span></div>
+    <div class="item got"><span class="box">${ICON.tick}</span><span class="nm">cilantro</span><small>Mon, Tue</small></div><div class="item"><span class="box"></span><span class="nm">baby spinach</span><small>Thu</small></div><div class="item"><span class="box"></span><span class="nm">limes</span><small>Tue</small></div></section></div>`;
+  if (kind === "tin") return `<div class="demo grid">${[["corn", "Elote Pasta", "Mexican · 25 min"], ["eggplant", "Baingan Bharta", "Indian · 40 min"]].map(([a, n, m]) => `<div class="rtile"><span class="ph">${art(a)}</span><span class="nm">${n}</span><span class="mt">${m}</span></div>`).join("")}</div>`;
+  return `<div class="demo trio">${art("tomato")}${art("noodles")}${art("chili")}</div>`;
+}
+const TOUR = [
+  { kicker: "How Pax works", title: "Dinner, sorted.", demo: "hello",
+    text: "Pax plans your weeknight dinners around who's cooking and what everyone eats. You pick what sounds good; Pax handles the week, the recipes and the grocery list." },
+  { kicker: "Pick", title: "Swipe your dinners", demo: "deck",
+    text: "Every week has a deck of dishes for the nights you cook. Scroll to a week and tap Pick. Swipe right to heart a dish, left for not this week. Heart one for each night you cook, then put them on your nights.",
+    small: "You can pick up to four weeks ahead. Picks close at 9pm the Sunday before a week; anything still open gets Pax's top picks, so no night is left blank." },
+  { kicker: "Cook", title: "Your week", demo: "week",
+    text: "Tap a night for the recipe and what goes in it. Swap to a backup, hand the night to someone else, or mark it Ordering in or Eating out.",
+    small: "Make my own puts anything you like on a night; the pencil edits what's there." },
+  { kicker: "Shop", title: "The fridge", demo: "fridge",
+    text: "Your grocery list builds itself from the dinners you're cooking, sorted by shelf. Tick things off as you shop.",
+    small: "Things you always have go in the fridge door, so they stay off the list." },
+  { kicker: "Save", title: "The recipe tin", demo: "tin",
+    text: "Heart any dinner to keep it in the tin. Found something on TikTok, Instagram or a recipe site? Share it to Pax with the Add to Pax shortcut and put it on a night.",
+    small: "Set up the shortcut from Household, at the bottom of the week." },
+];
+function renderTour() {
+  const i = S.tour.i, t = TOUR[i], last = i === TOUR.length - 1;
+  document.body.classList.add("out");
+  const mast = document.getElementById("mast"), v = document.getElementById("view");
+  mast.hidden = true; mast.innerHTML = ""; v.className = "";
+  v.innerHTML = `<section class="tour" aria-label="How Pax works">
+    <div class="line"><span class="k">${esc(t.kicker)} · ${i + 1} / ${TOUR.length}</span>${last ? "<span></span>" : `<button class="textlink" data-act="tourdone">Skip</button>`}</div>
+    <div class="stage">${tourDemo(t.demo)}</div>
+    <h1>${esc(t.title)}</h1><p class="lede">${esc(t.text)}</p>${t.small ? `<p class="say small">${esc(t.small)}</p>` : ""}
+    <div class="dots" aria-hidden="true">${TOUR.map((_, k) => `<span class="${k === i ? "on" : ""}"></span>`).join("")}</div>
+    <div class="actions2">${last ? `<button class="primary" data-act="tourdone">${S.tour.after === "welcome" ? "Got it" : "Start picking"} ${ICON.arrow}</button>` : `<button class="primary" data-act="tournext">Next ${ICON.arrow}</button>`}
+      ${i ? `<button class="ghost" data-act="tourback">Back</button>` : ""}</div></section>`;
+  scrollTo(0, 0);
+}
+function showTour(after) { S.tour = { i: 0, after }; renderTour(); }
+handlers.tour = d => showTour(d.v || "household");
+handlers.tournext = () => { S.tour.i = Math.min(S.tour.i + 1, TOUR.length - 1); renderTour(); };
+handlers.tourback = () => { S.tour.i = Math.max(S.tour.i - 1, 0); renderTour(); };
+handlers.tourdone = () => {
+  const after = S.tour.after; S.tour = null; store("local", "pax-tour-done", "1");
+  if (after === "welcome") return renderWelcome();
+  if (after === "household") return renderHousehold();
+  start();
+};
+
+handlers.iam = d => { store("local", "pax-me", d.v); if (!store("local", "pax-tour-done")) return showTour("start"); start(); };
 handlers.signout = () => { store("local", "pax-me", ""); location.reload(); };
 handlers.welcome = () => renderWelcome();
 handlers.setup = () => { S.setup = { people: [{ name: "", cooks: true }, { name: "", cooks: true }], taste: { cuisines: [], spice: "Medium" }, week: {} }; renderSetup(); };
@@ -1450,6 +1550,8 @@ async function start() {
   showBanner();
 }
 start();
+// Tapping an invite link while Pax is already open only changes the hash.
+addEventListener("hashchange", () => { if (/join=/.test(location.hash)) start(); });
 
 if ("serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
 </script>
