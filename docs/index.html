@@ -85,7 +85,7 @@ body.out .tabbar, body.full .tabbar { display: none; }
 .day .date strong { font-size: 28px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
 .day .thumb { position: relative; width: 72px; height: 72px; overflow: hidden; background: var(--cream); display: grid; place-items: center; }
 .day .thumb img.photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.day .thumb img.art { position: absolute; right: -12px; bottom: -12px; width: 74px; }
+.day .thumb img.art { width: 82%; height: 82%; object-fit: contain; }
 .day .thumb svg { color: var(--muted); }
 .day .thumb.ink { background: var(--ink); }
 .day .thumb.open { background: var(--paper); border: 1.5px dashed var(--ink); }
@@ -107,7 +107,7 @@ body.out .tabbar, body.full .tabbar { display: none; }
 /* night */
 .hero { position: relative; height: 260px; border-bottom: 2px solid var(--ink); background: var(--cream); overflow: hidden; }
 .hero img.photo { width: 100%; height: 100%; object-fit: cover; display: block; }
-.hero .art { position: absolute; right: -20px; bottom: -30px; width: 190px; }
+.hero .art { position: absolute; right: 28px; bottom: 26px; width: 46%; height: 72%; object-fit: contain; object-position: right bottom; }
 .hero .sq { position: absolute; top: calc(14px + env(safe-area-inset-top)); background: var(--cream); border: 0; }
 .hero .back { left: 14px; }
 .hero .pencil { right: 14px; }
@@ -191,7 +191,7 @@ form.stack, .ownform { display: grid; gap: 10px; }
 .rtile { display: block; width: 100%; border: 0; padding: 0; background: none; text-align: left; }
 .rtile .ph { position: relative; display: block; aspect-ratio: 1 / 1; overflow: hidden; background: var(--cream); }
 .rtile .ph img.photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.rtile .ph img.art { position: absolute; right: -18px; bottom: -16px; width: 72%; }
+.rtile .ph img.art { position: absolute; inset: 14%; width: 72%; height: 72%; object-fit: contain; }
 .rtile .nm { display: block; font-size: 15px; font-weight: 700; line-height: 1.15; margin-top: 7px; letter-spacing: -0.01em; }
 .rtile .mt { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
 .rtile.torn .ph { filter: grayscale(1); opacity: .6; }
@@ -220,7 +220,7 @@ form.stack, .ownform { display: grid; gap: 10px; }
 .deckcard { position: absolute; inset: 0; background: var(--cream); border: 2px solid var(--ink); box-shadow: 8px 8px 0 var(--ink); display: flex; flex-direction: column; touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: grab; }
 .deckcard .ph { position: relative; flex: 1; min-height: 140px; overflow: hidden; border-bottom: 2px solid var(--ink); background: var(--cream); }
 .deckcard .ph img.photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
-.deckcard .ph img.art { position: absolute; right: -16px; bottom: -22px; width: 58%; pointer-events: none; }
+.deckcard .ph img.art { position: absolute; inset: 12%; width: 76%; height: 76%; object-fit: contain; pointer-events: none; }
 .deckcard .body { padding: 14px 16px 16px; }
 .deckcard .top { display: flex; justify-content: space-between; gap: 10px; }
 .deckcard h2 { margin: 6px 0 0; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.02; }
@@ -448,8 +448,31 @@ const ICON = {
   plus: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
   down: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>',
 };
-const ART = { tomato: "art/tomato.png", peas: "art/peas.png", carrots: "art/carrots.png" };
-const artFor = s => ["peas", "tomato", "carrots"][[...String(s || "")].reduce((n, ch) => n + ch.charCodeAt(0), 0) % 3];
+const ART = Object.fromEntries(["tomato", "peas", "carrots", "lemon", "avocado", "eggplant", "broccoli", "mushrooms", "strawberry", "garlic", "egg", "bread", "fish"].map(n => [n, `art/${n}.png`]));
+// Every recipe without a photo gets the paper cutout closest to what's in it: the dish name first,
+// then its veg, then its ingredients. A card can name one outright with `art`.
+const ART_WORDS = [
+  ["eggplant", /eggplant|aubergine|baingan|brinjal/],
+  ["mushrooms", /mushroom|shiitake|portobello|oyster mush/],
+  ["broccoli", /broccoli|broccolini|gai lan/],
+  ["avocado", /avocado|guac/],
+  ["carrots", /carrot|gajar/],
+  ["peas", /\bpeas?\b|matar|mutter|edamame|snap pea/],
+  ["strawberry", /strawberr|berry|berries/],
+  ["fish", /\bfish\b|salmon|tuna|cod\b/],
+  ["egg", /\beggs?\b|omelet|shakshuka|frittata/],
+  ["bread", /bread|\btoast\b|naan|roti|pav\b|sandwich|burger|pita|focaccia|bun\b|bao\b/],
+  ["tomato", /tomato|marinara|vodka|arrabbiata|pomodoro|rajma|chana masala|makhani|tikka/],
+  ["lemon", /lemon|lime|citrus/],
+  ["garlic", /garlic|lahsun/],
+];
+function artFor(card) {
+  const c = card && typeof card === "object" ? card : { dish: card };
+  if (c.art && ART[c.art]) return c.art;
+  const lists = [String(c.dish || ""), String(c.veg || ""), (c.ingredients || []).filter(i => !/garlic|lemon|lime/i.test(i)).join(" ")];
+  for (const text of lists) for (const [name, re] of ART_WORDS) if (re.test(text.toLowerCase())) return name;
+  return ["tomato", "peas", "carrots"][[...String(c.dish || "")].reduce((n, ch) => n + ch.charCodeAt(0), 0) % 3];
+}
 // A recipe's photo, if it has one; a broken link quietly falls back to the coloured tile.
 const photo = c => { const u = safeLink(c && c.image); return u ? `<img class="photo" src="${esc(u)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ""; };
 const dayUp = iso => new Date(iso + "T12:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }).toUpperCase();
@@ -530,7 +553,7 @@ function renderWeek() {
     let thumb, chip;
     if (n.mode === "cook") {
       const who = n.picking || n.cook;
-      thumb = !n.current ? OFF_ICON.open : photo(n.current) || `<img class="art" src="${ART[artFor(title)]}" alt="" aria-hidden="true">`;
+      thumb = !n.current ? OFF_ICON.open : photo(n.current) || `<img class="art" src="${ART[artFor(n.current || title)]}" alt="" aria-hidden="true">`;
       chip = who ? `<span class="chip p-${esc(who)}">${n.picking ? (who === me ? "YOUR PICK" : esc((COOK[who] || who).toUpperCase()) + " PICKING") : who === me ? "YOU COOK" : esc((COOK[who] || who).toUpperCase()) + " COOKS"}</span>` : "";
     } else {
       thumb = OFF_ICON[n.mode] || OFF_ICON.flex;
@@ -555,7 +578,7 @@ function renderOpen(n) {
   const who = n.picking || n.cook;
   const kicker = `${isToday ? "TONIGHT · " : ""}${DAY[n.slot].slice(0, 3).toUpperCase()} ${dayUp(n.date)}${time && c ? " · " + time.toUpperCase() : ""}`;
   const img = c ? photo(c) : "";
-  const hero = `<div class="hero">${img || `<img class="art" src="${ART[artFor(c ? c.dish : DAY[n.slot])]}" alt="" aria-hidden="true">`}
+  const hero = `<div class="hero">${img || `<img class="art" src="${ART[artFor(c || DAY[n.slot])]}" alt="" aria-hidden="true">`}
     <button class="sq back" data-act="close" aria-label="Back to the week">${ICON.left}</button>
     <button class="sq pencil" data-act="ui" data-slot="${n.slot}" data-v="${ui.mode === "edit" ? "" : "edit"}" aria-label="${ui.mode === "edit" ? "Stop editing" : "Edit " + DAY[n.slot]}" aria-pressed="${ui.mode === "edit"}" ${dis}>${ICON.pencil}</button>
     <span class="kicker k${isToday ? "" : " plain"}">${esc(kicker)}</span></div>`;
@@ -766,7 +789,7 @@ function renderRecipes() {
     side: `<button class="bar" style="width:auto;margin:0;padding:9px 12px" data-act="tin" data-v="add" aria-expanded="${!!S.addOpen}">${ICON.plus} Add</button>`,
     extra: card ? "" : `<div class="filters" role="group" aria-label="Filter">${tabs.map(t => `<button data-act="tintab" data-v="${esc(t.id)}" aria-pressed="${t.id === tab.id}">${esc(t.label)}</button>`).join("")}</div>` });
   if (card) return [mast, renderTinCard(card, dis)];
-  const tile = (c, i) => `<button class="rtile${c.torn ? " torn" : ""}" data-act="tincard" data-key="${esc(c.key)}"><span class="ph">${c.pending ? `<span class="new k">New</span>` : ""}${photo(c) || `<img class="art" src="${ART[artFor(c.dish)]}" alt="" aria-hidden="true">`}</span><span class="nm">${esc(c.dish)}</span><span class="mt">${esc(c.torn ? "Never again" : [c.cuisine, c.minutes && c.minutes + " min", !c.minutes && c.source].filter(Boolean).join(" · "))}</span></button>`;
+  const tile = (c, i) => `<button class="rtile${c.torn ? " torn" : ""}" data-act="tincard" data-key="${esc(c.key)}"><span class="ph">${c.pending ? `<span class="new k">New</span>` : ""}${photo(c) || `<img class="art" src="${ART[artFor(c)]}" alt="" aria-hidden="true">`}</span><span class="nm">${esc(c.dish)}</span><span class="mt">${esc(c.torn ? "Never again" : [c.cuisine, c.minutes && c.minutes + " min", !c.minutes && c.source].filter(Boolean).join(" · "))}</span></button>`;
   const rec = r => {
     const link = safeLink(r.link); const k = recipeKey(r); const hearted = !!S.box[k];
     return `<div class="rec"><div class="t">${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">${esc(r.dish)}</a>` : `<b>${esc(r.dish)}</b>`}<small>${esc([r.source, r.cuisine, r.minutes && r.minutes + " min"].filter(Boolean).join(" · "))}</small></div>
@@ -790,7 +813,7 @@ function renderRecipes() {
 function renderTinCard(card, dis) {
   const link = safeLink(card.link), img = photo(card);
   let h = `<button class="ghost" data-act="tin" data-v="back" style="margin-bottom:14px">${ICON.left} All recipes</button>`;
-  h += `<div class="hero" style="height:240px;border:2px solid var(--ink)">${img || `<img class="art" src="${ART[artFor(card.dish)]}" alt="" aria-hidden="true">`}</div>`;
+  h += `<div class="hero" style="height:240px;border:2px solid var(--ink)">${img || `<img class="art" src="${ART[artFor(card)]}" alt="" aria-hidden="true">`}</div>`;
   h += `<div class="night" style="padding:16px 0 0"><div><h1>${esc(card.dish)}</h1><div class="src">${esc([card.cuisine, card.minutes && card.minutes + " min", card.source].filter(Boolean).join(" · "))}</div></div>`;
   if (card.torn) {
     h += `<p class="say">Claude won't suggest this one again. Changed your mind?</p><div class="btns"><button class="ghost" data-act="unreject" data-key="${esc(card.key)}" ${dis}>Bring it back</button></div></div>`;
@@ -865,7 +888,7 @@ function renderDeck() {
     const count = `${String(Math.min(pos + 1, cards.length)).padStart(2, "0")} / ${String(cards.length).padStart(2, "0")}`;
     body = top(count) + `<h1>${esc(title)}</h1><div class="hearts">${nights.map((_, i) => `<span class="${hearts[i] ? "on" : i === hearts.length ? "now" : ""}"><b class="k">Heart ${i + 1}</b>${esc(hearts[i] ? hearts[i].dish : i === hearts.length ? "Looking…" : "–")}</span>`).join("")}</div>
       <div class="stage"><span class="tape" aria-hidden="true"></span><article class="deckcard" aria-live="polite">
-        <div class="ph">${img || `<img class="art" src="${ART[artFor(c.dish)]}" alt="" aria-hidden="true">`}</div>
+        <div class="ph">${img || `<img class="art" src="${ART[artFor(c)]}" alt="" aria-hidden="true">`}</div>
         <div class="body"><div class="top k"><span style="color:var(--red-ink)">${esc([c.cuisine, c.minutes && c.minutes + " min"].filter(Boolean).join(" · "))}</span><span>${esc(c.source || "")}</span></div>
         <h2>${esc(c.dish)}</h2>${c.why ? `<p>${esc(c.why)}</p>` : ""}
         <div class="chips">${[c.protein, c.carb, c.veg].filter(Boolean).map(x => `<span class="chip plain">${esc(x)}</span>`).join("")}</div>
