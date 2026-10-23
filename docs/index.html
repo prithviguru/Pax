@@ -139,6 +139,40 @@ textarea { font: 16px/1.3 var(--print); width: 100%; border: 1px solid var(--ink
 .thing.box { border-radius: 2px; background: #eef1ea; }
 .thing.staple { border: 1px dashed var(--sage-ink); background: transparent; }
 .thing.got { opacity: .4; }
+.deckcta { display: grid; gap: 4px; width: 100%; text-align: left; background: var(--ink); color: var(--paper); border: 1px solid var(--ink); padding: 14px 16px; font: inherit; }
+.deckcta .k { font-size: 12px; text-transform: uppercase; letter-spacing: .07em; opacity: .8; }
+.deckcta b { font-size: 21px; font-weight: 500; line-height: 1.15; }
+.deckcta span:last-child { font-size: 14px; opacity: .85; }
+.deck { display: grid; gap: 14px; max-width: 520px; }
+.deck h2 { margin: 0; font-size: 32px; font-weight: 500; line-height: 1.05; }
+.deck p { margin: 0; font-size: 16px; }
+.deck p.small { font-size: 14px; }
+.pill { font: inherit; font-size: 16px; color: var(--ink); background: var(--paper); border: 1px solid var(--ink); border-radius: 999px; min-height: 48px; padding: 0 18px; }
+.pill.go { background: var(--ink); color: var(--paper); }
+.pill.small { min-height: 40px; font-size: 14px; justify-self: start; }
+.pill.dashed { border-style: dashed; min-height: 40px; font-size: 14px; justify-self: start; background: transparent; }
+.deckbtns { display: grid; grid-template-columns: auto 1fr; gap: 8px; }
+.deckchips { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 8px; }
+.deckchips .chip { border: 1px dashed var(--ink); padding: 8px 10px; font-size: 13px; line-height: 1.25; }
+.deckchips .chip b { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .07em; font-weight: 600; }
+.deckchips .chip.now { border-style: solid; background: var(--paper); }
+.deckchips .chip.on { border-style: solid; background: #f6f0e4; box-shadow: inset 6px 0 0 var(--sage); }
+.deckmeta { display: flex; justify-content: space-between; font-size: 13px; }
+.deckcard { position: relative; background: var(--paper); border: 1px solid var(--ink); padding: 26px 20px 18px; display: grid; gap: 10px; transform: rotate(-1deg); margin-top: 8px; }
+.deckcard::before { content: ""; position: absolute; top: -10px; left: 50%; width: 64px; height: 18px; margin-left: -32px; background: rgba(239, 239, 239, .92); border: 1px solid rgba(0, 0, 0, .3); transform: rotate(-4deg); }
+.deckcard .k { font-size: 12px; text-transform: uppercase; letter-spacing: .07em; }
+.deckcard h3 { margin: 0; font-size: 30px; font-weight: 500; line-height: 1.05; }
+.deckcard .src { font-size: 14px; }
+.deckcard p { font-size: 15px; }
+.deckcard .pcv { display: grid; grid-template-columns: 64px minmax(0, 1fr); row-gap: 4px; font-size: 15px; border-top: 1px solid var(--ink); padding-top: 10px; }
+.deckcard .pcv span:nth-child(odd) { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; padding-top: 2px; }
+.deckcard a { font-size: 15px; justify-self: start; }
+.deckrows { display: grid; gap: 8px; }
+.deckrow { display: grid; grid-template-columns: 44px minmax(0, 1fr); column-gap: 12px; align-items: center; border: 1px solid var(--ink); background: var(--paper); padding: 10px 12px; }
+.deckrow .d { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; text-align: center; line-height: 1; }
+.deckrow .d b { display: block; font-size: 22px; font-weight: 500; margin-top: 2px; }
+.deckrow b { display: block; font-size: 17px; font-weight: 500; }
+.deckrow small { display: block; font-size: 13px; }
 .thing.stocked { background: #e9ecdf; border-color: var(--sage); }
 .compart .stockedlabel { margin-top: 4px; }
 .thing.got span { text-decoration: line-through; text-decoration-thickness: 2px; text-decoration-color: var(--coral); }
@@ -354,7 +388,7 @@ const OTHER = { prithvi: "nihal", nihal: "prithvi" };
 
 const S = {
   db: null, user: null, me: null, canWrite: true,
-  weeks: {}, weekId: null, nights: {}, checks: {}, rejects: {}, box: {}, inbox: {}, hauls: {}, staples: [], requests: {},
+  weeks: {}, weekId: null, nights: {}, checks: {}, rejects: {}, box: {}, inbox: {}, hauls: {}, decks: {}, picks: {}, deck: null, staples: [], requests: {},
   tab: "tonight", focus: null, ui: {}, loaded: false,
   fridgeOpen: false, tipSeen: false, tin: { tab: null, card: null, up: false, flipped: false, picking: false },
 };
@@ -398,7 +432,13 @@ const flagMode = f => f === "skip" ? "out" : f;
 
 function nightView(slot) {
   const w = week() || {};
-  const plan = (w.nights || {})[slot] || { kind: "flex" };
+  let plan = (w.nights || {})[slot] || { kind: "flex" };
+  let picking = null;
+  // A cook night dealt as a Sunday deck has no options until its cook picks. After the deadline, Claude's picks stand in.
+  if (planKind(plan.kind) === "cook" && !(plan.options || []).length && plan.cook && deckNights(S.weekId, plan.cook).includes(slot)) {
+    if (deckPast(S.weekId)) { const f = autoFill(S.weekId, plan.cook)[slot]; if (f) plan = { ...plan, options: [{ ...f.card, auto: true }, ...f.backups] }; }
+    else picking = plan.cook;
+  }
   const st = S.nights[slot] || {};
   const pk = planKind(plan.kind);
   const mode = flagMode(st.flag) || pk;
@@ -410,13 +450,14 @@ function nightView(slot) {
   else current = opts.find(o => o.id === st.current) || opts[0] || null;
   const backups = opts.filter(o => !current || o.id !== current.id);
   const request = Object.values(S.requests).find(r => r.week === S.weekId && r.slot === slot && r.status === "open");
-  return { slot, date: slotDate(slot), plan, st, pk, mode, cook, current, backups, request };
+  return { slot, date: slotDate(slot), plan, st, pk, mode, cook, current, backups, request, picking };
 }
 
 function noteText(n) {
   if (n.mode === "cook") {
     if (n.current && n.current.pending) return { title: n.current.dish, sub: `From ${n.current.source || "a link"}${n.current.savedBy ? " ✶ saved by " + n.current.savedBy : ""}` };
     if (n.current) return { title: n.current.dish, sub: [n.current.minutes ? n.current.minutes + " min" : "", n.current.cuisine].filter(Boolean).join(" ✶ ") };
+    if (n.picking) return n.picking === myKey() ? { title: "Your pick", sub: "Heart it in your Sunday picks" } : { title: `${COOK[n.picking]}'s picking`, sub: "From the Sunday deck" };
     return { title: "Nothing yet", sub: "Pick from the recipe box or ask Claude" };
   }
   if (n.mode === "flex") return { title: n.plan.label || "Free night", sub: n.plan.note || "Out, in, or leftovers" };
@@ -424,6 +465,57 @@ function noteText(n) {
   const title = planned && n.plan.label ? n.plan.label : (n.mode === "order" ? "Ordering in" : "Eating out");
   const sub = n.current && n.pk === "cook" ? n.current.dish + " is off the list" : (planned ? n.plan.note || "" : "");
   return { title, sub };
+}
+
+/* ---------- Sunday decks ---------- */
+// decks/<week>: { deadline, lean: {mon: "asian"|"other"}, people: {prithvi: {nights: [...], cards: [...]}} }
+// decks/<week>/picks/<person>: { pos, hearts, never, skipped, auto, done, slots }
+const ASIAN = ["asian", "chinese", "indo-chinese", "sichuan", "hunan", "korean", "thai", "japanese", "vietnamese", "taiwanese", "malaysian", "indonesian", "filipino"];
+const isAsian = c => c.asian ?? ASIAN.includes(norm(c.cuisine));
+const myKey = () => norm(S.myName);
+const deckFor = w => S.decks[w] || null;
+const picksFor = (w, p) => (S.picks[w] || {})[p] || {};
+const deckPerson = (w, p) => ((deckFor(w) || {}).people || {})[p] || null;
+const deckNights = (w, p) => (deckPerson(w, p) || {}).nights || [];
+const deckCards = (w, p) => ((deckPerson(w, p) || {}).cards || []).filter(c => !S.rejects[recipeKey(c)]);
+function deckPast(w) { const d = deckFor(w); return !!(d && d.deadline && Date.now() > Date.parse(d.deadline)); }
+// Line dishes up with nights so Asian ones land on the week's Asian nights where they can.
+function bestOrder(cards, nights, lean) {
+  const perms = a => a.length <= 1 ? [a] : a.flatMap((x, i) => perms([...a.slice(0, i), ...a.slice(i + 1)]).map(p => [x, ...p]));
+  let best = cards, score = -1;
+  for (const p of perms(cards)) {
+    const sc = p.reduce((n, c, i) => n + ((lean || {})[nights[i]] ? (isAsian(c) === (lean[nights[i]] === "asian") ? 1 : 0) : 0), 0);
+    if (sc > score) { best = p; score = sc; }
+  }
+  return best;
+}
+// Backups for each night: the rest of the deck, minus anything marked never, matching the pick's style first.
+function deckBackups(order, avail) {
+  const left = [...avail];
+  return order.map(pick => {
+    const mine = [...left.filter(c => isAsian(c) === isAsian(pick)), ...left.filter(c => isAsian(c) !== isAsian(pick))].slice(0, 2);
+    mine.forEach(c => left.splice(left.indexOf(c), 1));
+    return mine;
+  });
+}
+// What a cook gets if the deadline passes: their hearts, then the deck's top cards for each night's style.
+function autoFill(w, p) {
+  const pk = picksFor(w, p), cards = deckCards(w, p), nights = deckNights(w, p), lean = (deckFor(w) || {}).lean || {};
+  const never = new Set(pk.never || []);
+  const avail = cards.filter(c => !never.has(c.id));
+  const chosen = avail.filter(c => (pk.hearts || []).includes(c.id)).slice(0, nights.length);
+  for (const sl of nights.slice(chosen.length)) {
+    const rest = avail.filter(c => !chosen.includes(c));
+    const c = rest.find(c => !lean[sl] || isAsian(c) === (lean[sl] === "asian")) || rest[0];
+    if (c) chosen.push(c);
+  }
+  const order = bestOrder(chosen, nights, lean);
+  const backups = deckBackups(order, avail.filter(c => !chosen.includes(c)));
+  return Object.fromEntries(nights.map((sl, i) => [sl, order[i] ? { card: order[i], backups: backups[i] } : null]));
+}
+function openDeckWeek() {
+  const me = myKey();
+  return Object.keys(S.decks).sort().find(w => addDays(w, 6) >= today() && deckNights(w, me).length && deckCards(w, me).length && !picksFor(w, me).done && !deckPast(w)) || null;
 }
 
 function chooseWeek() {
@@ -454,10 +546,10 @@ function showBanner() {
 function render() {
   document.querySelectorAll("nav.tabs button").forEach(b => b.setAttribute("aria-current", b.dataset.tab === S.tab ? "page" : "false"));
   const w = week();
-  document.getElementById("marquee").textContent = S.weekId ? `Week of ${shortDate(S.weekId)} ✶ ${w && w.note ? w.note.split(". ")[0].split(",")[0].replace(/\.$/, "") : "dinners for two"}` : "Pax ✶ dinners for two";
+  document.getElementById("marquee").textContent = S.deck ? `Week of ${shortDate(S.deck.week)} ✶ Sunday picks` : S.weekId ? `Week of ${shortDate(S.weekId)} ✶ ${w && w.note ? w.note.split(". ")[0].split(",")[0].replace(/\.$/, "") : "dinners for two"}` : "Pax ✶ dinners for two";
   if (!S.loaded) return;
   const v = document.getElementById("view");
-  v.innerHTML = S.tab === "list" ? renderList() : S.tab === "recipes" ? renderRecipes() : renderWeekView();
+  v.innerHTML = S.deck ? renderDeck() : S.tab === "list" ? renderList() : S.tab === "recipes" ? renderRecipes() : renderWeekView();
   resolveNames();
 }
 
@@ -465,16 +557,24 @@ function noWeek() {
   return `<div class="shelf"><h2>Nothing on the fridge yet</h2><p class="empty">Claude plans each week on Sunday afternoon: a dish for every cook night with two backups, and a note for nights you're out. It'll show up here.</p></div>`;
 }
 
+function deckBanner() {
+  const w = openDeckWeek(); if (!w) return "";
+  const me = myKey(), nights = deckNights(w, me), n = deckCards(w, me).length, pk = picksFor(w, me);
+  const started = (pk.pos || 0) > 0;
+  return `<button class="deckcta" data-act="deck" data-v="${w}"><span class="k">Your Sunday picks ✶ week of ${esc(shortDate(w))}</span><b>${n} dishes. Heart ${nights.length} for ${esc(nights.map(sl => DAY[sl].slice(0, 3)).join(" and "))}.</b><span>${started ? "Pick up where you left off →" : "Takes about a minute →"}</span></button>`;
+}
+
 function renderWeekView() {
-  if (!S.weekId) return noWeek();
-  return `<div style="display:grid;gap:72px">${renderWeek()}${S.focus ? renderOpen(nightView(S.focus)) : ""}</div>`;
+  if (!S.weekId) return deckBanner() || noWeek();
+  return `<div style="display:grid;gap:72px"><div style="display:grid;gap:22px">${deckBanner()}${renderWeek()}</div>${S.focus ? renderOpen(nightView(S.focus)) : ""}</div>`;
 }
 
 function renderWeek() {
   const w = week();
   const dis = S.canWrite ? "" : "disabled";
   // Unplanned weeks still open, so a link saved to next week shows up before Claude plans it.
-  const note = w ? w.note : addDays(S.weekId, 6) < today() ? "Nothing was planned this week." : "Not planned yet. Claude plans each week the Sunday before; anything you put on a night here stays.";
+  const deckNote = deckFor(S.weekId) && !deckPast(S.weekId) ? Object.keys(deckFor(S.weekId).people || {}).filter(p => p !== myKey()).map(p => { const pk = picksFor(S.weekId, p); return pk.done ? `${COOK[p] || p} has picked.` : `${COOK[p] || p}: ${Math.min((pk.hearts || []).length, deckNights(S.weekId, p).length)} of ${deckNights(S.weekId, p).length} picked.`; }).join(" ") : "";
+  const note = w ? [w.note, deckNote].filter(Boolean).join(" ") : addDays(S.weekId, 6) < today() ? "Nothing was planned this week." : "Not planned yet. Claude plans each week the Sunday before; anything you put on a night here stays.";
   let h = `<section aria-labelledby="week-h"><div class="weekhead"><div><h2 id="week-h">${esc(weekLabel(S.weekId))}</h2>${note ? `<p>${esc(note)}</p>` : ""}</div>
     <div class="print" style="display:flex;gap:20px"><button class="ink" data-act="week" data-v="${addDays(S.weekId, -7)}">← last</button><button class="ink" data-act="week" data-v="${addDays(S.weekId, 7)}">next →</button></div></div><div class="cal">`;
   const t = today();
@@ -515,6 +615,11 @@ function renderOpen(n) {
     if (n.mode === "flex") sheet += renderBoxPicker(n, dis, true);
     if (n.st.flag && n.st.by) sheet += `<p class="tweak" data-by="${esc(n.st.by)}">Marked by <span class="name">someone</span>.</p>`;
     receipt = `<p style="margin:10px 0 0;font-size:17px">Nothing to shop for. This night is off the list.</p>`;
+  } else if (!c && n.picking) {
+    const mine = n.picking === myKey();
+    sheet += `<h2 id="open-h">${mine ? "Your pick" : esc(COOK[n.picking]) + " is picking"}</h2><p class="tweak">${mine ? "Heart a dish in your Sunday picks and it lands here." : `This night comes from ${esc(COOK[n.picking])}'s Sunday deck. If nothing's picked by the deadline, Claude's top pick goes on.`}</p>`;
+    if (mine) sheet += `<button class="label" data-act="deck" data-v="${S.weekId}">Open your Sunday picks</button>`;
+    receipt = `<p style="margin:10px 0 0;font-size:17px">The dish's ingredients show up once it's picked.</p>`;
   } else if (!c) {
     sheet += `<h2 id="open-h">Nothing left for ${esc(DAY[n.slot])}</h2><p class="tweak">${(n.plan.options || []).length ? "Both backups are gone." : "Nothing was planned for this night."} Pick something from your recipe box, or ask Claude for two new options.</p>`;
     sheet += renderBoxPicker(n, dis, false) + renderRequest(n, dis);
@@ -772,6 +877,91 @@ function renderShared() {
     ${items.length ? items.map(row).join("") : `<p class="empty" style="margin:8px 0">Nothing has come through from the Add to Pax Shortcut yet. If you've shared something and it isn't here, the Shortcut's request isn't reaching Pax.</p>`}</details>`;
 }
 
+// The Sunday deck: heart as many dishes as you have cook nights, then put them on your nights.
+function renderDeck() {
+  const D = S.deck, w = D.week, me = myKey(), dis = S.canWrite ? "" : "disabled";
+  const cards = deckCards(w, me), nights = deckNights(w, me), need = nights.length;
+  const pk = picksFor(w, me), pos = pk.pos || 0;
+  const byId = id => cards.find(c => c.id === id);
+  const hearts = (pk.hearts || []).map(byId).filter(Boolean);
+  const days = nights.map(sl => DAY[sl]).join(" and ");
+  const other = Object.keys((deckFor(w) || {}).people || {}).find(p => p !== me);
+  const undo = D.history.length ? `<button class="pill dashed" data-act="deckundo">↶ Undo: ${esc(D.history[D.history.length - 1].label)}</button>` : "";
+  const row = (sl, c, note) => `<div class="deckrow"><span class="d">${esc(DAY[sl].slice(0, 3))}<b>${dayNum(addDays(w, SLOTS.indexOf(sl)))}</b></span><span><b>${esc(c ? c.dish : "Nothing yet")}</b><small>${esc(note || "")}</small></span></div>`;
+  const head = `<p class="kick" style="margin:0">Your Sunday picks ✶ week of ${esc(shortDate(w))}</p>`;
+  let body;
+  if (!need || !cards.length) {
+    body = `<h2>Nothing to pick</h2><p>There's no deck for you this week.</p>`;
+  } else if (pk.done) {
+    const slots = pk.slots || {};
+    body = `<h2>You're set.</h2><p>Your nights are on the week and the grocery list.${other && !picksFor(w, other).done ? ` ${esc(COOK[other])} hasn't picked yet. Anything still open at the deadline gets Claude's top picks.` : ""}</p>
+      <div class="deckrows">${nights.map(sl => { const c = byId(slots[sl]); return row(sl, c, c ? [c.cuisine, c.minutes && c.minutes + " min", (pk.auto || []).includes(c.id) ? "Claude's pick" : "You picked it"].filter(Boolean).join(" ✶ ") : ""); }).join("")}</div>
+      <button class="pill go" data-act="deckclose">Back to the week</button>`;
+  } else if (hearts.length >= need) {
+    const order = (D.order || bestOrder(hearts, nights, (deckFor(w) || {}).lean).map(c => c.id)).map(byId);
+    D.order = order.map(c => c.id);
+    const lean = (deckFor(w) || {}).lean || {};
+    const hint = need < 2 ? "" : order.every(isAsian) ? "Both are Asian, so one lands next to another Asian night. Fine if you're craving it." : Object.keys(lean).length ? "The Asian one goes on the week's Asian night, so you don't get two stir-fries in a row. Swap if you'd rather." : "";
+    body = `<h2>${need > 1 ? "Which night for which?" : "Put it on the week"}</h2>${hint ? `<p>${esc(hint)}</p>` : ""}
+      <div class="deckrows">${nights.map((sl, i) => row(sl, order[i], order[i] ? [order[i].cuisine, order[i].minutes && order[i].minutes + " min", (pk.auto || []).includes(order[i].id) ? "Claude's pick: the deck ran out" : ""].filter(Boolean).join(" ✶ ") : "") + (i < nights.length - 1 ? `<button class="pill small" data-act="deckswap" data-i="${i}" aria-label="Swap ${DAY[sl]} and ${DAY[nights[i + 1]]}">⇅ Swap ${esc(DAY[sl].slice(0, 3))} and ${esc(DAY[nights[i + 1]].slice(0, 3))}</button>` : "")).join("")}</div>
+      ${undo}<button class="pill go" data-act="deckok" ${dis}>Put ${need > 1 ? "them" : "it"} on the week</button>`;
+  } else if (!D.started && !pos) {
+    body = `<h2>${cards.length} dishes. Heart ${need}.</h2>
+      <p>You cook ${esc(days)}, so you need ${need}. Heart the ones you'd actually be excited to eat. Once you have ${need}, you'll put them on your nights.</p>
+      <p class="small">Not this week skips it; it can come back another week. Never puts it in the tin's Never divider for good.${other ? ` ${esc(COOK[other])} picks for their own nights on their phone.` : ""}</p>
+      <button class="pill go" data-act="deckstart">Start</button><button class="pill" data-act="deckclose">Later</button>`;
+  } else {
+    const c = cards[Math.min(pos, cards.length - 1)];
+    const link = safeLink(c.link);
+    body = `<div class="deckchips">${nights.map((_, i) => `<span class="chip${hearts[i] ? " on" : i === hearts.length ? " now" : ""}"><b>Heart ${i + 1}</b>${esc(hearts[i] ? hearts[i].dish : i === hearts.length ? "Looking…" : "Empty")}</span>`).join("")}</div>
+      <div class="deckmeta"><span>${hearts.length} of ${need} hearted</span><span>Card ${Math.min(pos + 1, cards.length)} of ${cards.length}</span></div>
+      <article class="deckcard" aria-live="polite"><span class="k">${esc([c.cuisine, c.minutes && c.minutes + " min"].filter(Boolean).join(" ✶ "))}</span>
+        <h3>${esc(c.dish)}</h3><span class="src">${esc(c.source || "")}</span>${c.why ? `<p>${esc(c.why)}</p>` : ""}
+        <div class="pcv"><span>Protein</span><span>${esc(c.protein || "")}</span><span>Carb</span><span>${esc(c.carb || "")}</span><span>Veg</span><span>${esc(c.veg || "")}</span></div>
+        ${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">Open the recipe →</a>` : ""}</article>
+      ${undo}<div class="deckbtns"><button class="pill" data-act="deckpick" data-v="never" ${dis}>Never</button><button class="pill" data-act="deckpick" data-v="skip" ${dis}>Not this week</button></div>
+      <button class="pill go" data-act="deckpick" data-v="heart" ${dis}>♥ Heart it</button>`;
+  }
+  return `<section class="deck" aria-label="Your Sunday picks">${head}${body}</section>`;
+}
+
+function savePicks(next, label) {
+  const D = S.deck, w = D.week, me = myKey();
+  D.history.push({ pk: { ...picksFor(w, me) }, label });
+  S.picks = { ...S.picks, [w]: { ...(S.picks[w] || {}), [me]: next } }; render();
+  write(() => S.db.doc(`decks/${w}/picks/${me}`).set({ ...next, ...stamp() }));
+}
+function deckAct(kind) {
+  const D = S.deck, w = D.week, me = myKey();
+  const cards = deckCards(w, me), need = deckNights(w, me).length, pk = picksFor(w, me), pos = pk.pos || 0;
+  const c = cards[pos]; if (!c) return;
+  const next = { pos: pos + 1, hearts: [...(pk.hearts || [])], never: [...(pk.never || [])], skipped: [...(pk.skipped || [])], auto: [] };
+  ({ heart: next.hearts, never: next.never, skip: next.skipped })[kind].push(c.id);
+  // Ran out of cards before hearting enough: fill from what's left that wasn't a never.
+  if (next.hearts.length < need && next.pos >= cards.length) {
+    const fill = cards.filter(x => !next.never.includes(x.id) && !next.hearts.includes(x.id)).slice(0, need - next.hearts.length).map(x => x.id);
+    next.hearts.push(...fill); next.auto = fill;
+  }
+  D.order = null;
+  savePicks(next, ({ heart: "heart on ", skip: "not this week on ", never: "never on " })[kind] + c.dish);
+}
+function deckConfirm() {
+  const D = S.deck, w = D.week, me = myKey();
+  const cards = deckCards(w, me), nights = deckNights(w, me), pk = picksFor(w, me);
+  const order = (D.order || []).map(id => cards.find(c => c.id === id)).filter(Boolean);
+  if (order.length < nights.length) return;
+  const never = new Set(pk.never || []);
+  const backups = deckBackups(order, cards.filter(c => !never.has(c.id) && !order.includes(c)));
+  const patch = { nights: Object.fromEntries(nights.map((sl, i) => [sl, { kind: "cook", cook: me, options: [order[i], ...backups[i]] }])) };
+  const slots = Object.fromEntries(nights.map((sl, i) => [sl, order[i].id]));
+  write(async () => {
+    await S.db.doc(`weeks/${w}`).update(patch);
+    for (const id of never) { const c = cards.find(x => x.id === id); if (c) await S.db.collection("rejects").doc(recipeKey(c)).set({ dish: c.dish, source: c.source || "", link: c.link || "", week: w, slot: null, ...stamp() }); }
+    D.history = [];
+    await S.db.doc(`decks/${w}/picks/${me}`).set({ ...pk, done: true, slots, ...stamp() });
+  }, "On the week.");
+}
+
 function resolveNames() {
   for (const e of document.querySelectorAll("[data-by]")) {
     const span = e.querySelector(".name"); if (!span) continue;
@@ -854,6 +1044,18 @@ const handlers = {
     write(() => saveNight(d.slot, { boxPick: b, flag: "cook" }), `${b.dish} is on for ${DAY[d.slot]}.`);
   },
   gonight: d => { S.tab = "tonight"; selectWeek(d.week); S.focus = d.slot; render(); scrollTo(0, 0); },
+  deck: d => { S.deck = { week: d.v, history: [], started: false, order: null }; S.focus = null; render(); scrollTo(0, 0); },
+  deckstart: () => { S.deck.started = true; render(); },
+  deckclose: () => { S.deck = null; S.tab = "tonight"; render(); },
+  deckpick: d => deckAct(d.v),
+  deckundo: () => {
+    const D = S.deck, last = D.history.pop(); if (!last) return;
+    const w = D.week, me = myKey(); D.order = null;
+    S.picks = { ...S.picks, [w]: { ...(S.picks[w] || {}), [me]: last.pk } }; render();
+    write(() => S.db.doc(`decks/${w}/picks/${me}`).set({ ...last.pk, ...stamp() }));
+  },
+  deckswap: d => { const o = S.deck.order, i = Number(d.i); [o[i], o[i + 1]] = [o[i + 1], o[i]]; render(); },
+  deckok: () => deckConfirm(),
   unstaple: d => saveStaples(S.staples.filter(s => norm(s) !== norm(d.name))),
 };
 
@@ -875,7 +1077,7 @@ function saveStaples(list) {
 
 document.addEventListener("click", e => {
   const tab = e.target.closest("nav.tabs button");
-  if (tab) { S.tab = tab.dataset.tab; S.ui = {}; render(); try { history.replaceState(null, "", "#" + (S.tab === "tonight" ? "week" : S.tab)); } catch (_) {} return; }
+  if (tab) { S.tab = tab.dataset.tab; S.ui = {}; S.deck = null; render(); try { history.replaceState(null, "", "#" + (S.tab === "tonight" ? "week" : S.tab)); } catch (_) {} return; }
   const el = e.target.closest("[data-act]");
   if (!el || el.disabled || el.dataset.act === "check") return;
   const h = handlers[el.dataset.act]; if (h) h(el.dataset);
@@ -982,6 +1184,11 @@ async function start() {
   });
   const coll = (name, key) => db.collection(name).onSnapshot(snap => { const m = {}; snap.docs.forEach(d => m[d.id] = d.data()); S[key] = m; render(); });
   coll("rejects", "rejects"); coll("box", "box"); coll("inbox", "inbox"); coll("hauls", "hauls");
+  db.onPrefix("decks/", snap => {
+    const decks = {}, picks = {};
+    snap.docs.forEach(d => { const m = /^decks\/(\d{4}-\d{2}-\d{2})(?:\/picks\/(\w+))?$/.exec(d.id); if (!m) return; if (m[2]) (picks[m[1]] = picks[m[1]] || {})[m[2]] = d.data(); else decks[m[1]] = d.data(); });
+    S.decks = decks; S.picks = picks; render();
+  });
   db.collection("requests").where("status", "==", "open").onSnapshot(snap => { const m = {}; snap.docs.forEach(d => m[d.id] = d.data()); S.requests = m; render(); });
   db.collection("staples").doc("list").onSnapshot(d => { S.staples = d.exists ? (d.data().items || []) : []; render(); });
   // Catch up on anything missed while the phone was asleep or offline.
