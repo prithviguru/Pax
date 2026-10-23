@@ -30,7 +30,7 @@
 }
 * { box-sizing: border-box; }
 html { background: var(--linen); overflow-x: clip; }
-body { margin: 0; position: relative; background: var(--linen); color: var(--ink); font: 20px/1.3 var(--serif); overflow-x: hidden; }
+body { margin: 0; position: relative; background: var(--linen); color: var(--ink); font: 20px/1.3 var(--serif); overflow-x: hidden; overflow-x: clip; }
 .gutter { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 h1, h2, h3 { font-weight: 400; margin: 0; text-wrap: balance; }
 a { color: var(--ink); text-underline-offset: 5px; text-decoration-thickness: 1px; }
@@ -139,6 +139,10 @@ textarea { font: 16px/1.3 var(--print); width: 100%; border: 1px solid var(--ink
 .thing.box { border-radius: 2px; background: #eef1ea; }
 .thing.staple { border: 1px dashed var(--sage-ink); background: transparent; }
 .thing.got { opacity: .4; }
+.ownform { display: grid; gap: 10px; margin-top: 10px; }
+.ownform label { display: grid; gap: 4px; font-size: 15px; }
+.ownform label small { font-size: 13px; opacity: .75; }
+.ownform input { font: 16px var(--print); border: 1px solid var(--ink); background: var(--paper); padding: 8px 10px; border-radius: 0; color: var(--ink); min-width: 0; }
 .deckcta { display: grid; gap: 4px; width: 100%; text-align: left; background: var(--ink); color: var(--paper); border: 1px solid var(--ink); padding: 14px 16px; font: inherit; }
 .deckcta .k { font-size: 12px; text-transform: uppercase; letter-spacing: .07em; opacity: .8; }
 .deckcta b { font-size: 21px; font-weight: 500; line-height: 1.15; }
@@ -158,6 +162,14 @@ textarea { font: 16px/1.3 var(--print); width: 100%; border: 1px solid var(--ink
 .deckchips .chip.now { border-style: solid; background: var(--paper); }
 .deckchips .chip.on { border-style: solid; background: #f6f0e4; box-shadow: inset 6px 0 0 var(--sage); }
 .deckmeta { display: flex; justify-content: space-between; font-size: 13px; }
+.deckcard { touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: grab; }
+.deckcard[data-dir]::after { content: "Heart"; position: absolute; top: 22px; left: 18px; border: 2px solid var(--sage-ink); color: var(--sage-ink); background: var(--paper); padding: 4px 10px; font-size: 18px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; transform: rotate(-12deg); opacity: var(--o, 0); }
+.deckcard[data-dir="skip"]::after { content: "Not this week"; left: auto; right: 18px; border-color: var(--ink); color: var(--ink); transform: rotate(10deg); }
+.swipebtns { display: grid; grid-template-columns: 64px minmax(0, 1fr) 64px; align-items: center; gap: 12px; }
+.swipebtns .hint { font-size: 13px; text-align: center; opacity: .8; }
+.round { width: 64px; height: 64px; border-radius: 50%; border: 1px solid var(--ink); background: var(--paper); color: var(--ink); font-size: 26px; line-height: 1; }
+.round.go { background: var(--ink); color: var(--paper); }
+.deckfoot { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .deckcard { position: relative; background: var(--paper); border: 1px solid var(--ink); padding: 26px 20px 18px; display: grid; gap: 10px; transform: rotate(-1deg); margin-top: 8px; }
 .deckcard::before { content: ""; position: absolute; top: -10px; left: 50%; width: 64px; height: 18px; margin-left: -32px; background: rgba(239, 239, 239, .92); border: 1px solid rgba(0, 0, 0, .3); transform: rotate(-4deg); }
 .deckcard .k { font-size: 12px; text-transform: uppercase; letter-spacing: .07em; }
@@ -456,6 +468,7 @@ function nightView(slot) {
 function noteText(n) {
   if (n.mode === "cook") {
     if (n.current && n.current.pending) return { title: n.current.dish, sub: `From ${n.current.source || "a link"}${n.current.savedBy ? " ✶ saved by " + n.current.savedBy : ""}` };
+    if (n.current && n.current.own) return { title: n.current.dish, sub: "Your own" + (n.current.by ? " ✶ " + n.current.by : "") };
     if (n.current) return { title: n.current.dish, sub: [n.current.minutes ? n.current.minutes + " min" : "", n.current.cuisine].filter(Boolean).join(" ✶ ") };
     if (n.picking) return n.picking === myKey() ? { title: "Your pick", sub: "Heart it in your Sunday picks" } : { title: `${COOK[n.picking]}'s picking`, sub: "From the Sunday deck" };
     return { title: "Nothing yet", sub: "Pick from the recipe box or ask Claude" };
@@ -612,23 +625,24 @@ function renderOpen(n) {
     const { title, sub } = noteText(n);
     sheet += `<h2 id="open-h">${esc(title)}</h2>`;
     if (sub) sheet += `<p class="tweak">${esc(sub)}</p>`;
-    if (n.mode === "flex") sheet += renderBoxPicker(n, dis, true);
+    if (n.mode === "flex") sheet += renderBoxPicker(n, dis, true) + renderOwnForm(n, dis, false);
     if (n.st.flag && n.st.by) sheet += `<p class="tweak" data-by="${esc(n.st.by)}">Marked by <span class="name">someone</span>.</p>`;
     receipt = `<p style="margin:10px 0 0;font-size:17px">Nothing to shop for. This night is off the list.</p>`;
   } else if (!c && n.picking) {
     const mine = n.picking === myKey();
     sheet += `<h2 id="open-h">${mine ? "Your pick" : esc(COOK[n.picking]) + " is picking"}</h2><p class="tweak">${mine ? "Heart a dish in your Sunday picks and it lands here." : `This night comes from ${esc(COOK[n.picking])}'s Sunday deck. If nothing's picked by the deadline, Claude's top pick goes on.`}</p>`;
     if (mine) sheet += `<button class="label" data-act="deck" data-v="${S.weekId}">Open your Sunday picks</button>`;
+    sheet += renderOwnForm(n, dis, false);
     receipt = `<p style="margin:10px 0 0;font-size:17px">The dish's ingredients show up once it's picked.</p>`;
   } else if (!c) {
     sheet += `<h2 id="open-h">Nothing left for ${esc(DAY[n.slot])}</h2><p class="tweak">${(n.plan.options || []).length ? "Both backups are gone." : "Nothing was planned for this night."} Pick something from your recipe box, or ask Claude for two new options.</p>`;
-    sheet += renderBoxPicker(n, dis, false) + renderRequest(n, dis);
+    sheet += renderBoxPicker(n, dis, false) + renderOwnForm(n, dis, false) + renderRequest(n, dis);
     receipt = `<p style="margin:10px 0 0;font-size:17px">Pick a dish and its ingredients show up here.</p>`;
   } else {
     const link = safeLink(c.link);
     const hearted = !!S.box[recipeKey(c)];
     sheet += `<h2 id="open-h">${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">${esc(c.dish)}</a>` : esc(c.dish)}</h2>
-      <span class="src">${esc([c.source, c.minutes && c.minutes + " min", c.cuisine, c.fromBox && "from your recipe box"].filter(Boolean).join(", "))}</span>
+      <span class="src">${esc([c.source, c.minutes && c.minutes + " min", c.cuisine, c.own ? "your own" : c.fromBox && "from your recipe box"].filter(Boolean).join(", "))}</span>
       <div class="cookline"><span class="who">${esc(COOK[n.cook] || "Whoever's home")} cooks</span>
         ${n.cook ? `<button class="ink" data-act="cook" data-slot="${n.slot}" ${dis}>Hand to ${esc(COOK[OTHER[n.cook]])}</button>` : ""}
         <button class="heart" data-act="heart" data-slot="${n.slot}" aria-pressed="${hearted}" aria-label="${hearted ? "Remove from" : "Save to"} recipe box" ${dis}>${hearted ? "♥" : "♡"}</button></div>
@@ -641,15 +655,19 @@ function renderOpen(n) {
       sheet += `<div class="options">${n.backups.map(o => `<button class="option" data-act="pick" data-slot="${n.slot}" data-id="${esc(o.id)}" ${dis}><b>${esc(o.dish)}</b><span>${esc([o.source, o.minutes && o.minutes + " min", o.protein].filter(Boolean).join(", "))}</span></button>`).join("") || `<p class="tweak">No backups left for this night.</p>`}</div>`;
       sheet += renderBoxPicker(n, dis, true);
       sheet += `<div class="actions"><button class="ink" data-act="ui" data-slot="${n.slot}" data-v="">Keep ${esc(c.dish)}</button></div>`;
+    } else if (ui.mode === "own") {
+      sheet += renderOwnForm(n, dis, true);
+      sheet += `<div class="actions"><button class="ink" data-act="ui" data-slot="${n.slot}" data-v="">Cancel</button></div>`;
     } else if (ui.mode === "reject") {
       sheet += `<div class="confirm actions"><span>Never suggest ${esc(c.dish)} again?</span><button class="ink" data-act="reject" data-slot="${n.slot}" ${dis}>Yes, reject it</button><button class="ink" data-act="ui" data-slot="${n.slot}" data-v="">Cancel</button></div>`;
     } else {
       sheet += `<div class="actions">${link ? `<a href="${esc(link)}" target="_blank" rel="noopener" style="font-size:20px">${c.source === "TikTok" || c.source === "Instagram" ? "Open on " + esc(c.source) : "Open the recipe"} →</a>` : ""}
         <button class="ink" data-act="ui" data-slot="${n.slot}" data-v="swap" ${dis}>Swap${n.backups.length ? ` (${n.backups.length})` : ""}</button>
-        <button class="ink" data-act="ui" data-slot="${n.slot}" data-v="reject" ${dis}>Reject</button></div>`;
+        <button class="ink" data-act="ui" data-slot="${n.slot}" data-v="own" ${dis}>${c.own ? "Edit" : "Make my own"}</button>
+        ${c.own ? "" : `<button class="ink" data-act="ui" data-slot="${n.slot}" data-v="reject" ${dis}>Reject</button>`}</div>`;
     }
     if (n.st.by && (n.st.current || n.st.boxPick || (n.st.rejected || []).length || n.st.cook)) sheet += `<p class="tweak" data-by="${esc(n.st.by)}">Last changed by <span class="name">someone</span>.</p>`;
-    receipt = (c.ingredients || []).length ? `<ul>${c.ingredients.map(i => `<li>${esc(i)}</li>`).join("")}</ul><p style="margin:10px 0 0;font-size:14px">Quantities are on the recipe page.</p>` : `<p style="margin:10px 0 0;font-size:17px">No ingredient list for this one.</p>`;
+    receipt = (c.ingredients || []).length ? `<ul>${c.ingredients.map(i => `<li>${esc(i)}</li>`).join("")}</ul>${c.own ? "" : `<p style="margin:10px 0 0;font-size:14px">Quantities are on the recipe page.</p>`}` : `<p style="margin:10px 0 0;font-size:17px">No ingredient list for this one.</p>`;
   }
   sheet = sheet.replace("</h2>", "</h2>" + inout);
   return `<section class="open" id="open" aria-labelledby="open-h"><span class="bigstamp" aria-hidden="true">${esc(DAY[n.slot])}</span><button class="ink closer" data-act="close">Close ✕</button>
@@ -661,6 +679,20 @@ function renderBoxPicker(n, dis, compact) {
   if (!items.length) return compact ? "" : `<p class="tweak">Your recipe box is empty. Tap ♡ on a dish you liked to save it.</p>`;
   return `<details ${compact ? "" : "open"}><summary class="print" style="cursor:pointer;font-size:16px">${n.mode === "flex" ? "Cook something from your recipe box" : "From your recipe box"}</summary><div class="options" style="margin-top:8px">${items.map(b =>
     `<button class="option" data-act="boxpick" data-slot="${n.slot}" data-key="${esc(recipeKey(b))}" ${dis}><b>${esc(b.dish)}</b><span>${esc([b.source, b.minutes && b.minutes + " min", b.protein].filter(Boolean).join(", "))}</span></button>`).join("")}</div></details>`;
+}
+
+// Cooking something that isn't a preset recipe: name it, list what goes in it, optionally link it.
+function renderOwnForm(n, dis, open) {
+  const c = n.current && n.current.own ? n.current : null;
+  const val = (x) => esc(x || "");
+  return `<details id="own-${n.slot}" ${open ? "open" : ""}><summary class="print" style="cursor:pointer;font-size:16px">${c ? "Edit what you're making" : "Making your own thing?"}</summary>
+    <form class="ownform" id="own-form" data-slot="${n.slot}">
+      <label>What you're making<input type="text" id="own-dish" required value="${val(c && c.dish)}" placeholder="e.g. Mom's rajma, or leftovers fried rice" ${dis}></label>
+      <label>What goes in it <small>(one per line or commas; goes on the list)</small><textarea id="own-ing" rows="3" placeholder="kidney beans, onion, tomatoes, rice" ${dis}>${val(c && (c.ingredients || []).join(", "))}</textarea></label>
+      <label>Link <small>(optional)</small><input type="url" id="own-link" value="${val(c && c.link)}" placeholder="https://…" ${dis}></label>
+      <label>Notes <small>(optional)</small><input type="text" id="own-note" value="${val(c && c.tweak)}" placeholder="e.g. double the garlic" ${dis}></label>
+      <div class="actions" style="margin:0"><button class="label" style="width:auto" ${dis}>${c ? "Save changes" : `Put it on ${esc(DAY[n.slot])}`}</button>${c ? `<button type="button" class="ink" data-act="ownclear" data-slot="${n.slot}" ${dis}>Go back to the plan</button>` : ""}</div>
+    </form></details>`;
 }
 
 function renderRequest(n, dis) {
@@ -919,11 +951,42 @@ function renderDeck() {
         <h3>${esc(c.dish)}</h3><span class="src">${esc(c.source || "")}</span>${c.why ? `<p>${esc(c.why)}</p>` : ""}
         <div class="pcv"><span>Protein</span><span>${esc(c.protein || "")}</span><span>Carb</span><span>${esc(c.carb || "")}</span><span>Veg</span><span>${esc(c.veg || "")}</span></div>
         ${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">Open the recipe →</a>` : ""}</article>
-      ${undo}<div class="deckbtns"><button class="pill" data-act="deckpick" data-v="never" ${dis}>Never</button><button class="pill" data-act="deckpick" data-v="skip" ${dis}>Not this week</button></div>
-      <button class="pill go" data-act="deckpick" data-v="heart" ${dis}>♥ Heart it</button>`;
+      <div class="swipebtns"><button class="round" data-act="deckpick" data-v="skip" aria-label="Not this week" ${dis}>✕</button><span class="hint">Swipe right to heart it,<br>left for not this week</span><button class="round go" data-act="deckpick" data-v="heart" aria-label="Heart it" ${dis}>♥</button></div>
+      <div class="deckfoot">${undo || "<span></span>"}<button class="ink" data-act="deckpick" data-v="never" ${dis}>Never suggest this</button></div>`;
   }
   return `<section class="deck" aria-label="Your Sunday picks">${head}${body}</section>`;
 }
+
+// Swipe the deck card like Hinge: right hearts it, left is "not this week". Never stays a button, since it's permanent.
+let drag = null;
+document.addEventListener("pointerdown", e => {
+  const card = e.target.closest(".deckcard");
+  if (!card || e.target.closest("a, button") || !S.canWrite) return;
+  drag = { card, x: e.clientX, dx: 0, id: e.pointerId };
+});
+document.addEventListener("pointermove", e => {
+  if (!drag || e.pointerId !== drag.id) return;
+  drag.dx = e.clientX - drag.x;
+  if (Math.abs(drag.dx) < 6) return;
+  const { card, dx } = drag;
+  card.style.transition = "none";
+  card.style.transform = `translateX(${dx}px) rotate(${dx / 18}deg)`;
+  card.dataset.dir = dx > 0 ? "heart" : "skip";
+  card.style.setProperty("--o", Math.min(1, Math.abs(dx) / 110).toFixed(2));
+});
+function endDrag(e) {
+  if (!drag || e.pointerId !== drag.id) return;
+  const { card, dx } = drag; drag = null;
+  if (Math.abs(dx) > 110) {
+    card.style.transition = "transform .22s ease-out";
+    card.style.transform = `translateX(${dx > 0 ? 640 : -640}px) rotate(${dx > 0 ? 24 : -24}deg)`;
+    setTimeout(() => deckAct(dx > 0 ? "heart" : "skip"), 180);
+  } else {
+    card.style.transition = "transform .2s ease-out"; card.style.transform = ""; delete card.dataset.dir;
+  }
+}
+document.addEventListener("pointerup", endDrag);
+document.addEventListener("pointercancel", endDrag);
 
 function savePicks(next, label) {
   const D = S.deck, w = D.week, me = myKey();
@@ -1056,6 +1119,7 @@ const handlers = {
   },
   deckswap: d => { const o = S.deck.order, i = Number(d.i); [o[i], o[i + 1]] = [o[i + 1], o[i]]; render(); },
   deckok: () => deckConfirm(),
+  ownclear: d => write(() => { S.ui = {}; return saveNight(d.slot, { boxPick: null }); }, "Back to the plan."),
   unstaple: d => saveStaples(S.staples.filter(s => norm(s) !== norm(d.name))),
 };
 
@@ -1127,6 +1191,18 @@ document.addEventListener("submit", e => {
     await S.db.collection("weeks").doc(monday).collection("nights").doc(slot).update({ boxPick: card, flag: "cook", ...stamp() });
     S.addOpen = false; S.tab = "tonight"; selectWeek(monday); S.focus = slot; render();
   }, `On for ${DAY[slot]}.`);
+});
+document.addEventListener("submit", e => {
+  if (e.target.id !== "own-form") return;
+  e.preventDefault();
+  const slot = e.target.dataset.slot, val = id => document.getElementById(id).value.trim();
+  const dish = val("own-dish"); if (!dish) return;
+  const link = val("own-link");
+  if (link && !safeLink(link)) return toast("That link needs to start with https://");
+  const prev = (S.nights[slot] || {}).boxPick;
+  const card = { id: prev && prev.own ? prev.id : "own-" + Date.now().toString(36), dish, own: true, link, source: siteOf(link),
+    ingredients: val("own-ing").split(/[\n,]+/).map(x => x.trim()).filter(Boolean), tweak: val("own-note"), by: S.myName };
+  write(() => { S.ui = {}; return saveNight(slot, { boxPick: card, flag: "cook" }); }, `${dish} is on for ${DAY[slot]}.`);
 });
 document.addEventListener("toggle", e => { if (e.target.id === "staples-box") S.staplesOpen = e.target.open; if (e.target.id === "add-box") S.addOpen = e.target.open; if (e.target.id === "shared-box") S.sharedOpen = e.target.open; }, true);
 document.addEventListener("submit", e => {

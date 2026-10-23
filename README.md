@@ -47,10 +47,10 @@ Edit `docs/`, bump `CACHE` in `docs/sw.js`, merge to `main`. Pages redeploys in 
 
 ## How it works
 
-- **Week (home):** the week as paper notes taped to the fridge. Every night is a cook night unless you tap "We're ordering in" or "We're eating out". Tap a note to open that night's recipe: swap to a backup, reject a dish (it never comes back), hand the night to the other cook, or save it to the recipe tin.
+- **Week (home):** the week as paper notes taped to the fridge. Every night is a cook night unless you tap "We're ordering in" or "We're eating out". Tap a note to open that night's recipe: swap to a backup, reject a dish (it never comes back), hand the night to the other cook, or save it to the recipe tin. **Make my own** puts anything you like on a night: a name, what goes in it (that goes on the grocery list), and an optional link or note. Edit it any time, or go back to the plan.
 - **List:** a sage fridge. Pull the handle and the week's groceries sit on freezer, dairy, pantry and crisper-drawer shelves, with staples on the bottom "already have" shelf. Tap anything you've got. The list follows every swap and night out.
 - **Recipes:** a recipe tin with divider tabs by cuisine, plus Quick and Never. Pull a card, flip it for the steps, or "Cook it this week" to drop it onto a night. **Add a recipe** under the tin takes a link and a name and puts it in the tin or on one of the next seven nights, same as the Shortcut; a card Claude hasn't filled in yet can be named from the tin.
-- **Sunday picks:** Claude deals each of you about 10 dishes for the nights you cook. Heart as many as you have nights, put them on your nights, done. Undo steps back a card at a time. Anything not picked by 9pm Sunday gets Claude's top picks. The rest of your deck becomes that night's backups under Swap.
+- **Sunday picks:** Claude deals each of you about 10 dishes for the nights you cook. Swipe right to heart, left for not this week (or use the buttons); Never is a button so it can't happen by accident. Heart as many as you have nights, put them on your nights, done. Undo steps back a card at a time. Anything not picked by 9pm Sunday gets Claude's top picks. The rest of your deck becomes that night's backups under Swap.
 - **Planning:** Claude writes `weeks/<Monday>` (nights out, cook nights and who cooks, the `shelves` map) and `decks/<Monday>` (the cards) every Sunday. See the skill for the shape.
 
 ## Data
