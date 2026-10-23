@@ -45,7 +45,7 @@ The bar is "we'd actually be excited to eat this", not "technically fits the rul
 
 ## Reading Pax before you plan
 
-Pax's data lives in Supabase. Read and write it with `tools/paxdb.py` from the Pax repo (it needs `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` in the environment; if either is missing or `supabase.co` is blocked, stop and say so rather than guessing):
+Pax's data lives in Supabase. Read and write it with `tools/paxdb.py` from the Pax repo (it uses the app's public key from `docs/config.js`; if `xzvsxgbsdzwvdmgmclut.supabase.co` is blocked by the environment's network settings, stop and say so rather than guessing):
 
 ```
 python3 tools/paxdb.py list weeks                       # every planned week
