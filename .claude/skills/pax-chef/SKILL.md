@@ -74,7 +74,7 @@ Dishes Prithvi has already OK'd but that didn't fit a week yet. Use these before
 
 ## Planning ahead: always four weeks of decks
 
-They can swipe their dinners up to four weeks out, so every Sunday run makes sure the **next four weeks** (the Mondays 1, 8, 15 and 22 days away) each have a week document and a deck. Usually that means dealing one new week, the fourth, and checking the other three.
+They can swipe any of the next four weeks whenever they like, so there's always a deck waiting: every planning run (Monday mornings, or whenever asked) makes sure the **next four weeks** (the next four Mondays after today) each have a week document and a deck. Usually that means dealing one new week, the fourth, and checking the other three. Sunday evening is only a reminder for anyone who hasn't picked the coming week; it never deals.
 
 **A week that doesn't exist yet:** write one document: collection `weeks`, doc id = that Monday's date (`YYYY-MM-DD`), then its deck (below). The one exception is an old placeholder week with `stub: true`: plan it with `merge` and drop `stub`. A link they share to a week you haven't planned sits in that week's `nights/` docs with no week document; plan the week as usual. Leave any night that already has a `boxPick` or a `flag` as they set it. Calendars thin out further ahead, so a far week is mostly the usual cook nights; that's fine.
 

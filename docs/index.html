@@ -100,14 +100,6 @@ body.out .tabbar, body.full .tabbar { display: none; }
 .day.past { opacity: .5; }
 .day.today .date { background: var(--ink); color: var(--paper); border-right-color: var(--ink); margin: -12px 0; padding: 12px 8px 12px 0; }
 .day.today .date b { color: var(--butter); }
-.ahead { position: relative; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 14px; border: 1.5px solid var(--ink); }
-.ahead button { display: grid; gap: 2px; padding: 7px 8px 6px; border: 0; border-left: 1.5px solid var(--ink); background: var(--paper); text-align: left; font: inherit; color: var(--ink); }
-.ahead button:first-child { border-left: 0; }
-.ahead button span { font-size: 13px; font-weight: 600; }
-.ahead button.done { background: var(--ink); color: var(--paper); }
-.ahead button.none span { color: var(--muted); font-weight: 400; }
-.ahead button.open span::before { content: "\2661  "; }
-.ahead button.here { box-shadow: inset 0 -4px 0 var(--red); }
 .washi { position: absolute; z-index: 2; top: -2px; left: 70px; width: 62px; height: 18px; background: rgba(216,73,47,.88); transform: rotate(-4deg); pointer-events: none; }
 .whoami { margin: 22px 0 0; font-size: 13px; color: var(--muted); }
 .whoami button { border: 0; background: none; padding: 0; font-size: 13px; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
@@ -363,7 +355,7 @@ function noteText(n) {
     if (n.current && n.current.own) return { title: n.current.dish, sub: "Your own" + (n.current.by ? " · " + n.current.by : "") };
     if (n.current) return { title: n.current.dish, sub: [n.current.minutes ? n.current.minutes + " min" : "", n.current.cuisine].filter(Boolean).join(" · ") };
     if (n.blank) return { title: "Nothing planned", sub: "" };
-    if (n.picking) return n.picking === myKey() ? { title: "Your pick", sub: "Heart it in your Sunday picks" } : { title: `${COOK[n.picking]}'s picking`, sub: "From the Sunday deck" };
+    if (n.picking) return n.picking === myKey() ? { title: "Your pick", sub: "Heart it in your picks for this week" } : { title: `${COOK[n.picking]}'s picking`, sub: "From their deck" };
     return { title: "Nothing yet", sub: "Pick from the recipe box or ask Claude" };
   }
   if (n.mode === "flex") return { title: n.plan.label || "Free night", sub: n.plan.note || "Out, in, or leftovers" };
@@ -525,29 +517,18 @@ function masthead({ word, dateline, title, art, side = "", extra = "" }) {
 }
 
 function noWeek() {
-  return `<p class="say">Nothing planned yet. Claude deals the Sunday picks every Sunday evening, and the week shows up here.</p>`;
+  return `<p class="say">Nothing planned yet. Claude keeps the next four weeks dealt, so this week's deck shows up here soon.</p>`;
 }
 
-function deckBanner(w, other) {
+function deckBanner(w) {
   if (!w) return "";
   const me = myKey(), nights = deckNights(w, me), n = deckCards(w, me).length, pk = picksFor(w, me);
   const d = deckFor(w), due = d.deadline ? new Date(d.deadline) : null;
   const by = !due ? "" : due - Date.now() < 6 * 864e5 ? "by 9pm Sun" : "by Sun " + due.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "America/New_York" });
-  const label = (other ? `Week of ${shortDate(w)}: ` : "") + (nights.length === 1 ? `Pick ${DAY[nights[0]]}'s dinner` : `Pick ${nights.length} dinners`);
+  const label = (nights.length === 1 ? `Pick ${DAY[nights[0]]}'s dinner` : `Pick ${nights.length} dinners`);
   return `<button class="bar" data-act="deck" data-v="${w}"><span>${esc(label)} <span>· ${n} dishes${(pk.pos || 0) > 0 ? " · keep going" : ""}${by ? " · " + by : ""}</span></span>${ICON.arrow}</button>`;
 }
 
-// The next four weeks at a glance, so you can swipe ahead whenever you like.
-function aheadStrip() {
-  const me = myKey(), start = addDays(thisMonday(), 7);
-  const cells = [0, 7, 14, 21].map(k => {
-    const w = addDays(start, k), d = deckFor(w), pk = picksFor(w, me);
-    const mine = d && deckNights(w, me).length;
-    const st = !d ? ["Not dealt", "none"] : !mine ? ["Not cooking", "none"] : pk.done ? ["Picked", "done"] : deckPast(w) ? ["Claude picked", "done"] : [(pk.hearts || []).length ? `${Math.min(pk.hearts.length, deckNights(w, me).length)} of ${deckNights(w, me).length}` : "Pick", "open"];
-    return `<button class="${st[1]}${w === S.weekId ? " here" : ""}" data-act="${st[1] === "open" ? "deck" : "week"}" data-v="${w}"><b class="k">${esc(dayUp(w))}</b><span>${esc(st[0])}</span></button>`;
-  });
-  return `<div class="ahead" role="group" aria-label="Your picks for the next four weeks">${cells.join("")}</div>`;
-}
 function renderWeekView() {
   const me = myKey();
   const w = week();
@@ -556,12 +537,12 @@ function renderWeekView() {
   const note = !S.weekId ? "" : w ? [w.note, deckNote].filter(Boolean).join(" ") : addDays(S.weekId, 6) < today() ? "Nothing was planned this week." : "Not planned yet. Anything you put on a night stays when Claude plans it.";
   const myDeck = S.weekId && deckNights(S.weekId, me).length && deckCards(S.weekId, me).length;
   const myPk = S.weekId ? picksFor(S.weekId, me) : {};
-  // The deck for the week you're looking at; on this week, the next one still waiting on you.
-  const barWeek = S.weekId && deckOpenFor(S.weekId) ? S.weekId : S.weekId && S.weekId <= addDays(thisMonday(), 7) ? openDeckWeek(S.weekId) : null;
-  const deckLink = myDeck && !deckOpenFor(S.weekId) ? `<button class="textlink" data-act="deck" data-v="${S.weekId}">Your Sunday picks · ${myPk.done ? "done, tap to change" : (myPk.pos || 0) > 0 ? "keep going" : deckNights(S.weekId, me).some(sl => (((week() || {}).nights || {})[sl] || {}).options?.length) ? "picking again" : "not started"}</button>` : "";
+  // Each week shows its own deck while it's open; scroll to a week to pick it.
+  const barWeek = S.weekId && deckOpenFor(S.weekId) ? S.weekId : null;
+  const deckLink = myDeck && !deckOpenFor(S.weekId) ? `<button class="textlink" data-act="deck" data-v="${S.weekId}">Your picks · ${myPk.done ? "done, tap to change" : (myPk.pos || 0) > 0 ? "keep going" : deckNights(S.weekId, me).some(sl => (((week() || {}).nights || {})[sl] || {}).options?.length) ? "picking again" : "not started"}</button>` : "";
   const arrows = S.weekId ? `<span class="arrows"><button class="sq" data-act="week" data-v="${addDays(S.weekId, -7)}" aria-label="Last week">${ICON.left}</button><button class="sq" data-act="week" data-v="${addDays(S.weekId, 7)}" aria-label="Next week">${ICON.right}</button></span>` : "";
   const mast = masthead({ word: "Pax", dateline: `${dayUp(id)} – ${dayUp(addDays(id, 6))}`, title: esc(S.weekId ? weekLabel(S.weekId) : "This week"), art: "tomato", side: arrows,
-    extra: `${note ? `<p class="note">${esc(note)}</p>` : ""}${deckLink}${deckBanner(barWeek, barWeek !== S.weekId)}${aheadStrip()}` });
+    extra: `${note ? `<p class="note">${esc(note)}</p>` : ""}${deckLink}${deckBanner(barWeek)}` });
   if (!S.weekId) return [mast, noWeek() + whoami()];
   return [mast, renderWeek() + whoami()];
 }
@@ -629,8 +610,8 @@ function renderOpen(n) {
     if (n.st.flag && n.st.by) body += `<p class="say small" data-by="${esc(n.st.by)}">Marked by <span class="name">someone</span>.</p>`;
   } else if (!c && n.picking) {
     const mine = n.picking === myKey();
-    body = `<div><h1 id="open-h">${mine ? "Your pick" : esc(COOK[n.picking]) + " is picking"}</h1><div class="src">${mine ? "Heart a dish in your Sunday picks and it lands here." : `From ${esc(COOK[n.picking])}'s Sunday deck. If nothing's picked by the deadline, Claude's top pick goes on.`}</div></div>${seg}`;
-    if (mine) body += `<button class="primary" data-act="deck" data-v="${S.weekId}">Open your Sunday picks ${ICON.arrow}</button>`;
+    body = `<div><h1 id="open-h">${mine ? "Your pick" : esc(COOK[n.picking]) + " is picking"}</h1><div class="src">${mine ? "Heart a dish in your picks for this week and it lands here." : `From ${esc(COOK[n.picking])}'s deck. If nothing's picked by the deadline, Claude's top pick goes on.`}</div></div>${seg}`;
+    if (mine) body += `<button class="primary" data-act="deck" data-v="${S.weekId}">Open your picks ${ICON.arrow}</button>`;
     body += `<div class="btns">${own}</div>`;
   } else if (!c && n.blank) {
     body = `<div><h1 id="open-h">Nothing planned</h1><div class="src">Make your own to put something on ${esc(DAY[n.slot])}.</div></div>${seg}<div class="btns">${own}<button class="ghost" data-act="ownclear" data-slot="${n.slot}" ${dis}>Go back to the plan</button></div>`;
@@ -929,7 +910,7 @@ function renderDeck() {
       <div class="choose"><button data-act="deckpick" data-v="skip" ${dis}>${ICON.x} Not this week</button><button class="go" data-act="deckpick" data-v="heart" ${dis}><span style="color:var(--red)">${ICON.heart}</span> Heart it</button></div>
       <div class="deckfoot">${undo}<span>or swipe the card</span><button data-act="deckpick" data-v="never" ${dis}>Never suggest this</button></div>`;
   }
-  return `<section class="deck" aria-label="Your Sunday picks">${body}</section>`;
+  return `<section class="deck" aria-label="Your picks">${body}</section>`;
 }
 
 // Swipe the deck card like Hinge: right hearts it, left is "not this week". Never stays a button, since it's permanent.
